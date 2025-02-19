@@ -1,4 +1,4 @@
-## SMU CS102 Project
+# SMU CS102 Project
 
 This Java project is a console-based game, simulating the card game
 Parade.
