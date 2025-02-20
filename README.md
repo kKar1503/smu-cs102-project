@@ -13,7 +13,7 @@ A.Y. 2024/25 Semester 2.
 - [Yee Ming](https://github.com/45tera)
 - [Riyaz](https://github.com/riyxz245)
 - [Nanyang Baskeyball](https://github.com/sri7373)
-- [Anson]()
+- [Anson](https://github.com/Aelderic)
 
 ## Set Up Instructions
 
