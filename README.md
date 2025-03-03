@@ -10,7 +10,7 @@ A.Y. 2024/25 Semester 2.
 
 - [Yam Kar Lok](https://github.com/kKar1503)
 - [Gerg Lee](https://github.com/gregleejy)
-- [Yee Ming](https://github.com/45tera)
+- [Tan Yee Ming](https://github.com/45tera)
 - [Riyaz](https://github.com/riyxz245)
 - [Nanyang Baskeyball](https://github.com/sri7373)
 - [Anson](https://github.com/Aelderic)
