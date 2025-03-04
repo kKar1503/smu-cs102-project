@@ -1,4 +1,3 @@
 package parade.common;
 
-public interface Card {
-}
+public interface Card {}

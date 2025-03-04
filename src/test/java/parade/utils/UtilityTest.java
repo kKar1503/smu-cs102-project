@@ -8,7 +8,7 @@ class UtilityTest {
 
     @Test
     void sum() {
-        int actual = Utility.Sum(1,2);
+        int actual = Utility.Sum(1, 2);
         int expected = 3;
 
         assertEquals(expected, actual);

@@ -1,5 +1,3 @@
 package parade.utils;
 
-public class ScoreUtility {
-
-}
+public class ScoreUtility {}

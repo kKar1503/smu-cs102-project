@@ -1,10 +1,10 @@
 package parade.common;
 
 public enum Colour {
-    RED,
-    BLUE,
-    GREEN,
-    YELLOW,
-    BLACK,
-    WHITE;
+  RED,
+  BLUE,
+  GREEN,
+  YELLOW,
+  BLACK,
+  WHITE;
 }
