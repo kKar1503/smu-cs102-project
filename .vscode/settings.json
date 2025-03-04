@@ -1,0 +1,11 @@
+{
+  "java.format.settings.google.extra": "--aosp",
+  "[java]": {
+    "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code",
+    "editor.formatOnSave": true
+  },
+  "[java-properties]": {
+    "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code",
+    "editor.formatOnSave": true
+  }
+}
