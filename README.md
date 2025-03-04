@@ -13,7 +13,7 @@ A.Y. 2024/25 Semester 2.
 - [Yee Ming](https://github.com/45tera)
 - [Riyaz](https://github.com/riyxz245)
 - [Sri](https://github.com/sri7373)
-- [Anson](https://github.com/Aelderic)
+- [Koh Guang Wei, Anson](https://github.com/Aelderic)
 
 ## Set Up Instructions
 
