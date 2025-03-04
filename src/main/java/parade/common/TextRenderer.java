@@ -1,5 +1,3 @@
 package parade.common;
 
-public class TextRenderer {
-
-}
+public class TextRenderer {}
