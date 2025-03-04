@@ -1,3 +1,3 @@
 package common;
 
-public interface Class { }
+public interface Card { }
