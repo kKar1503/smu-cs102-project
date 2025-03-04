@@ -1,5 +1,5 @@
-package common;
+package parade.common;
 
 public class TextRenderer {
-    
+
 }

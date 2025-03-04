@@ -1,4 +1,4 @@
-package common;
+package parade.common;
 
 public enum Colour {
     RED,
