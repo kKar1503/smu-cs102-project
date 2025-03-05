@@ -47,8 +47,6 @@ public class Parade {
 
             // Add placeCard
             paradeList.add(placeCard);
-
-            return removedCards;
         }
 
         return removedCards;
