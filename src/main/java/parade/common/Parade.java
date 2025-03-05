@@ -51,4 +51,8 @@ public class Parade {
 
         return removedCards;
     }
+
+    public List<Card> getParadeCards() {
+        return paradeList;
+    }
 }
