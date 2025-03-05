@@ -2,7 +2,10 @@ package parade;
 
 import parade.settings.SettingKey;
 import parade.settings.Settings;
+import parade.textrenderer.DebugRenderer;
+import parade.textrenderer.DebugRendererProvider;
 import parade.textrenderer.TextRendererProvider;
+import parade.textrenderer.impl.BasicDebugRenderer;
 import parade.textrenderer.impl.BasicTextRenderer;
 
 import java.util.NoSuchElementException;
@@ -17,11 +20,22 @@ public class Main {
                         .fromClasspath("config.properties")
                         .build();
 
+        // Currently only supporting 1 debug renderer
+        DebugRenderer debugRenderer;
+        switch (settings.get(SettingKey.CONFIG_DEBUG_TYPE)) {
+            default:
+                // Defaults to basic debug renderer
+                debugRenderer = new BasicDebugRenderer();
+        }
+        DebugRendererProvider.setInstance(debugRenderer);
+
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
+        debugRenderer.debug("Gameplay is starting in " + gameplayMode + " mode");
 
         switch (gameplayMode) {
             case "local":
                 TextRendererProvider.setInstance(new BasicTextRenderer());
+                debugRenderer.debug("Initialised basic text renderer");
                 break;
             case "network":
                 throw new UnsupportedOperationException("Network mode is not yet supported");
@@ -32,6 +46,7 @@ public class Main {
 
         TextRendererProvider.getInstance().renderWelcome();
         Scanner scanner = new Scanner(System.in);
+        debugRenderer.debug("Prompting user to start game in menu");
         while (true) {
             TextRendererProvider.getInstance().renderMenu();
             try {
@@ -43,8 +58,10 @@ public class Main {
                 }
 
                 if (input == 1) {
+                    debugRenderer.debug("User is starting the game");
                     startGame();
                 } else {
+                    debugRenderer.debug("User is exiting the game");
                     TextRendererProvider.getInstance().renderBye();
                 }
                 break;
