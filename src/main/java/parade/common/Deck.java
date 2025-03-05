@@ -5,29 +5,27 @@ import java.util.LinkedList;
 
 public class Deck {
 
-    private LinkedList<Card> cards;
+    private final LinkedList<Card> cards;
 
     public Deck() {
 
-        cards = new LinkedList<Card>();
+        cards = new LinkedList<>();
 
         for (Colour colour : Colour.values()) {
             for (int i = 0; i <= 10; i++) {
                 cards.add(new Card(i, colour));
             }
         }
+
+        shuffleDeck();
     }
 
-    public void shuffleDeck() {
+    private void shuffleDeck() {
         Collections.shuffle(cards);
     }
 
     public boolean isDeckEmpty() {
         return cards.isEmpty();
-    }
-
-    public int cardsLeft() {
-        return cards.size();
     }
 
     public Card drawCard() {
