@@ -1,8 +1,8 @@
 package parade.player;
 
-import parade.common.Card;
-
 import java.util.List;
+
+import parade.common.Card;
 
 public interface Player {
     /**
@@ -12,6 +12,14 @@ public interface Player {
      * @return The card selected to be played.
      */
     Card playCard(List<Card> parade);
+
+    /**
+     * Adds multiple cards to the player's board (collected cards).
+     * This allows adding more than one card at a time.
+     *
+     * @param cards The list of cards to add to the board.
+     */
+    void addToBoard(List<Card> cards);
 
     /**
      * Draws a new card and adds it to the player's hand.

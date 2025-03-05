@@ -28,6 +28,16 @@ public abstract class Computer implements Player {
     }
 
     /**
+     * Adds multiple cards to the AI player's board (collected cards).
+     *
+     * @param cards The list of cards to add to the board.
+     */
+    @Override
+    public void addToBoard(List<Card> cards) {
+        board.addAll(cards); // Appends all cards from the list to the board.
+    }
+
+    /**
      * Draws a new card and adds it to the AI player's hand.
      *
      * @param card The card drawn from the deck.
