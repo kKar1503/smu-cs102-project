@@ -22,16 +22,11 @@ public class Human implements Player {
     /**
      * Constructs a human player with a given name and initial hand.
      *
-     * @param cards The initial set of cards assigned to the human player's hand.
      * @param name The name of the human player.
      */
-    public Human(List<Card> cards, String name) {
+    public Human(String name) {
         this.name = name;
-        if (cards instanceof LinkedList<Card> llCards) {
-            this.hand = llCards;
-        } else {
-            this.hand = new LinkedList<>(cards);
-        }
+        this.hand = new LinkedList<>();
         this.board = new LinkedList<>();
     }
 
