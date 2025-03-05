@@ -34,4 +34,12 @@ public interface Player {
      * @return A list of cards representing the player's board.
      */
     List<Card> getBoard();
+
+    /**
+     * Retrieves the player's name.
+     * This helps differentiate between different types of players (human or AI).
+     *
+     * @return The player's name as a string.
+     */
+    String getName();
 }

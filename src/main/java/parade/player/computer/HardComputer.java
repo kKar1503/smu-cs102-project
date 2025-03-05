@@ -6,25 +6,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The HardComputer class represents an AI player with an advanced strategy. This AI minimizes its
- * own losses while maximizing the difficulty of the opponent’s next move. It uses predictive
- * analysis to determine the best card to play.
+ * The HardComputer class represents an AI player with an advanced strategy.
+ * This AI minimises its own losses while maximising the difficulty for the opponent.
+ * It uses predictive analysis to determine the best card to play.
  */
 public class HardComputer extends Computer {
 
     /**
      * Constructs a HardComputer instance with an initial hand of cards.
      *
-     * @param cards The initial set of cards assigned to the computer's hand.
+     * @param cards The initial set of cards assigned to the AI player's hand.
      */
     public HardComputer(List<Card> cards) {
-        super(cards);
+        super(cards, "Hard AI");
     }
 
     /**
-     * Selects the best card to play by balancing two factors: - Minimizing its own loss (i.e.,
-     * taking as few parade cards as possible). - Maximizing the difficulty for the opponent (i.e.,
-     * forcing them into bad moves).
+     * Selects the best card to play by balancing two factors:
+     * - Minimising its own loss (i.e., taking as few parade cards as possible).
+     * - Maximising the difficulty for the opponent (i.e., forcing them into bad moves).
      *
      * <p>The AI simulates the loss it would incur for each possible move and also predicts how much
      * it can force the opponent to lose.
@@ -46,8 +46,9 @@ public class HardComputer extends Computer {
                     simulateOpponentLoss(card, parade); // How many cards the opponent might take
 
             /**
-             * Decision-making process: - Select the card that minimizes self-loss. - If multiple
-             * cards result in the same loss, choose the one that maximizes opponent's loss.
+             * Decision-making process:
+             * - Select the card that minimises self-loss.
+             * - If multiple cards result in the same loss, choose the one that maximises opponent's loss.
              */
             if (selfLoss < minLoss || (selfLoss == minLoss && opponentLoss > maxOpponentLoss)) {
                 minLoss = selfLoss;
@@ -60,9 +61,9 @@ public class HardComputer extends Computer {
     }
 
     /**
-     * Simulates how many cards the AI would take if it plays the given card. - The card's number
-     * determines how many cards remain safe in the parade. - Any card in the parade with a smaller
-     * number or a matching color will be taken.
+     * Simulates how many cards the AI would take if it plays the given card.
+     * - The card's number determines how many cards remain safe in the parade.
+     * - Any card in the parade with a smaller number or a matching colour will be taken.
      *
      * @param card The card being played.
      * @param parade The current parade lineup.
@@ -79,9 +80,8 @@ public class HardComputer extends Computer {
 
             // AI will take this card if:
             // - Its number is less than or equal to the played card's number.
-            // - Its color matches the played card's color.
-            if (paradeCard.getNumber() <= card.getNumber()
-                    || paradeCard.getColour().equals(card.getColour())) {
+            // - Its colour matches the played card's colour.
+            if (paradeCard.getNumber() <= card.getNumber() || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
             }
         }
@@ -90,9 +90,9 @@ public class HardComputer extends Computer {
     }
 
     /**
-     * Simulates how many cards the opponent might take if the AI plays the given card. - This
-     * method assumes that the opponent will try to minimize their own loss. - The AI attempts to
-     * force the opponent into an unfavorable position.
+     * Simulates how many cards the opponent might take if the AI plays the given card.
+     * - This method assumes that the opponent will try to minimise their own loss.
+     * - The AI attempts to force the opponent into an unfavourable position.
      *
      * @param card The card the AI is considering playing.
      * @param parade The current parade lineup.
