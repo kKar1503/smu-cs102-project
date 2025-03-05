@@ -3,6 +3,7 @@ package parade.server;
 import parade.common.Card;
 import parade.common.Colour;
 import parade.common.Deck;
+import parade.common.Parade;
 import parade.player.Player;
 import parade.utils.ScoreUtility;
 
@@ -16,7 +17,7 @@ public class BasicGameServer {
     private List<Player> playersList; // List of players in the game
     private Deck deck; // The deck of cards used in the game
     private Map<Player, Integer> playerScores; // Stores each player's score
-    private List<Card> parade; // The list of cards currently in the parade
+    private Parade parade; // The list of cards currently in the parade
 
     /**
      * Initializes the game server with a deck.
@@ -27,7 +28,11 @@ public class BasicGameServer {
         this.playersList = new ArrayList<>();
         this.deck = new Deck();
         this.playerScores = new HashMap<>();
-        this.parade = new ArrayList<>();
+        List<Card> parade_cards = new ArrayList<Card>();
+        for (int i = 0 ; i < 6 ; i ++) {
+            parade_cards.add(deck.drawCard());
+        }
+        this.parade = new Parade(parade_cards);
     }
 
     /**
@@ -58,9 +63,9 @@ public class BasicGameServer {
 
             // Each player plays a card
             for (Player player : playersList) {
-                Card playedCard = player.playCard(parade);
+                Card playedCard = player.playCard(parade.getParadeCards());
                 if (playedCard != null) {
-                    parade.placeCard(playedCard, parade); // Apply parade logic
+                    parade.placeCard(playedCard); // Apply parade logic
                     System.out.println(player.getName() + " played: " + playedCard);
                 }
             }
@@ -87,9 +92,9 @@ public class BasicGameServer {
         // met
         System.out.println("Extra round started. Players do not draw a card.");
         for (Player player : playersList) {
-            Card playedCard = player.playCard(parade);
+            Card playedCard = player.playCard(parade.getParadeCards());
             if (playedCard != null) {
-                parade.placeCard(playedCard, parade);
+                parade.placeCard(playedCard);
                 System.out.println(player.getName() + " played: " + playedCard);
             }
         }
