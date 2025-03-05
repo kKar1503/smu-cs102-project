@@ -42,25 +42,14 @@ public class BasicGameServer {
      * Starts the game loop and manages game progression.
      */
     public void startGame() {
-        boolean extraRound = false; // Flag to determine if an extra round is required
-
-        // Game loop continues until the deck is empty or an extra round is required
-        while (deck.size() > 0 || extraRound) {
-            // Check if the game-ending conditions are met
-            if (checkForEndConditions() && !extraRound) {
-                extraRound = true;
-                System.out.println("A player has all 6 colours or deck is empty. Extra round will be played.");
-                break;
-            }
-
+        // Game loop continues until the deck is empty or an end condition is met
+        while (deck.size() > 0 && !checkForEndConditions()) {
             // Players draw cards only in normal rounds
-            if (!extraRound) {
-                for (Player player : playersList) {
-                    Card drawnCard = deck.draw();
-                    if (drawnCard != null) {
-                        player.draw(drawnCard);
-                        System.out.println(player.getName() + " drew: " + drawnCard);
-                    }
+            for (Player player : playersList) {
+                Card drawnCard = deck.draw();
+                if (drawnCard != null) {
+                    player.draw(drawnCard);
+                    System.out.println(player.getName() + " drew: " + drawnCard);
                 }
             }
 
@@ -97,8 +86,9 @@ public class BasicGameServer {
             }
         }
 
-        // Execute one final round if necessary
-        if (extraRound) {
+        // After the game loop finishes, check if the extra round is needed.
+        // Allow players to play one more round even if the deck is empty or the end condition is met
+        if (checkForEndConditions() || deck.size() == 0) {
             System.out.println("Extra round started. Players do not draw a card.");
             for (Player player : playersList) {
                 Card playedCard = player.playCard(parade);
@@ -115,7 +105,7 @@ public class BasicGameServer {
     }
 
     /**
-     * Checks whether the game is over (i.e., deck is empty and extra round is completed).
+     * Checks whether the game is over (i.e., deck is empty).
      * @return True if the game is over, false otherwise.
      */
     private boolean isGameOver() {
