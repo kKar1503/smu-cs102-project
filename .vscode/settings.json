@@ -7,5 +7,6 @@
   "[java-properties]": {
     "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code",
     "editor.formatOnSave": true
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
