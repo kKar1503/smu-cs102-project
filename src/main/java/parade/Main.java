@@ -1,5 +1,7 @@
 package parade;
 
+import parade.common.Server;
+import parade.server.BasicGameServer;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 import parade.textrenderer.DebugRenderer;
@@ -12,6 +14,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
+    private static Server server;
+
     public static void main(String[] args) {
 
         Settings settings =
@@ -36,6 +40,8 @@ public class Main {
             case "local":
                 TextRendererProvider.setInstance(new BasicTextRenderer());
                 debugRenderer.debug("Initialised basic text renderer");
+                server = new BasicGameServer();
+                debugRenderer.debug("Initialised basic game server");
                 break;
             case "network":
                 throw new UnsupportedOperationException("Network mode is not yet supported");
@@ -72,6 +78,7 @@ public class Main {
     }
 
     static void startGame() {
-        // TODO: implement game server logic
+        server.waitForPlayersLobby();
+        server.startGame();
     }
 }
