@@ -9,8 +9,8 @@ import parade.utils.ScoreUtility;
 import java.util.*;
 
 /**
- * Represents the game server for the Parade game.
- * Manages players, the deck, the parade, and game flow.
+ * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
+ * flow.
  */
 public class BasicGameServer {
     private List<Player> playersList; // List of players in the game
@@ -20,6 +20,7 @@ public class BasicGameServer {
 
     /**
      * Initializes the game server with a deck.
+     *
      * @param deck The deck to be used in the game.
      */
     public BasicGameServer(Deck deck) {
@@ -31,6 +32,7 @@ public class BasicGameServer {
 
     /**
      * Adds a player to the game.
+     *
      * @param p The player to be added.
      */
     public void addPlayer(Player p) {
@@ -38,15 +40,13 @@ public class BasicGameServer {
         playerScores.put(p, 0); // Initialize player's score to 0
     }
 
-    /**
-     * Starts the game loop and manages game progression.
-     */
+    /** Starts the game loop and manages game progression. */
     public void startGame() {
         // Game loop continues until the deck is empty or an end condition is met
-        while (deck.size() > 0 && !checkForEndConditions()) {
+        while (!deck.isDeckEmpty() && !shouldGameEnd()) {
             // Players draw cards only in normal rounds
             for (Player player : playersList) {
-                Card drawnCard = deck.draw();
+                Card drawnCard = deck.drawCard();
                 if (drawnCard != null) {
                     player.draw(drawnCard);
                     System.out.println(player.getName() + " drew: " + drawnCard);
@@ -60,7 +60,7 @@ public class BasicGameServer {
             for (Player player : playersList) {
                 Card playedCard = player.playCard(parade);
                 if (playedCard != null) {
-                    player.placeCard(playedCard, parade); // Apply parade logic
+                    parade.placeCard(playedCard, parade); // Apply parade logic
                     System.out.println(player.getName() + " played: " + playedCard);
                 }
             }
@@ -68,34 +68,29 @@ public class BasicGameServer {
             // Calculate majority colours for each player
             Map<Player, List<Card>> playerHands = getPlayerHands();
             Map<Player, List<Colour>> majorityColours = new HashMap<>();
-            
+
             for (Player player : playersList) {
-                majorityColours.put(player, ScoreUtility.decideMajority(playerHands, player).get(player));
+                majorityColours.put(
+                        player, ScoreUtility.decideMajority(playerHands, player).get(player));
             }
-            
+
             // Calculate scores for each player
             for (Player player : playersList) {
                 int score = ScoreUtility.calculateScore(player, playerHands, majorityColours);
                 playerScores.put(player, playerScores.get(player) + score);
                 System.out.println(player.getName() + "'s score: " + playerScores.get(player));
             }
-
-            // Check if the game is over
-            if (isGameOver()) {
-                break;
-            }
         }
 
         // After the game loop finishes, check if the extra round is needed.
-        // Allow players to play one more round even if the deck is empty or the end condition is met
-        if (checkForEndConditions() || deck.size() == 0) {
-            System.out.println("Extra round started. Players do not draw a card.");
-            for (Player player : playersList) {
-                Card playedCard = player.playCard(parade);
-                if (playedCard != null) {
-                    player.placeCard(playedCard, parade);
-                    System.out.println(player.getName() + " played: " + playedCard);
-                }
+        // Allow players to play one more round even if the deck is empty or the end condition is
+        // met
+        System.out.println("Extra round started. Players do not draw a card.");
+        for (Player player : playersList) {
+            Card playedCard = player.playCard(parade);
+            if (playedCard != null) {
+                player.placeCard(playedCard, parade);
+                System.out.println(player.getName() + " played: " + playedCard);
             }
         }
 
@@ -104,17 +99,7 @@ public class BasicGameServer {
         declareWinner();
     }
 
-    /**
-     * Checks whether the game is over (i.e., deck is empty).
-     * @return True if the game is over, false otherwise.
-     */
-    private boolean isGameOver() {
-        return deck.size() == 0;
-    }
-
-    /**
-     * Declares the winner based on the lowest score.
-     */
+    /** Declares the winner based on the lowest score. */
     private void declareWinner() {
         Player winner = null;
         int lowestScore = Integer.MAX_VALUE;
@@ -135,6 +120,7 @@ public class BasicGameServer {
 
     /**
      * Retrieves the hands of all players.
+     *
      * @return A map containing each player and their respective hand of cards.
      */
     private Map<Player, List<Card>> getPlayerHands() {
@@ -147,9 +133,10 @@ public class BasicGameServer {
 
     /**
      * Checks if any player has collected all 6 colours or if the deck is empty.
+     *
      * @return True if an end condition is met, false otherwise.
      */
-    private boolean checkForEndConditions() {
+    private boolean shouldGameEnd() {
         for (Player player : playersList) {
             Set<Colour> uniqueColours = new HashSet<>();
             for (Card card : player.getHand()) {
@@ -162,8 +149,6 @@ public class BasicGameServer {
         return deck.size() == 0; // Game ends when the deck is empty
     }
 }
-
-
 
 // check if anybody has all 6 colours or deck is empty. when this happens
 // everybody has one more turn (one more round played) but they do NOT draw a card.
