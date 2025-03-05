@@ -1,5 +1,6 @@
 package parade.player;
 
+import parade.common.BasicTextRenderer;
 import parade.common.Card;
 
 import java.util.InputMismatchException;
@@ -16,6 +17,7 @@ public class Human implements Player {
     private String name;
     private LinkedList<Card> hand;
     private LinkedList<Card> board;
+    private Card latestDrawnCard;
 
     /**
      * Constructs a human player with a given name and initial hand.
@@ -39,22 +41,23 @@ public class Human implements Player {
 
         Scanner sc = new Scanner(System.in);
         int input;
+        BasicTextRenderer.getInstance().renderPlayerTurn(this, latestDrawnCard, parade);
 
-        do {
+        while (true) {
             try {
                 input = sc.nextInt();
                 break;
 
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please try again");
-                System.out.println("Select a card to play:");
 
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Invalid choice. Please select a valid index");
+
+            } finally {
                 System.out.println("Select a card to play:");
             }
-        } while (true);
-
+        }
         return hand.remove(input);
     }
 
@@ -69,7 +72,9 @@ public class Human implements Player {
     }
 
     /** Adds a drawn card to the player's hand */
+    @Override
     public void draw(Card card) {
+        latestDrawnCard = card;
         hand.add(card);
     }
 
