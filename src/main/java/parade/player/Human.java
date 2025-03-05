@@ -1,7 +1,7 @@
 package parade.player;
 
-import parade.common.BasicTextRenderer;
 import parade.common.Card;
+import parade.textrenderer.TextRendererProvider;
 
 import java.util.InputMismatchException;
 import java.util.LinkedList;
@@ -14,9 +14,9 @@ import java.util.Scanner;
  */
 public class Human implements Player {
 
-    private String name;
-    private LinkedList<Card> hand;
-    private LinkedList<Card> board;
+    private final String name;
+    private final LinkedList<Card> hand;
+    private final LinkedList<Card> board;
     private Card latestDrawnCard;
 
     /**
@@ -25,9 +25,13 @@ public class Human implements Player {
      * @param cards The initial set of cards assigned to the human player's hand.
      * @param name The name of the human player.
      */
-    public Human(LinkedList<Card> cards, String name) {
+    public Human(List<Card> cards, String name) {
         this.name = name;
-        this.hand = new LinkedList<>(cards);
+        if (cards instanceof LinkedList<Card> llCards) {
+            this.hand = llCards;
+        } else {
+            this.hand = new LinkedList<>(cards);
+        }
         this.board = new LinkedList<>();
     }
 
@@ -37,23 +41,20 @@ public class Human implements Player {
      * @param parade The current lineup of cards in the parade.
      * @return The card chosen by the player.
      */
-    public Card playCard(LinkedList<Card> parade) {
+    public Card playCard(List<Card> parade) {
 
         Scanner sc = new Scanner(System.in);
         int input;
-        BasicTextRenderer.getInstance().renderPlayerTurn(this, latestDrawnCard, parade);
+        TextRendererProvider.getInstance().renderPlayerTurn(this, latestDrawnCard, parade);
 
         while (true) {
             try {
                 input = sc.nextInt();
                 break;
-
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please try again");
-
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Invalid choice. Please select a valid index");
-
             } finally {
                 System.out.println("Select a card to play:");
             }
