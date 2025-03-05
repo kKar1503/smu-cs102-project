@@ -1,5 +1,6 @@
-package parade.common;
+package parade.textrenderer;
 
+import parade.common.Card;
 import parade.player.Player;
 
 import java.util.List;
@@ -53,4 +54,7 @@ public interface TextRenderer {
      * @param score the player's score
      */
     public void renderSinglePlayerEndGame(Player player, int score);
+
+    /** Bye bye buddy. */
+    public void renderBye();
 }
