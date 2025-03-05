@@ -1,9 +1,7 @@
 package parade.server;
 
-import parade.common.Card;
-import parade.common.Colour;
-import parade.common.Deck;
-import parade.common.Parade;
+import parade.common.*;
+import parade.player.Human;
 import parade.player.Player;
 import parade.textrenderer.DebugRendererProvider;
 import parade.textrenderer.TextRendererProvider;
@@ -15,7 +13,7 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class BasicGameServer {
+public class BasicGameServer implements Server {
     private final List<Player> playersList; // List of players in the game
     private final Deck deck; // The deck of cards used in the game
     private final Map<Player, Integer> playerScores; // Stores each player's score
@@ -43,10 +41,40 @@ public class BasicGameServer {
         playerScores.put(p, 0); // Initialize player's score to 0
     }
 
-    /** Starts the game loop and manages game progression. */
-    public void startGame() {
+    @Override
+    public void waitForPlayersLobby() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            TextRendererProvider.getInstance().renderPlayersLobby(playersList);
+            int input = scanner.nextInt();
+            scanner.nextLine();
+            if (input == 1) {
+                if (playersList.size() == 6) {
+                    TextRendererProvider.getInstance().render("Lobby is full.");
+                    continue;
+                }
+                System.out.print("Enter player name: ");
+                String name = scanner.nextLine();
+                addPlayer(new Human(name));
+            } else if (input == 2) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * Starts the game loop and manages game progression.
+     *
+     * @throws IllegalStateException if there are less than 2 players
+     */
+    @Override
+    public void startGame() throws IllegalStateException {
+        if (playersList.size() < 2) {
+            throw new IllegalStateException("Server requires at least two players");
+        }
         // Game loop continues until the deck is empty or an end condition is met
         while (!deck.isDeckEmpty() && !shouldGameEnd()) {
+            System.out.println("here");
             // Each player plays a card
             for (Player player : playersList) {
                 Card drawnCard = deck.drawCard();
