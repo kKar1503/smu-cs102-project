@@ -1,15 +1,17 @@
 package parade.player.computer;
 
+import parade.common.Card;
+import parade.player.Player;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public abstract class Computer implements Player {
-    protected LinkedList<Card> hand;  // Represents the player's current hand.
+    protected LinkedList<Card> hand; // Represents the player's current hand.
     protected LinkedList<Card> board; // Represents the cards collected from the parade.
 
     /**
-     * Constructor for the Computer player.
-     * Initializes the hand and an empty board.
+     * Constructor for the Computer player. Initializes the hand and an empty board.
      *
      * @param cards The initial set of cards assigned to the computer's hand.
      */

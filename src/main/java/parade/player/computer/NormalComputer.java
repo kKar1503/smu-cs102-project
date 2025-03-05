@@ -1,12 +1,13 @@
 package parade.player.computer;
 
+import parade.common.Card;
+
 import java.util.List;
 
 /**
- * The NormalComputer class represents an AI player
- * that makes slightly intelligent decisions when playing a card.
- * It tries to minimize its losses by avoiding taking too many cards
- * and avoiding color matches with the parade.
+ * The NormalComputer class represents an AI player that makes slightly intelligent decisions when
+ * playing a card. It tries to minimize its losses by avoiding taking too many cards and avoiding
+ * color matches with the parade.
  */
 public class NormalComputer extends Computer {
 
@@ -20,9 +21,9 @@ public class NormalComputer extends Computer {
     }
 
     /**
-     * Selects the best card to play based on a simple heuristic:
-     * - Prefers cards that minimize the number of cards taken from the parade.
-     * - Avoids matching the color of cards in the parade (to reduce loss).
+     * Selects the best card to play based on a simple heuristic: - Prefers cards that minimize the
+     * number of cards taken from the parade. - Avoids matching the color of cards in the parade (to
+     * reduce loss).
      *
      * @param parade The current parade lineup of cards.
      * @return The best card determined by its heuristic.
@@ -49,11 +50,11 @@ public class NormalComputer extends Computer {
     }
 
     /**
-     * Simulates how many cards would be taken if the given card is played.
-     * - A card's number determines how many cards are safe from being taken.
-     * - Any card in the parade with a smaller number or a matching color is taken.
+     * Simulates how many cards would be taken if the given card is played. - A card's number
+     * determines how many cards are safe from being taken. - Any card in the parade with a smaller
+     * number or a matching color is taken.
      *
-     * @param card   The card to be played.
+     * @param card The card to be played.
      * @param parade The current parade lineup.
      * @return The number of cards the player would take.
      */
@@ -64,7 +65,8 @@ public class NormalComputer extends Computer {
         // Check all affected cards in the parade
         for (int i = Math.max(0, position); i < parade.size(); i++) {
             Card paradeCard = parade.get(i);
-            if (paradeCard.getNumber() <= card.getNumber() || paradeCard.getColor().equals(card.getColor())) {
+            if (paradeCard.getNumber() <= card.getNumber()
+                    || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
             }
         }
@@ -72,17 +74,17 @@ public class NormalComputer extends Computer {
     }
 
     /**
-     * Counts how many cards in the parade match the color of the given card.
-     * - The higher the number of matches, the riskier the card is.
+     * Counts how many cards in the parade match the color of the given card. - The higher the
+     * number of matches, the riskier the card is.
      *
-     * @param card   The card to check against the parade.
+     * @param card The card to check against the parade.
      * @param parade The current parade lineup.
      * @return The number of color matches.
      */
     private int countColorMatches(Card card, List<Card> parade) {
         int colorMatches = 0;
         for (Card paradeCard : parade) {
-            if (paradeCard.getColor().equals(card.getColor())) {
+            if (paradeCard.getColour().equals(card.getColour())) {
                 colorMatches++;
             }
         }

@@ -1,4 +1,6 @@
-package common.player;
+package parade.player;
+
+import parade.common.Card;
 
 import java.util.List;
 
@@ -26,8 +28,8 @@ public interface Player {
     List<Card> getHand();
 
     /**
-     * Retrieves the cards that the player has collected from the parade.
-     * Represents the player's current board state.
+     * Retrieves the cards that the player has collected from the parade. Represents the player's
+     * current board state.
      *
      * @return A list of cards representing the player's board.
      */
