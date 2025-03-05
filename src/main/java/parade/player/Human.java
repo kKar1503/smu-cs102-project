@@ -56,10 +56,10 @@ public class Human implements Player {
             } catch (IndexOutOfBoundsException e) {
                 TextRendererProvider.getInstance()
                         .render("Invalid choice. Please select a valid index");
-            } finally {
-                TextRendererProvider.getInstance().render("Select a card to play:");
             }
+            TextRendererProvider.getInstance().render("Select a card to play:");
         }
+        latestDrawnCard = null;
         return hand.remove(input);
     }
 
