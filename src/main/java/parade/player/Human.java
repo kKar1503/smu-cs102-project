@@ -45,6 +45,9 @@ public class Human implements Player {
         while (true) {
             try {
                 input = sc.nextInt();
+                if (input < 1 || input > hand.size()) {
+                    throw new IndexOutOfBoundsException();
+                }
                 break;
             } catch (InputMismatchException e) {
                 TextRendererProvider.getInstance().render("Invalid input. Please try again");
@@ -53,9 +56,10 @@ public class Human implements Player {
                         .render("Invalid choice. Please select a valid index");
             }
             TextRendererProvider.getInstance().render("Select a card to play:");
+            sc.nextLine();
         }
         latestDrawnCard = null;
-        return hand.remove(input);
+        return hand.remove(input - 1);
     }
 
     /**
