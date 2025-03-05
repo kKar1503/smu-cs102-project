@@ -1,18 +1,14 @@
-package parade.common;
+package parade.textrenderer.impl;
 
+import parade.common.Card;
 import parade.player.Player;
+import parade.textrenderer.TextRenderer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class BasicTextRenderer implements TextRenderer {
-    private static BasicTextRenderer instance = null;
-
-    public static BasicTextRenderer getInstance() {
-        if (instance == null) {
-            instance = new BasicTextRenderer();
-        }
-        return instance;
-    }
+    public BasicTextRenderer() {}
 
     @Override
     public void renderWelcome() {
@@ -48,5 +44,10 @@ public class BasicTextRenderer implements TextRenderer {
         System.out.println(
                 "Game Over, " + "hehe" /* TODO: replace this with player.getName()*/ + "!");
         System.out.println("Your score: " + score);
+    }
+
+    @Override
+    public void renderBye() {
+        System.out.println("Bye bye buddy.");
     }
 }
