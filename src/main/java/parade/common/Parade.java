@@ -48,17 +48,9 @@ public class Parade {
             // Add placeCard
             paradeList.add(placeCard);
 
-            // Validate that it is not null
-            if (paradeList != null) {
-                // return
-                return removedCards;
-            }
-
-        } else {
-            System.out.println("No cards to remove");
             return removedCards;
         }
 
-        throw new IllegalArgumentException("Not meant to be here");
+        return removedCards;
     }
 }
