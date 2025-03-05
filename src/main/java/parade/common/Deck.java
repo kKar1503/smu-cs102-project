@@ -1,5 +1,7 @@
 package parade.common;
 
+import parade.textrenderer.DebugRendererProvider;
+
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -21,6 +23,7 @@ public class Deck {
     }
 
     private void shuffleDeck() {
+        DebugRendererProvider.getInstance().debug("Shuffling deck");
         Collections.shuffle(cards);
     }
 
@@ -30,7 +33,9 @@ public class Deck {
 
     public Card drawCard() {
         if (!cards.isEmpty()) {
-            return (cards.removeLast());
+            Card cardDrawn = cards.removeLast();
+            DebugRendererProvider.getInstance().debug("Drawn card: " + cardDrawn);
+            return cardDrawn;
         }
         return null;
     }
