@@ -55,10 +55,10 @@ public class Human implements Player {
                 System.out.println("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Invalid choice. Please select a valid index");
-            } finally {
-                System.out.println("Select a card to play:");
             }
+            System.out.println("Select a card to play:");
         }
+        latestDrawnCard = null;
         return hand.remove(input);
     }
 
