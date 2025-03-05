@@ -37,16 +37,21 @@ public class Main {
             try {
                 int input = scanner.nextInt();
                 scanner.nextLine();
-                if (input == 2) {
-                    break;
+                if (input != 1 && input != 2) {
+                    System.out.println("Invalid input, please only type only 1 or 2.");
+                    continue;
                 }
-                startGame();
+
+                if (input == 1) {
+                    startGame();
+                } else {
+                    TextRendererProvider.getInstance().renderBye();
+                }
+                break;
             } catch (NoSuchElementException e) {
                 System.out.println("Invalid input, please try again.");
             }
         }
-
-        TextRendererProvider.getInstance().renderBye();
     }
 
     static void startGame() {
