@@ -41,7 +41,8 @@ public class ScoreUtility {
                 Player otherPlayer = entry.getKey();
                 if (!otherPlayer.equals(targetPlayer)) { // Don't compare against self
                     int otherCount = countColours(entry.getValue()).getOrDefault(colour, 0);
-                    if (otherCount > targetCount) {
+                    if ((playerCards.size() == 2 && otherCount > targetCount - 2) || // 2 player mode (majority -> 2 or more cards)
+                        (playerCards.size() > 2 && otherCount > targetCount)) {     // multiplayer mode
                         isMajority = false;
                         break;
                     }
