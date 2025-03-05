@@ -52,11 +52,12 @@ public class Human implements Player {
                 input = sc.nextInt();
                 break;
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please try again");
+                TextRendererProvider.getInstance().render("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
-                System.out.println("Invalid choice. Please select a valid index");
+                TextRendererProvider.getInstance()
+                        .render("Invalid choice. Please select a valid index");
             } finally {
-                System.out.println("Select a card to play:");
+                TextRendererProvider.getInstance().render("Select a card to play:");
             }
         }
         return hand.remove(input);
