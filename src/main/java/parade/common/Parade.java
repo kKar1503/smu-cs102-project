@@ -28,10 +28,9 @@ public class Parade {
         // Remove mode
         if ((this.paradeList).size() > placeCard.getNumber()) {
 
+            int removeZoneCardIndex = this.paradeList.size() - placeCard.getNumber();
             // Count from index of numbers
-            for (int i = 0;
-                    i < this.paradeList.size() - placeCard.getNumber();
-                    i++) { // i here is the index
+            for (int i = 0; i < removeZoneCardIndex; i++) { // i here is the index
 
                 // Obtains card to compare
                 Card cardAtIndex = paradeList.get(i);
