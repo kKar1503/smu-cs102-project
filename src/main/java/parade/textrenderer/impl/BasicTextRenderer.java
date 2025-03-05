@@ -162,8 +162,20 @@ public class BasicTextRenderer implements TextRenderer {
     }
 
     @Override
+    public void renderPlayersLobby(List<Player> players) {
+        System.out.println("Players in lobby: ");
+        for (int i = 1; i <= players.size(); i++) {
+            System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
+        }
+        System.out.println();
+        System.out.println("1. Add Player" + (players.size() == 6 ? " (Lobby is full)" : ""));
+        System.out.println("2. Start Game");
+        System.out.print("Please select an option: ");
+    }
+
+    @Override
     public void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade) {
-        System.out.println("hehe" + player.getName() + "'s turn.");
+        System.out.println(player.getName() + "'s turn.");
         System.out.println("You drew: " + newlyDrawnCard);
         System.out.println("Parade: " + parade);
         System.out.print("Your hand: " + player.getHand() + "\nSelect a card to play: ");
@@ -173,15 +185,13 @@ public class BasicTextRenderer implements TextRenderer {
     public void renderEndGame(Map<Player, Integer> playerScores) {
         System.out.println("Game Over!");
         for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
-            System.out.println(
-                    "hehe" /* TODO: replace this with player.getName()*/ + ": " + entry.getValue());
+            System.out.println(entry.getKey().getName() + ": " + entry.getValue());
         }
     }
 
     @Override
     public void renderSinglePlayerEndGame(Player player, int score) {
-        System.out.println(
-                "Game Over, " + "hehe" /* TODO: replace this with player.getName()*/ + "!");
+        System.out.println("Game Over, " + player.getName() + "!");
         System.out.println("Your score: " + score);
     }
 

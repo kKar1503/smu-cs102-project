@@ -30,6 +30,12 @@ public interface TextRenderer {
 
     /**
      * Render the screen for a single player, this is to display for the player to prompt them for
+     * input to join the lobby.
+     */
+    public void renderPlayersLobby(List<Player> players);
+
+    /**
+     * Render the screen for a single player, this is to display for the player to prompt them for
      * input.
      *
      * <p>This render needs the user to be able to see the cards in their hand, and the parade cards
