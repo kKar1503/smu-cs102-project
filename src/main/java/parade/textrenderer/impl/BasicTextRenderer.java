@@ -11,6 +11,11 @@ public class BasicTextRenderer implements TextRenderer {
     public BasicTextRenderer() {}
 
     @Override
+    public void render(String message) {
+        System.out.println(message);
+    }
+
+    @Override
     public void renderWelcome() {
         System.out.println("Welcome to Parade!");
     }

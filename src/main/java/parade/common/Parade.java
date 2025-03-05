@@ -14,9 +14,7 @@ public class Parade {
             throw new IllegalArgumentException("Give me 6 cards");
         }
 
-        for (Card c : cardList) {
-            this.paradeList.add(c);
-        }
+        paradeList.addAll(cardList);
     }
 
     // PlaceCard

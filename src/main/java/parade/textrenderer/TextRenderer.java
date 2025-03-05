@@ -8,6 +8,13 @@ import java.util.Map;
 
 public interface TextRenderer {
     /**
+     * Render a message to the screen. This is used to display messages to the user.
+     *
+     * @param message the message to render
+     */
+    public void render(String message);
+
+    /**
      * Render the welcome message for the game. This is used to display the welcome message for the
      * game. This can make damn fancy.
      */

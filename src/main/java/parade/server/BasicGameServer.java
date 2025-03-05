@@ -5,6 +5,8 @@ import parade.common.Colour;
 import parade.common.Deck;
 import parade.common.Parade;
 import parade.player.Player;
+import parade.textrenderer.DebugRendererProvider;
+import parade.textrenderer.TextRendererProvider;
 import parade.utils.ScoreUtility;
 
 import java.util.*;
@@ -14,22 +16,18 @@ import java.util.*;
  * flow.
  */
 public class BasicGameServer {
-    private List<Player> playersList; // List of players in the game
-    private Deck deck; // The deck of cards used in the game
-    private Map<Player, Integer> playerScores; // Stores each player's score
-    private Parade parade; // The list of cards currently in the parade
+    private final List<Player> playersList; // List of players in the game
+    private final Deck deck; // The deck of cards used in the game
+    private final Map<Player, Integer> playerScores; // Stores each player's score
+    private final Parade parade; // The list of cards currently in the parade
 
-    /**
-     * Initializes the game server with a deck.
-     *
-     * @param deck The deck to be used in the game.
-     */
+    /** Initializes the game server with a deck. */
     public BasicGameServer() {
         this.playersList = new ArrayList<>();
         this.deck = new Deck();
         this.playerScores = new HashMap<>();
         List<Card> parade_cards = new ArrayList<Card>();
-        for (int i = 0 ; i < 6 ; i ++) {
+        for (int i = 0; i < 6; i++) {
             parade_cards.add(deck.drawCard());
         }
         this.parade = new Parade(parade_cards);
@@ -49,24 +47,23 @@ public class BasicGameServer {
     public void startGame() {
         // Game loop continues until the deck is empty or an end condition is met
         while (!deck.isDeckEmpty() && !shouldGameEnd()) {
-            // Players draw cards only in normal rounds
+            // Each player plays a card
             for (Player player : playersList) {
                 Card drawnCard = deck.drawCard();
                 if (drawnCard != null) {
+                    DebugRendererProvider.getInstance()
+                            .debugf("%s drew: %s", player.getName(), drawnCard);
                     player.draw(drawnCard);
-                    System.out.println(player.getName() + " drew: " + drawnCard);
                 }
-            }
 
-            // Display the current parade state
-            System.out.println("Current Parade: " + parade);
-
-            // Each player plays a card
-            for (Player player : playersList) {
+                DebugRendererProvider.getInstance().debugf("%s playing a card", player.getName());
                 Card playedCard = player.playCard(parade.getParadeCards());
                 if (playedCard != null) {
+                    DebugRendererProvider.getInstance()
+                            .debugf(
+                                    "%s played and placed card into parade: %s",
+                                    player.getName(), playedCard);
                     parade.placeCard(playedCard); // Apply parade logic
-                    System.out.println(player.getName() + " played: " + playedCard);
                 }
             }
 
@@ -100,7 +97,7 @@ public class BasicGameServer {
         }
 
         // Declare the final results
-        System.out.println("Game Over! Final Scores:");
+        TextRendererProvider.getInstance().render("Game Over! Final Scores:");
         declareWinner();
     }
 
@@ -117,9 +114,10 @@ public class BasicGameServer {
         }
 
         if (winner != null) {
-            System.out.println("Winner: " + winner.getName() + " with " + lowestScore + " points!");
+            TextRendererProvider.getInstance()
+                    .render("Winner: " + winner.getName() + " with " + lowestScore + " points!");
         } else {
-            System.out.println("The game ended in a tie!");
+            TextRendererProvider.getInstance().render("The game ended in a tie!");
         }
     }
 

@@ -8,7 +8,7 @@ public class BasicDebugRenderer implements DebugRenderer {
     private final boolean shouldPrint;
 
     public BasicDebugRenderer() {
-        shouldPrint = Settings.getInstance().getBoolean(SettingKey.CONFIG_DEBUG);
+        shouldPrint = Settings.getInstance().getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
     }
 
     @Override
