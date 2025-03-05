@@ -34,7 +34,7 @@ class SettingsTest {
 
     @Test
     void testLoadBooleanProperty() {
-        boolean debug = settings.getBoolean(SettingKey.CONFIG_DEBUG);
+        boolean debug = settings.getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
         assertTrue(debug, "Config debug should be true");
     }
 
