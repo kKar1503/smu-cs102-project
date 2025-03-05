@@ -23,9 +23,9 @@ public class BasicGameServer {
      *
      * @param deck The deck to be used in the game.
      */
-    public BasicGameServer(Deck deck) {
+    public BasicGameServer() {
         this.playersList = new ArrayList<>();
-        this.deck = deck;
+        this.deck = new Deck();
         this.playerScores = new HashMap<>();
         this.parade = new ArrayList<>();
     }
@@ -89,7 +89,7 @@ public class BasicGameServer {
         for (Player player : playersList) {
             Card playedCard = player.playCard(parade);
             if (playedCard != null) {
-                player.placeCard(playedCard, parade);
+                parade.placeCard(playedCard, parade);
                 System.out.println(player.getName() + " played: " + playedCard);
             }
         }
@@ -146,7 +146,7 @@ public class BasicGameServer {
                 return true; // A player has all 6 colours
             }
         }
-        return deck.size() == 0; // Game ends when the deck is empty
+        return deck.isDeckEmpty(); // Game ends when the deck is empty
     }
 }
 
