@@ -6,30 +6,28 @@ import java.util.Random;
 import parade.common.Card;
 
 /**
- * The EasyComputer class represents a simple AI player that plays completely randomly with no
- * strategic decision-making. It extends the abstract Computer class and implements the playCard
- * method.
+ * The EasyComputer class represents a basic AI player that plays randomly.
  */
 public class EasyComputer extends Computer {
 
     /**
      * Constructs an EasyComputer instance with an initial hand of cards.
      *
-     * @param cards The initial set of cards assigned to the computer's hand.
+     * @param cards The initial set of cards assigned to the AI player's hand.
      */
     public EasyComputer(List<Card> cards) {
-        super(cards);
+        super(cards, "Easy AI");
     }
 
     /**
-     * Selects a card to play from the hand completely at random.
+     * Selects a card to play randomly from the AI player's hand.
      *
      * @param parade The current parade lineup of cards.
-     * @return The randomly chosen card to be played.
+     * @return A randomly chosen card to be played.
      */
     @Override
     public Card playCard(List<Card> parade) {
         Random rand = new Random();
-        return hand.get(rand.nextInt(hand.size())); // Picks any random card from the hand.
+        return hand.get(rand.nextInt(hand.size())); // Randomly picks any card from the hand.
     }
 }
