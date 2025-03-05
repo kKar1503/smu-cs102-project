@@ -3,10 +3,12 @@ package parade.player.computer;
 import java.util.List;
 import java.util.Random;
 
+import parade.common.Card;
+
 /**
- * The EasyComputer class represents a simple AI player
- * that plays completely randomly with no strategic decision-making.
- * It extends the abstract Computer class and implements the playCard method.
+ * The EasyComputer class represents a simple AI player that plays completely randomly with no
+ * strategic decision-making. It extends the abstract Computer class and implements the playCard
+ * method.
  */
 public class EasyComputer extends Computer {
 
