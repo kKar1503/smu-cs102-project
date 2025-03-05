@@ -74,7 +74,7 @@ public class BasicGameServer implements Server {
         }
 
         // Gives out card to everyone
-        for (int i = 0; i < 5; i++) { // Dish out the cards one by one, like real life you know?
+        for (int i = 0; i < 4; i++) { // Dish out the cards one by one, like real life you know?
             for (Player player : playersList) {
                 Card drawnCard = deck.drawCard();
                 if (drawnCard != null) {
