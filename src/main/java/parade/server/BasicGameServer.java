@@ -53,7 +53,7 @@ public class BasicGameServer implements Server {
                     TextRendererProvider.getInstance().render("Lobby is full.");
                     continue;
                 }
-                System.out.print("Enter player name: ");
+                TextRendererProvider.getInstance().render("Enter player name: ");
                 String name = scanner.nextLine();
                 addPlayer(new Human(name));
             } else if (input == 2) {
@@ -72,6 +72,19 @@ public class BasicGameServer implements Server {
         if (playersList.size() < 2) {
             throw new IllegalStateException("Server requires at least two players");
         }
+
+        // Gives out card to everyone
+        for (int i = 0; i < 5; i++) { // Dish out the cards one by one, like real life you know?
+            for (Player player : playersList) {
+                Card drawnCard = deck.drawCard();
+                if (drawnCard != null) {
+                    DebugRendererProvider.getInstance()
+                            .debugf("%s drew: %s", player.getName(), drawnCard);
+                    player.draw(drawnCard);
+                }
+            }
+        }
+
         // Game loop continues until the deck is empty or an end condition is met
         while (!deck.isDeckEmpty() && !shouldGameEnd()) {
             System.out.println("here");
