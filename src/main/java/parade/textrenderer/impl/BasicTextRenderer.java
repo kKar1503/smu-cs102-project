@@ -6,7 +6,6 @@ import parade.textrenderer.ConsoleColors;
 import parade.textrenderer.TextRenderer;
 
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +81,7 @@ public class BasicTextRenderer implements TextRenderer {
         }
         // sort board and print
         List<Card> board = player.getBoard();
-        Collections.sort(
-                board, Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
+        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 "\n\nYour board\n===========================================================================");
         for (Card card : board) {
