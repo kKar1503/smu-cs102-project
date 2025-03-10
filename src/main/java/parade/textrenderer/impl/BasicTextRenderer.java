@@ -1,6 +1,9 @@
 package parade.textrenderer.impl;
 
+import java.util.Comparator;
+
 import parade.common.Card;
+import parade.common.Colour;
 import parade.player.Player;
 import parade.textrenderer.TextRenderer;
 
@@ -8,6 +11,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Collections;
 
 public class BasicTextRenderer implements TextRenderer {
     public BasicTextRenderer() {}
@@ -63,11 +67,33 @@ public class BasicTextRenderer implements TextRenderer {
 
     @Override
     public void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade) {
-        System.out.println(player.getName() + "'s turn.");
-        System.out.println("You drew: " + newlyDrawnCard);
-        System.out.println("Parade: " + parade);
-        System.out.print("Your hand: " + player.getHand() + "\nSelect a card to play: ");
+        // print player's name and drawn card
+        System.out.println("\n" + player.getName() + "'s turn.");
+        if (newlyDrawnCard != null) {
+            System.out.println("You drew: [" + newlyDrawnCard.getNumber() + " " 
+                            + newlyDrawnCard.getColour() + "]");
+        }
+        // print cards in parade
+        System.out.println("\nParade\n======================================================================");
+        for (Card card : parade) {
+            System.out.print((parade.indexOf(card) + 1) + "." + printCards(card) + "  ");
+        }
+        // sort board and print 
+        List<Card> board = player.getBoard();
+        Collections.sort(board, Comparator.comparing(Card::getColour)
+            .thenComparing(Card::getNumber));
+        System.out.println("\n\nYour board\n===========================================================================");
+        for (Card card : board) {
+            System.out.print(printCards(card) + " ");
+        }
+        // print player's hand
+        System.out.println("\n\nYour hand\n==========================================================================");
+        for (Card card : player.getHand()) {
+            System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
+        }
+        System.out.print("\n\nSelect a card to play:");
     }
+
 
     @Override
     public void renderEndGame(Map<Player, Integer> playerScores) {
@@ -86,5 +112,9 @@ public class BasicTextRenderer implements TextRenderer {
     @Override
     public void renderBye() {
         System.out.println("Bye bye buddy.");
+    }
+
+    public String printCards(Card card) {
+        return "[" + card.getNumber() + " " + card.getColour() + "]";
     }
 }
