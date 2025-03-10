@@ -3,6 +3,7 @@ package parade.settings;
 public enum SettingKey {
     CONFIG_DEBUG_ENABLED("config.debug.enabled", false),
     CONFIG_DEBUG_TYPE("config.debug.type", false),
+    CONFIG_DEBUG_FILE("config.debug.file", false),
     SERVER_PORT("server.port", true),
     SERVER_HOST("server.host", true),
     SERVER_THREADS("server.threads", true),
