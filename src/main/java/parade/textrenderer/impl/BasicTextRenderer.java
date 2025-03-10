@@ -7,8 +7,10 @@ import parade.common.Colour;
 import parade.player.Player;
 import parade.textrenderer.TextRenderer;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Collections;
 
 public class BasicTextRenderer implements TextRenderer {
@@ -21,7 +23,27 @@ public class BasicTextRenderer implements TextRenderer {
 
     @Override
     public void renderWelcome() {
-        System.out.println("Welcome to Parade!");
+        String paradeWelcome = null;
+        try {
+            // the stream holding the file content
+            InputStream inFromFile =
+                    getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
+            Scanner s = new Scanner(inFromFile).useDelimiter("\\A");
+            paradeWelcome = s.hasNext() ? s.next() : "";
+
+        } catch (Exception e) {
+        }
+
+        if (paradeWelcome != null) {
+            System.out.println(ConsoleColors.PURPLE_BOLD);
+            System.out.println(
+                    "============================= Welcome to Parade!"
+                            + " ==============================");
+            System.out.println(ConsoleColors.PURPLE_UNDERLINED + paradeWelcome);
+            System.out.println(ConsoleColors.RESET);
+            System.out.println(
+                    "===================================================================================");
+        }
     }
 
     @Override
