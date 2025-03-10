@@ -10,14 +10,17 @@ import parade.textrenderer.TextRendererProvider;
 import parade.textrenderer.impl.BasicTextRenderer;
 import parade.textrenderer.impl.ConsoleDebugRenderer;
 import parade.textrenderer.impl.ConsoleJsonDebugRenderer;
+import parade.textrenderer.impl.FileJsonDebugRenderer;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
     private static Server server;
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+            throws IOException, IllegalStateException, UnsupportedOperationException {
 
         Settings settings =
                 new Settings.Builder()
@@ -27,15 +30,20 @@ public class Main {
 
         // Currently only supporting 1 debug renderer
         String debugType = settings.get(SettingKey.CONFIG_DEBUG_TYPE);
+        boolean shouldPrint = settings.getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
         DebugRenderer debugRenderer =
                 switch (debugType) {
-                    case "console" -> new ConsoleDebugRenderer();
-                    case "console_json" -> new ConsoleJsonDebugRenderer();
+                    case "console" -> new ConsoleDebugRenderer(shouldPrint);
+                    case "console_json" -> new ConsoleJsonDebugRenderer(shouldPrint);
+                    case "file_json" ->
+                            new FileJsonDebugRenderer(
+                                    settings.get(SettingKey.CONFIG_DEBUG_FILE), shouldPrint);
                     default ->
                             throw new IllegalStateException(
                                     "Unknown debug type in settings: " + debugType);
                 };
         DebugRendererProvider.setInstance(debugRenderer);
+        debugRenderer.debug("Initialised debug renderer");
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
         debugRenderer.debug("Gameplay is starting in " + gameplayMode + " mode");
@@ -75,6 +83,7 @@ public class Main {
                 }
                 break;
             } catch (NoSuchElementException e) {
+                debugRenderer.debug("Invalid input received", e);
                 System.out.println("Invalid input, please try again.");
             }
         }

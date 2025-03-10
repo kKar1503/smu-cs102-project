@@ -24,10 +24,7 @@ public class BasicGameServer implements Server {
         this.playersList = new ArrayList<>();
         this.deck = new Deck();
         this.playerScores = new HashMap<>();
-        List<Card> parade_cards = new ArrayList<Card>();
-        for (int i = 0; i < 6; i++) {
-            parade_cards.add(deck.drawCard());
-        }
+        List<Card> parade_cards = new ArrayList<>(deck.draw(6));
         this.parade = new Parade(parade_cards);
     }
 
@@ -76,7 +73,7 @@ public class BasicGameServer implements Server {
         // Gives out card to everyone
         for (int i = 0; i < 4; i++) { // Dish out the cards one by one, like real life you know?
             for (Player player : playersList) {
-                Card drawnCard = deck.drawCard();
+                Card drawnCard = deck.draw();
                 if (drawnCard != null) {
                     DebugRendererProvider.getInstance()
                             .debugf("%s drew: %s", player.getName(), drawnCard);
@@ -90,7 +87,7 @@ public class BasicGameServer implements Server {
             System.out.println("here");
             // Each player plays a card
             for (Player player : playersList) {
-                Card drawnCard = deck.drawCard();
+                Card drawnCard = deck.draw();
                 if (drawnCard != null) {
                     DebugRendererProvider.getInstance()
                             .debugf("%s drew: %s", player.getName(), drawnCard);
