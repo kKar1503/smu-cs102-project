@@ -7,8 +7,9 @@ import parade.settings.Settings;
 import parade.textrenderer.DebugRenderer;
 import parade.textrenderer.DebugRendererProvider;
 import parade.textrenderer.TextRendererProvider;
-import parade.textrenderer.impl.BasicDebugRenderer;
 import parade.textrenderer.impl.BasicTextRenderer;
+import parade.textrenderer.impl.ConsoleDebugRenderer;
+import parade.textrenderer.impl.ConsoleJsonDebugRenderer;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -25,17 +26,19 @@ public class Main {
                         .build();
 
         // Currently only supporting 1 debug renderer
-        DebugRenderer debugRenderer;
-        switch (settings.get(SettingKey.CONFIG_DEBUG_TYPE)) {
-            default:
-                // Defaults to basic debug renderer
-                debugRenderer = new BasicDebugRenderer();
-        }
+        String debugType = settings.get(SettingKey.CONFIG_DEBUG_TYPE);
+        DebugRenderer debugRenderer =
+                switch (debugType) {
+                    case "console" -> new ConsoleDebugRenderer();
+                    case "console_json" -> new ConsoleJsonDebugRenderer();
+                    default ->
+                            throw new IllegalStateException(
+                                    "Unknown debug type in settings: " + debugType);
+                };
         DebugRendererProvider.setInstance(debugRenderer);
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
         debugRenderer.debug("Gameplay is starting in " + gameplayMode + " mode");
-
         switch (gameplayMode) {
             case "local":
                 TextRendererProvider.setInstance(new BasicTextRenderer());
