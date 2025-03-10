@@ -22,7 +22,6 @@ public class BasicTextRenderer implements TextRenderer {
 
     @Override
     public void renderWelcome() throws IllegalStateException {
-        String paradeWelcome = null;
         // the stream holding the file content
         InputStream inFromFile =
                 getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
@@ -30,7 +29,7 @@ public class BasicTextRenderer implements TextRenderer {
             throw new IllegalStateException("parade_ascii_art.txt not found");
         }
         Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
-        paradeWelcome = s.hasNext() ? s.next() : "";
+        String paradeWelcome = s.hasNext() ? s.next() : "";
 
         if (paradeWelcome != null) {
             System.out.println(
