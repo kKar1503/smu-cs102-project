@@ -1,7 +1,5 @@
 package parade.textrenderer.impl;
 
-import parade.settings.SettingKey;
-import parade.settings.Settings;
 import parade.textrenderer.ConsoleColors;
 import parade.textrenderer.DebugRenderer;
 
@@ -13,8 +11,8 @@ import java.util.Date;
 public class ConsoleDebugRenderer implements DebugRenderer {
     private final boolean shouldPrint;
 
-    public ConsoleDebugRenderer() {
-        shouldPrint = Settings.getInstance().getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
+    public ConsoleDebugRenderer(boolean shouldPrint) {
+        this.shouldPrint = shouldPrint;
     }
 
     @Override
