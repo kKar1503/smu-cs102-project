@@ -16,7 +16,7 @@ public class BasicTextRenderer implements TextRenderer {
 
     @Override
     public void render(String message) {
-        System.out.println(message);
+        System.out.print(message);
     }
 
     @Override
