@@ -2,8 +2,8 @@ package parade.engine.impl;
 
 import parade.common.*;
 import parade.engine.GameEngine;
-import parade.player.Human;
 import parade.player.Player;
+import parade.player.human.LocalHuman;
 import parade.renderer.debug.DebugRenderer;
 import parade.renderer.debug.DebugRendererProvider;
 import parade.renderer.text.TextRenderer;
@@ -46,7 +46,7 @@ public class LocalGameEngine extends GameEngine {
                 }
                 textRenderer.render("Enter player name: ");
                 String name = scanner.nextLine();
-                addPlayer(new Human(name));
+                addPlayer(new LocalHuman(name));
             } else if (input == 2) {
                 if (!lobbyHasEnoughPlayers()) {
                     textRenderer.renderln("Lobby does not have enough players.");
