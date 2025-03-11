@@ -3,9 +3,10 @@ package parade.server;
 import parade.common.*;
 import parade.player.Human;
 import parade.player.Player;
+import parade.textrenderer.DebugRenderer;
 import parade.textrenderer.DebugRendererProvider;
+import parade.textrenderer.TextRenderer;
 import parade.textrenderer.TextRendererProvider;
-import parade.utils.ScoreUtility;
 
 import java.util.*;
 
@@ -13,47 +14,45 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class BasicGameServer implements Server {
-    private final List<Player> playersList; // List of players in the game
-    private final Deck deck; // The deck of cards used in the game
-    private final Map<Player, Integer> playerScores; // Stores each player's score
-    private final Parade parade; // The list of cards currently in the parade
+public class BasicGameServer extends Server {
+    private final DebugRenderer debugRenderer;
+    private final TextRenderer textRenderer;
 
     /** Initializes the game server with a deck. */
     public BasicGameServer() {
-        this.playersList = new ArrayList<>();
-        this.deck = new Deck();
-        this.playerScores = new HashMap<>();
-        List<Card> parade_cards = new ArrayList<>(deck.draw(6));
-        this.parade = new Parade(parade_cards);
+        debugRenderer = DebugRendererProvider.getInstance();
+        textRenderer = TextRendererProvider.getInstance();
     }
 
-    /**
-     * Adds a player to the game.
-     *
-     * @param p The player to be added.
-     */
-    public void addPlayer(Player p) {
-        playersList.add(p);
-        playerScores.put(p, 0); // Initialize player's score to 0
+    @Override
+    public void addPlayer(Player player) {
+        super.addPlayer(player);
+        debugRenderer.debugf("Player %s added to the game", player.getName());
     }
 
     @Override
     public void waitForPlayersLobby() {
+        debugRenderer.debugf("Waiting for players to join lobby");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            TextRendererProvider.getInstance().renderPlayersLobby(playersList);
+            textRenderer.renderPlayersLobby(getPlayers());
             int input = scanner.nextInt();
             scanner.nextLine();
             if (input == 1) {
-                if (playersList.size() == 6) {
-                    TextRendererProvider.getInstance().render("Lobby is full.");
+                debugRenderer.debug("Adding a new player");
+                if (isLobbyFull()) {
+                    textRenderer.renderln("Lobby is full.");
                     continue;
                 }
-                TextRendererProvider.getInstance().render("Enter player name: ");
+                textRenderer.render("Enter player name: ");
                 String name = scanner.nextLine();
                 addPlayer(new Human(name));
             } else if (input == 2) {
+                if (!lobbyHasEnoughPlayers()) {
+                    textRenderer.renderln("Lobby does not have enough players.");
+                    continue;
+                }
+                debugRenderer.debug("User requested to start the game");
                 return;
             }
         }
@@ -66,80 +65,85 @@ public class BasicGameServer implements Server {
      */
     @Override
     public void startGame() throws IllegalStateException {
-        if (playersList.size() < 2) {
+        if (lobbyHasEnoughPlayers()) {
+            debugRenderer.debugf(
+                    "Insufficient players to start the game, found %d", getPlayersCount());
             throw new IllegalStateException("Server requires at least two players");
         }
 
+        debugRenderer.debugf("Starting game with %d players", getPlayersCount());
+
         // Gives out card to everyone
-        for (int i = 0; i < 4; i++) { // Dish out the cards one by one, like real life you know?
-            for (Player player : playersList) {
-                Card drawnCard = deck.draw();
-                if (drawnCard != null) {
-                    DebugRendererProvider.getInstance()
-                            .debugf("%s drew: %s", player.getName(), drawnCard);
-                    player.draw(drawnCard);
-                }
+        int numCardsToDraw = INITIAL_CARDS_PER_PLAYER * getPlayersCount();
+        debugRenderer.debugf("Dealing %d cards to %d players", numCardsToDraw, getPlayersCount());
+        List<Card> drawnCards = drawFromDeck(numCardsToDraw); // Draw all the cards first
+        debugRenderer.debug("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+        // Dish out the cards one by one, like real life you know? Like not getting the direct next
+        // card but alternating between players
+        for (int i = 0; i < getPlayersCount(); i++) {
+            Player player = getPlayer(i);
+            for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
+                Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
+                player.draw(drawnCard);
+                debugRenderer.debugf("%s drew: %s", player.getName(), drawnCard);
             }
         }
 
         // Game loop continues until the deck is empty or an end condition is met
-        while (!deck.isEmpty() && !shouldGameEnd()) {
+        debugRenderer.debug("Game loop starting");
+        while (shouldGameContinue()) {
             // Each player plays a card
-            for (Player player : playersList) {
-                Card drawnCard = deck.draw();
-                if (drawnCard != null) {
-                    DebugRendererProvider.getInstance()
-                            .debugf("%s drew: %s", player.getName(), drawnCard);
-                    player.draw(drawnCard);
-                }
+            Player player = getCurrentPlayer();
 
-                DebugRendererProvider.getInstance().debugf("%s playing a card", player.getName());
-                Card playedCard = player.playCard(parade.getParadeCards());
-                if (playedCard != null) {
-                    DebugRendererProvider.getInstance()
-                            .debugf(
-                                    "%s played and placed card into parade: %s",
-                                    player.getName(), playedCard);
-                    parade.placeCard(playedCard); // Apply parade logic
-                }
-            }
+            // Draw a card from the deck for the player
+            Card drawnCard = drawFromDeck();
+            player.draw(drawnCard);
+            debugRenderer.debugf("%s drew: %s", player.getName(), drawnCard);
 
-            // Calculate majority colours for each player
-            Map<Player, List<Card>> playerHands = getPlayerHands();
-            Map<Player, List<Colour>> majorityColours = new HashMap<>();
+            playerPlayCard(player); // Play a card from their hand
+            nextPlayer();
+        }
+        debugRenderer.debugf("Game loop finished");
 
-            for (Player player : playersList) {
-                majorityColours.put(
-                        player, ScoreUtility.decideMajority(playerHands, player).get(player));
-            }
-
-            // Calculate scores for each player
-            for (Player player : playersList) {
-                int score = ScoreUtility.calculateScore(player, playerHands, majorityColours);
-                playerScores.put(player, playerScores.get(player) + score);
-                System.out.println(player.getName() + "'s score: " + playerScores.get(player));
-            }
+        // After the game loop finishes, the extra round is played.
+        debugRenderer.debug("Game loop finished, running final round");
+        textRenderer.renderln("Final round started. Players do not draw a card.");
+        for (int i = 0; i < getPlayersCount(); i++) {
+            playerPlayCard(getCurrentPlayer());
+            nextPlayer();
         }
 
-        // After the game loop finishes, check if the extra round is needed.
-        // Allow players to play one more round even if the deck is empty or the end condition is
-        // met
-        System.out.println("Extra round started. Players do not draw a card.");
-        for (Player player : playersList) {
-            Card playedCard = player.playCard(parade.getParadeCards());
-            if (playedCard != null) {
-                parade.placeCard(playedCard);
-                System.out.println(player.getName() + " played: " + playedCard);
-            }
-        }
+        debugRenderer.debug("Tabulating scores");
+        Map<Player, Integer> playerScores = tabulateScores();
 
         // Declare the final results
-        TextRendererProvider.getInstance().render("Game Over! Final Scores:");
-        declareWinner();
+        textRenderer.renderln("Game Over! Final Scores:");
+        declareWinner(playerScores);
+    }
+
+    private void playerPlayCard(Player player) {
+        // Playing card
+        debugRenderer.debugf("%s playing a card", player.getName());
+        Card playedCard = player.playCard(getParadeCards());
+        debugRenderer.debugf(
+                "%s played and placed card into parade: %s", player.getName(), playedCard);
+        textRenderer.renderln(player.getName() + " played: " + playedCard);
+
+        // Place card in parade and receive cards from parade
+        List<Card> cardsFromParade = placeCardInParade(playedCard); // Apply parade logic
+        player.addToBoard(cardsFromParade);
+        debugRenderer.debugf(
+                "%s received %d cards from parade to add to board: %s",
+                player.getName(),
+                cardsFromParade.size(),
+                Arrays.toString(cardsFromParade.toArray()));
+        textRenderer.renderf(
+                "%s received %s from parade.%n",
+                player.getName(), Arrays.toString(cardsFromParade.toArray()));
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner() {
+    private void declareWinner(Map<Player, Integer> playerScores) {
         Player winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
@@ -151,45 +155,10 @@ public class BasicGameServer implements Server {
         }
 
         if (winner != null) {
-            TextRendererProvider.getInstance()
-                    .render("Winner: " + winner.getName() + " with " + lowestScore + " points!");
+            textRenderer.render(
+                    "Winner: " + winner.getName() + " with " + lowestScore + " points!");
         } else {
-            TextRendererProvider.getInstance().render("The game ended in a tie!");
+            textRenderer.render("The game ended in a tie!");
         }
-    }
-
-    /**
-     * Retrieves the hands of all players.
-     *
-     * @return A map containing each player and their respective hand of cards.
-     */
-    private Map<Player, List<Card>> getPlayerHands() {
-        Map<Player, List<Card>> playerHands = new HashMap<>();
-        for (Player player : playersList) {
-            playerHands.put(player, player.getHand());
-        }
-        return playerHands;
-    }
-
-    /**
-     * Checks if any player has collected all 6 colours or if the deck is empty.
-     *
-     * @return True if an end condition is met, false otherwise.
-     */
-    private boolean shouldGameEnd() {
-        for (Player player : playersList) {
-            Set<Colour> uniqueColours = new HashSet<>();
-            for (Card card : player.getHand()) {
-                uniqueColours.add(card.getColour());
-            }
-            if (uniqueColours.size() == 6) {
-                return true; // A player has all 6 colours
-            }
-        }
-        return deck.isEmpty(); // Game ends when the deck is empty
     }
 }
-
-// check if anybody has all 6 colours or deck is empty. when this happens
-// everybody has one more turn (one more round played) but they do NOT draw a card.
-// after this round the game ends (everybody either ways ends with 4 cards)
