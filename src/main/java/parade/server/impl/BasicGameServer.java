@@ -1,8 +1,9 @@
-package parade.server;
+package parade.server.impl;
 
 import parade.common.*;
 import parade.player.Human;
 import parade.player.Player;
+import parade.server.Server;
 import parade.textrenderer.DebugRenderer;
 import parade.textrenderer.DebugRendererProvider;
 import parade.textrenderer.TextRenderer;

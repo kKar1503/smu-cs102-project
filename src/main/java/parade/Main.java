@@ -1,7 +1,7 @@
 package parade;
 
-import parade.common.Server;
-import parade.server.BasicGameServer;
+import parade.server.Server;
+import parade.server.impl.BasicGameServer;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 import parade.textrenderer.DebugRenderer;

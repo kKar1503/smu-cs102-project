@@ -1,8 +1,8 @@
 package parade.textrenderer.impl;
 
 import parade.common.Card;
-import parade.common.Server;
 import parade.player.Player;
+import parade.server.Server;
 import parade.textrenderer.ConsoleColors;
 import parade.textrenderer.TextRenderer;
 
