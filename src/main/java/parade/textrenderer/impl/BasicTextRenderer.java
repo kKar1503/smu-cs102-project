@@ -1,6 +1,7 @@
 package parade.textrenderer.impl;
 
 import parade.common.Card;
+import parade.common.Server;
 import parade.player.Player;
 import parade.textrenderer.ConsoleColors;
 import parade.textrenderer.TextRenderer;
@@ -66,8 +67,11 @@ public class BasicTextRenderer implements TextRenderer {
             System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
         }
         System.out.println();
-        System.out.println("1. Add Player" + (players.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println("2. Start Game");
+        System.out.println(
+                "1. Add Player" + (players.size() == Server.MAX_PLAYERS ? " (Lobby is full)" : ""));
+        System.out.println(
+                "2. Start Game"
+                        + (players.size() < Server.MIN_PLAYERS ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
