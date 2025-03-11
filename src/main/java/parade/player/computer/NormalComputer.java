@@ -1,12 +1,12 @@
 package parade.player.computer;
 
-import java.util.List;
-
 import parade.common.Card;
 
+import java.util.List;
+
 /**
- * The NormalComputer class represents an AI player with a basic strategy.
- * It attempts to minimise its losses by avoiding taking too many cards.
+ * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
+ * its losses by avoiding taking too many cards.
  */
 public class NormalComputer extends Computer {
 
@@ -20,9 +20,9 @@ public class NormalComputer extends Computer {
     }
 
     /**
-     * Selects the best card to play based on a heuristic:
-     * - Prefers cards that minimise the number of cards taken from the parade.
-     * - Avoids playing cards that match the colours in the parade to reduce losses.
+     * Selects the best card to play based on a heuristic: - Prefers cards that minimise the number
+     * of cards taken from the parade. - Avoids playing cards that match the colours in the parade
+     * to reduce losses.
      *
      * @param parade The current parade lineup of cards.
      * @return The best card determined by the heuristic.
@@ -59,7 +59,8 @@ public class NormalComputer extends Computer {
 
         for (int i = Math.max(0, position); i < parade.size(); i++) {
             Card paradeCard = parade.get(i);
-            if (paradeCard.getNumber() <= card.getNumber() || paradeCard.getColour().equals(card.getColour())) {
+            if (paradeCard.getNumber() <= card.getNumber()
+                    || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
             }
         }
