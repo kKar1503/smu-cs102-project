@@ -5,16 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Parade {
-    List<Card> paradeList = new LinkedList<>();
+    List<Card> cards = new LinkedList<>();
 
     // Constructor
-    public Parade(List<Card> cardList) {
+    public Parade(List<Card> cards) {
         // check that it is exactly 6 cards
-        if (cardList.size() != 6) {
+        if (cards.size() != 6) {
             throw new IllegalArgumentException("Give me 6 cards");
         }
 
-        paradeList.addAll(cardList);
+        this.cards.addAll(cards);
     }
 
     // PlaceCard
@@ -24,14 +24,14 @@ public class Parade {
         List<Card> removedCards = new ArrayList<>();
 
         // Remove mode
-        if ((this.paradeList).size() > placeCard.getNumber()) {
+        if ((this.cards).size() > placeCard.getNumber()) {
 
-            int removeZoneCardIndex = this.paradeList.size() - placeCard.getNumber();
+            int removeZoneCardIndex = this.cards.size() - placeCard.getNumber();
             // Count from index of numbers
             for (int i = 0; i < removeZoneCardIndex; i++) { // i here is the index
 
                 // Obtains card to compare
-                Card cardAtIndex = paradeList.get(i);
+                Card cardAtIndex = cards.get(i);
 
                 // Check which ones to remove (equal or less than)
                 if (cardAtIndex.getNumber() <= placeCard.getNumber()
@@ -41,10 +41,10 @@ public class Parade {
             }
 
             // Remove from the cards
-            paradeList.removeAll(removedCards);
+            cards.removeAll(removedCards);
 
             // Add placeCard
-            paradeList.add(placeCard);
+            cards.add(placeCard);
         }
 
         return removedCards;
