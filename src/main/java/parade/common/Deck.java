@@ -1,7 +1,5 @@
 package parade.common;
 
-import parade.textrenderer.DebugRendererProvider;
-
 import java.util.*;
 
 public class Deck {
@@ -21,7 +19,6 @@ public class Deck {
     }
 
     private void shuffleDeck() {
-        DebugRendererProvider.getInstance().debug("Shuffling deck");
         Collections.shuffle(cards);
     }
 
@@ -30,24 +27,16 @@ public class Deck {
     }
 
     public Card draw() {
-        if (cards.isEmpty()) {
-            DebugRendererProvider.getInstance().debug("Attempted to draw from an empty deck");
-            return null;
-        }
-        Card drawnCard = cards.pop();
-        DebugRendererProvider.getInstance().debug("Drawn card: " + drawnCard);
-        return drawnCard;
+        return cards.isEmpty() ? null : cards.pop();
     }
 
     public List<Card> draw(int count) {
         List<Card> drawnCards = new ArrayList<>(count);
         if (cards.isEmpty()) {
-            DebugRendererProvider.getInstance().debug("Attempted to draw from an empty deck");
             return drawnCards;
         }
         for (int i = 0; i < count; i++) {
             Card drawnCard = cards.pop();
-            DebugRendererProvider.getInstance().debug("Drawn card: " + drawnCard);
             drawnCards.add(drawnCard);
         }
         return drawnCards;
