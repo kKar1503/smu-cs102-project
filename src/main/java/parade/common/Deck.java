@@ -1,6 +1,12 @@
 package parade.common;
 
-import java.util.*;
+import parade.common.exceptions.EmptyDeckException;
+import parade.common.exceptions.InsufficientCardException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
 
 public class Deck {
 
@@ -26,16 +32,38 @@ public class Deck {
         return cards.isEmpty();
     }
 
-    public Card draw() {
-        return cards.isEmpty() ? null : cards.pop();
+    public int size() {
+        return cards.size();
     }
 
-    public List<Card> draw(int count) {
-        List<Card> drawnCards = new ArrayList<>(count);
+    /**
+     * Removes the top card from the deck and returns it.
+     *
+     * @return The top card from the deck.
+     * @throws EmptyDeckException if the deck is empty.
+     */
+    public Card draw() throws EmptyDeckException {
+        if (cards.isEmpty()) throw new EmptyDeckException();
+        return cards.pop();
+    }
+
+    /**
+     * Removes the top n card from the deck and returns them in a list.
+     *
+     * @param n number of cards to draw
+     * @return A list of drawn cards.
+     * @throws EmptyDeckException if the deck is empty.
+     * @throws InsufficientCardException if there are not enough cards in the deck.
+     */
+    public List<Card> draw(int n) throws EmptyDeckException, InsufficientCardException {
         if (cards.isEmpty()) {
-            return drawnCards;
+            throw new EmptyDeckException();
         }
-        for (int i = 0; i < count; i++) {
+        if (cards.size() < n) {
+            throw new InsufficientCardException();
+        }
+        List<Card> drawnCards = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
             Card drawnCard = cards.pop();
             drawnCards.add(drawnCard);
         }
