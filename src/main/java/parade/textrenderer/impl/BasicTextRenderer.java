@@ -1,8 +1,8 @@
 package parade.textrenderer.impl;
 
 import parade.common.Card;
+import parade.engine.GameEngine;
 import parade.player.Player;
-import parade.server.Server;
 import parade.textrenderer.ConsoleColors;
 import parade.textrenderer.TextRenderer;
 
@@ -68,10 +68,11 @@ public class BasicTextRenderer implements TextRenderer {
         }
         System.out.println();
         System.out.println(
-                "1. Add Player" + (players.size() == Server.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                "1. Add Player"
+                        + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
         System.out.println(
                 "2. Start Game"
-                        + (players.size() < Server.MIN_PLAYERS ? " (Not enough players)" : ""));
+                        + (players.size() < GameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 

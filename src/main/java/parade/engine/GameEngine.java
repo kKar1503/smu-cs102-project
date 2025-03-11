@@ -1,4 +1,4 @@
-package parade.server;
+package parade.engine;
 
 import parade.common.Card;
 import parade.common.Colour;
@@ -9,7 +9,7 @@ import parade.utils.ScoreUtility;
 
 import java.util.*;
 
-public abstract class Server {
+public abstract class GameEngine {
     public static final int MIN_PLAYERS = 2; // Minimum number of players required to start the game
     public static final int MAX_PLAYERS = 6; // Maximum number of players allowed
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
@@ -21,7 +21,7 @@ public abstract class Server {
 
     private int currentPlayerIdx = 0; // The index of the current player
 
-    protected Server() {
+    protected GameEngine() {
         List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
         parade = new Parade(parade_cards);
     }
@@ -96,9 +96,7 @@ public abstract class Server {
         return players.size() >= MIN_PLAYERS;
     }
 
-    public abstract void startGame();
-
-    public abstract void waitForPlayersLobby();
+    public abstract void start();
 
     /**
      * Determines if the deck is empty.

@@ -1,9 +1,9 @@
-package parade.server.impl;
+package parade.engine.impl;
 
 import parade.common.*;
+import parade.engine.GameEngine;
 import parade.player.Human;
 import parade.player.Player;
-import parade.server.Server;
 import parade.textrenderer.DebugRenderer;
 import parade.textrenderer.DebugRendererProvider;
 import parade.textrenderer.TextRenderer;
@@ -15,12 +15,12 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class BasicGameServer extends Server {
+public class LocalGameEngine extends GameEngine {
     private final DebugRenderer debugRenderer;
     private final TextRenderer textRenderer;
 
     /** Initializes the game server with a deck. */
-    public BasicGameServer() {
+    public LocalGameEngine() {
         debugRenderer = DebugRendererProvider.getInstance();
         textRenderer = TextRendererProvider.getInstance();
     }
@@ -31,8 +31,7 @@ public class BasicGameServer extends Server {
         debugRenderer.debugf("Player %s added to the game", player.getName());
     }
 
-    @Override
-    public void waitForPlayersLobby() {
+    private void waitForPlayersLobby() {
         debugRenderer.debugf("Waiting for players to join lobby");
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -65,7 +64,9 @@ public class BasicGameServer extends Server {
      * @throws IllegalStateException if there are less than 2 players
      */
     @Override
-    public void startGame() throws IllegalStateException {
+    public void start() throws IllegalStateException {
+        waitForPlayersLobby();
+
         if (lobbyHasEnoughPlayers()) {
             debugRenderer.debugf(
                     "Insufficient players to start the game, found %d", getPlayersCount());
