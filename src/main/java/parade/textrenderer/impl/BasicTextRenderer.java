@@ -20,6 +20,16 @@ public class BasicTextRenderer implements TextRenderer {
     }
 
     @Override
+    public void renderln(String message) {
+        System.out.println(message);
+    }
+
+    @Override
+    public void renderf(String format, Object... args) {
+        System.out.printf(format, args);
+    }
+
+    @Override
     public void renderWelcome() throws IllegalStateException {
         // the stream holding the file content
         InputStream inFromFile =

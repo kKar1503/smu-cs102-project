@@ -15,6 +15,23 @@ public interface TextRenderer {
     public void render(String message);
 
     /**
+     * Render a message to the screen. This is used to display messages to the user. Appends a new
+     * line to the end of the message.
+     *
+     * @param message the message to render
+     */
+    public void renderln(String message);
+
+    /**
+     * Render a message to the screen. This is used to display messages to the user. This is a
+     * formatted message, this has the same format as the printf method in Java.
+     *
+     * @param format the format string
+     * @param args the arguments to format the string with
+     */
+    public void renderf(String format, Object... args);
+
+    /**
      * Render the welcome message for the game. This is used to display the welcome message for the
      * game. This can make damn fancy.
      */
