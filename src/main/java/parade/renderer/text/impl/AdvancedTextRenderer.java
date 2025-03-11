@@ -6,12 +6,14 @@ import parade.player.Player;
 import parade.renderer.ConsoleColors;
 import parade.renderer.text.TextRenderer;
 
+import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
-public class BasicTextRenderer implements TextRenderer {
-    public BasicTextRenderer() {}
+public class AdvancedTextRenderer implements TextRenderer {
+    public AdvancedTextRenderer() {}
 
     @Override
     public void render(String message) {
@@ -30,11 +32,25 @@ public class BasicTextRenderer implements TextRenderer {
 
     @Override
     public void renderWelcome() throws IllegalStateException {
-        System.out.println(
-                ConsoleColors.PURPLE_BOLD
-                        + "============================= Welcome to Parade!"
-                        + " =============================="
-                        + ConsoleColors.RESET);
+        // the stream holding the file content
+        InputStream inFromFile =
+                getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
+        if (inFromFile == null) {
+            throw new IllegalStateException("parade_ascii_art.txt not found");
+        }
+        Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
+        String paradeWelcome = s.hasNext() ? s.next() : "";
+
+        if (paradeWelcome != null) {
+            System.out.println(
+                    ConsoleColors.PURPLE_BOLD
+                            + "============================= Welcome to Parade!"
+                            + " =============================="
+                            + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
+            System.out.println(
+                    "===================================================================================");
+        }
     }
 
     @Override
