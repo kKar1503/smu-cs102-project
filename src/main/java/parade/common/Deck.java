@@ -15,14 +15,14 @@ public class Deck {
             }
         }
 
-        shuffleDeck();
+        shuffle();
     }
 
-    private void shuffleDeck() {
+    private void shuffle() {
         Collections.shuffle(cards);
     }
 
-    public boolean isDeckEmpty() {
+    public boolean isEmpty() {
         return cards.isEmpty();
     }
 

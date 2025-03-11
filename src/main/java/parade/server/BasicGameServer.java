@@ -83,8 +83,7 @@ public class BasicGameServer implements Server {
         }
 
         // Game loop continues until the deck is empty or an end condition is met
-        while (!deck.isDeckEmpty() && !shouldGameEnd()) {
-            System.out.println("here");
+        while (!deck.isEmpty() && !shouldGameEnd()) {
             // Each player plays a card
             for (Player player : playersList) {
                 Card drawnCard = deck.draw();
@@ -187,7 +186,7 @@ public class BasicGameServer implements Server {
                 return true; // A player has all 6 colours
             }
         }
-        return deck.isDeckEmpty(); // Game ends when the deck is empty
+        return deck.isEmpty(); // Game ends when the deck is empty
     }
 }
 
