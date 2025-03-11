@@ -1,6 +1,6 @@
-package parade.textrenderer.impl;
+package parade.renderer.debug.impl;
 
-import parade.textrenderer.DebugRenderer;
+import parade.renderer.debug.DebugRenderer;
 
 /**
  * A no-operation (NOP) implementation of the DebugRenderer interface. This class is used when

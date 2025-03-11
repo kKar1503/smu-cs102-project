@@ -1,7 +1,7 @@
 package parade.player;
 
 import parade.common.Card;
-import parade.textrenderer.TextRendererProvider;
+import parade.renderer.text.TextRendererProvider;
 
 import java.util.InputMismatchException;
 import java.util.LinkedList;

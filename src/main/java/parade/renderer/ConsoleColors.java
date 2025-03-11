@@ -1,4 +1,4 @@
-package parade.textrenderer;
+package parade.renderer;
 
 public class ConsoleColors {
     // Reset

@@ -1,4 +1,4 @@
-package parade.textrenderer;
+package parade.renderer.text;
 
 import parade.common.Card;
 import parade.player.Player;

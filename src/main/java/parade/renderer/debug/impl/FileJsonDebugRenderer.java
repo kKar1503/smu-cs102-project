@@ -1,10 +1,10 @@
-package parade.textrenderer.impl;
+package parade.renderer.debug.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import parade.textrenderer.DebugRenderer;
-import parade.textrenderer.LogInfo;
+import parade.renderer.debug.DebugRenderer;
+import parade.renderer.debug.LogInfo;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

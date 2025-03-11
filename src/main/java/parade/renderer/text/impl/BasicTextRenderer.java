@@ -1,10 +1,10 @@
-package parade.textrenderer.impl;
+package parade.renderer.text.impl;
 
 import parade.common.Card;
 import parade.engine.GameEngine;
 import parade.player.Player;
-import parade.textrenderer.ConsoleColors;
-import parade.textrenderer.TextRenderer;
+import parade.renderer.ConsoleColors;
+import parade.renderer.text.TextRenderer;
 
 import java.io.InputStream;
 import java.util.Comparator;

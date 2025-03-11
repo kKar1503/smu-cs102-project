@@ -1,4 +1,4 @@
-package parade.textrenderer;
+package parade.renderer.debug;
 
 import com.google.gson.annotations.SerializedName;
 

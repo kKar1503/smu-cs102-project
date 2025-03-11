@@ -1,4 +1,4 @@
-package parade.textrenderer;
+package parade.renderer.text;
 
 public class TextRendererProvider {
     private static TextRenderer instance = null;

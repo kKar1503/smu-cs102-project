@@ -1,4 +1,4 @@
-package parade.textrenderer;
+package parade.renderer.debug;
 
 public class DebugRendererProvider {
     private static DebugRenderer instance = null;

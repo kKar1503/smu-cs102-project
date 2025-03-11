@@ -1,7 +1,7 @@
-package parade.textrenderer.impl;
+package parade.renderer.debug.impl;
 
-import parade.textrenderer.ConsoleColors;
-import parade.textrenderer.DebugRenderer;
+import parade.renderer.ConsoleColors;
+import parade.renderer.debug.DebugRenderer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -48,7 +48,7 @@ public class ConsoleDebugRenderer implements DebugRenderer {
 
     @Override
     public void debugf(String format, Object... args) {
-            print(String.format(format, args));
+        print(String.format(format, args));
     }
 
     private void print(String message) {

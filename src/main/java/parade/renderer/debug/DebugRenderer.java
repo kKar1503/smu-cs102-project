@@ -1,4 +1,4 @@
-package parade.textrenderer;
+package parade.renderer.debug;
 
 public interface DebugRenderer {
     void debug(String message);

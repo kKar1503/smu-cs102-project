@@ -4,10 +4,10 @@ import parade.common.*;
 import parade.engine.GameEngine;
 import parade.player.Human;
 import parade.player.Player;
-import parade.textrenderer.DebugRenderer;
-import parade.textrenderer.DebugRendererProvider;
-import parade.textrenderer.TextRenderer;
-import parade.textrenderer.TextRendererProvider;
+import parade.renderer.debug.DebugRenderer;
+import parade.renderer.debug.DebugRendererProvider;
+import parade.renderer.text.TextRenderer;
+import parade.renderer.text.TextRendererProvider;
 
 import java.util.*;
 
