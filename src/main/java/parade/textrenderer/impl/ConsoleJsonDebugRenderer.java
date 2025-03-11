@@ -7,46 +7,37 @@ import parade.textrenderer.LogInfo;
 
 public class ConsoleJsonDebugRenderer implements DebugRenderer {
     private final Gson gson = new Gson();
-    private final boolean shouldPrint;
 
-    public ConsoleJsonDebugRenderer(boolean shouldPrint) {
-        this.shouldPrint = shouldPrint;
-    }
+    public ConsoleJsonDebugRenderer() {}
 
     @Override
     public void debug(String message) {
-        if (shouldPrint) {
-            StackTraceElement caller = getCaller();
-            if (caller != null) {
-                System.out.println(gson.toJson(new LogInfo(message, caller)));
-            } else {
-                System.out.println(gson.toJson(new LogInfo(message)));
-            }
+        StackTraceElement caller = getCaller();
+        if (caller != null) {
+            System.out.println(gson.toJson(new LogInfo(message, caller)));
+        } else {
+            System.out.println(gson.toJson(new LogInfo(message)));
         }
     }
 
     @Override
     public void debug(String message, Exception e) {
-        if (shouldPrint) {
-            StackTraceElement caller = getCaller();
-            if (caller != null) {
-                System.out.println(gson.toJson(new LogInfo(message, e, caller)));
-            } else {
-                System.out.println(gson.toJson(new LogInfo(message, e)));
-            }
+        StackTraceElement caller = getCaller();
+        if (caller != null) {
+            System.out.println(gson.toJson(new LogInfo(message, e, caller)));
+        } else {
+            System.out.println(gson.toJson(new LogInfo(message, e)));
         }
     }
 
     @Override
     public void debugf(String format, Object... args) {
-        if (shouldPrint) {
-            String message = String.format(format, args);
-            StackTraceElement caller = getCaller();
-            if (caller != null) {
-                System.out.println(gson.toJson(new LogInfo(message, caller)));
-            } else {
-                System.out.println(gson.toJson(new LogInfo(message)));
-            }
+        String message = String.format(format, args);
+        StackTraceElement caller = getCaller();
+        if (caller != null) {
+            System.out.println(gson.toJson(new LogInfo(message, caller)));
+        } else {
+            System.out.println(gson.toJson(new LogInfo(message)));
         }
     }
 

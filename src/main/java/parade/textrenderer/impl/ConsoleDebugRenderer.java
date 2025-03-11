@@ -9,56 +9,46 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ConsoleDebugRenderer implements DebugRenderer {
-    private final boolean shouldPrint;
-
-    public ConsoleDebugRenderer(boolean shouldPrint) {
-        this.shouldPrint = shouldPrint;
-    }
+    public ConsoleDebugRenderer() {}
 
     @Override
     public void debug(String message) {
-        if (shouldPrint) {
-            print(message);
-        }
+        print(message);
     }
 
     @Override
     public void debug(String message, Exception e) {
-        if (shouldPrint) {
-            print(message);
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String stackTrace = sw.toString();
+        print(message);
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String stackTrace = sw.toString();
 
-            // Split stack trace into lines and format each line
-            StringBuilder formattedTrace = new StringBuilder();
-            String[] lines = stackTrace.split("\n");
+        // Split stack trace into lines and format each line
+        StringBuilder formattedTrace = new StringBuilder();
+        String[] lines = stackTrace.split("\n");
 
-            for (int i = 0; i < lines.length; i++) {
-                if (i == 0) {
-                    formattedTrace
-                            .append(ConsoleColors.RED)
-                            .append(lines[i])
-                            .append(ConsoleColors.RESET)
-                            .append("\n"); // Exception message in red
-                } else {
-                    formattedTrace
-                            .append("    ")
-                            .append(ConsoleColors.GREY)
-                            .append(lines[i])
-                            .append(ConsoleColors.RESET)
-                            .append("\n"); // Stack trace in grey with indentation
-                }
+        for (int i = 0; i < lines.length; i++) {
+            if (i == 0) {
+                formattedTrace
+                        .append(ConsoleColors.RED)
+                        .append(lines[i])
+                        .append(ConsoleColors.RESET)
+                        .append("\n"); // Exception message in red
+            } else {
+                formattedTrace
+                        .append("    ")
+                        .append(ConsoleColors.GREY)
+                        .append(lines[i])
+                        .append(ConsoleColors.RESET)
+                        .append("\n"); // Stack trace in grey with indentation
             }
-            System.out.println(formattedTrace);
         }
+        System.out.println(formattedTrace);
     }
 
     @Override
     public void debugf(String format, Object... args) {
-        if (shouldPrint) {
             print(String.format(format, args));
-        }
     }
 
     private void print(String message) {

@@ -16,15 +16,13 @@ public class FileJsonDebugRenderer implements DebugRenderer {
     private static final String LOG_FILE_PATH = "logs/debug.log";
 
     private final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-    private final boolean shouldPrint;
     private final BufferedWriter writer;
 
     public FileJsonDebugRenderer() throws IOException {
-        this(LOG_FILE_PATH, true);
+        this(LOG_FILE_PATH);
     }
 
-    public FileJsonDebugRenderer(String logFilePath, boolean shouldPrint) throws IOException {
-        this.shouldPrint = shouldPrint;
+    public FileJsonDebugRenderer(String logFilePath) throws IOException {
         ensureLogFileExists(logFilePath);
         writer = new BufferedWriter(new FileWriter(logFilePath, true));
 
@@ -34,38 +32,32 @@ public class FileJsonDebugRenderer implements DebugRenderer {
 
     @Override
     public void debug(String message) {
-        if (shouldPrint) {
-            StackTraceElement caller = getCaller();
-            if (caller != null) {
-                writeLogToFile(new LogInfo(message, caller));
-            } else {
-                writeLogToFile(new LogInfo(message));
-            }
+        StackTraceElement caller = getCaller();
+        if (caller != null) {
+            writeLogToFile(new LogInfo(message, caller));
+        } else {
+            writeLogToFile(new LogInfo(message));
         }
     }
 
     @Override
     public void debug(String message, Exception e) {
-        if (shouldPrint) {
-            StackTraceElement caller = getCaller();
-            if (caller != null) {
-                writeLogToFile(new LogInfo(message, e, caller));
-            } else {
-                writeLogToFile(new LogInfo(message, e));
-            }
+        StackTraceElement caller = getCaller();
+        if (caller != null) {
+            writeLogToFile(new LogInfo(message, e, caller));
+        } else {
+            writeLogToFile(new LogInfo(message, e));
         }
     }
 
     @Override
     public void debugf(String format, Object... args) {
-        if (shouldPrint) {
-            String message = String.format(format, args);
-            StackTraceElement caller = getCaller();
-            if (caller != null) {
-                writeLogToFile(new LogInfo(message, caller));
-            } else {
-                writeLogToFile(new LogInfo(message));
-            }
+        String message = String.format(format, args);
+        StackTraceElement caller = getCaller();
+        if (caller != null) {
+            writeLogToFile(new LogInfo(message, caller));
+        } else {
+            writeLogToFile(new LogInfo(message));
         }
     }
 
