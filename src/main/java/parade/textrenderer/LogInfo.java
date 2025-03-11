@@ -41,4 +41,20 @@ public class LogInfo {
         }
         return formattedStackTrace;
     }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getCaller() {
+        return caller;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public String[] getStackTrace() {
+        return stackTrace;
+    }
 }
