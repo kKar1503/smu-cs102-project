@@ -1,6 +1,7 @@
 package parade.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +51,12 @@ public class Parade {
         return removedCards;
     }
 
-    public List<Card> getParadeCards() {
-        return paradeList;
+    /**
+     * Get the cards in the parade.
+     *
+     * @return An unmodifiable list of cards in the parade.
+     */
+    public List<Card> getCards() {
+        return Collections.unmodifiableList(cards);
     }
 }
