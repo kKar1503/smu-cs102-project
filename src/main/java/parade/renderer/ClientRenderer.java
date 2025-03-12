@@ -1,4 +1,4 @@
-package parade.renderer.text;
+package parade.renderer;
 
 import parade.common.Card;
 import parade.player.Player;
@@ -6,13 +6,13 @@ import parade.player.Player;
 import java.util.List;
 import java.util.Map;
 
-public interface TextRenderer {
+public interface ClientRenderer {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *
      * @param message the message to render
      */
-    public void render(String message);
+    void render(String message);
 
     /**
      * Render a message to the screen. This is used to display messages to the user. Appends a new
@@ -20,7 +20,7 @@ public interface TextRenderer {
      *
      * @param message the message to render
      */
-    public void renderln(String message);
+    void renderln(String message);
 
     /**
      * Render a message to the screen. This is used to display messages to the user. This is a
@@ -29,13 +29,13 @@ public interface TextRenderer {
      * @param format the format string
      * @param args the arguments to format the string with
      */
-    public void renderf(String format, Object... args);
+    void renderf(String format, Object... args);
 
     /**
      * Render the welcome message for the game. This is used to display the welcome message for the
      * game. This can make damn fancy.
      */
-    public void renderWelcome();
+    void renderWelcome();
 
     /**
      * Render the menu for the game. This is used to display the main menu for the game.
@@ -43,13 +43,13 @@ public interface TextRenderer {
      * <p>This should ends with a print() method instead of println(). Because we expect the method
      * follow directly with a Scanner that reads the input.
      */
-    public void renderMenu();
+    void renderMenu();
 
     /**
      * Render the screen for a single player, this is to display for the player to prompt them for
      * input to join the lobby.
      */
-    public void renderPlayersLobby(List<Player> players);
+    void renderPlayersLobby(List<Player> players);
 
     /**
      * Render the screen for a single player, this is to display for the player to prompt them for
@@ -66,7 +66,7 @@ public interface TextRenderer {
      * @param newlyDrawnCard the card that the player has drawn
      * @param parade the parade cards on the table
      */
-    public void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade);
+    void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade);
 
     /**
      * Render the end game message for all players. This method is used for the naive implementation
@@ -74,7 +74,7 @@ public interface TextRenderer {
      *
      * @param playerScores a map of players and their scores
      */
-    public void renderEndGame(Map<Player, Integer> playerScores);
+    void renderEndGame(Map<Player, Integer> playerScores);
 
     /**
      * Render the end game message for a single player, this is probably only used when this is a
@@ -83,8 +83,8 @@ public interface TextRenderer {
      * @param player the player to render the end game screen for
      * @param score the player's score
      */
-    public void renderSinglePlayerEndGame(Player player, int score);
+    void renderSinglePlayerEndGame(Player player, int score);
 
     /** Bye bye buddy. */
-    public void renderBye();
+    void renderBye();
 }

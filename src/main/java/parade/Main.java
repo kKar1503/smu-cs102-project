@@ -2,21 +2,21 @@ package parade;
 
 import parade.engine.GameEngine;
 import parade.engine.impl.LocalGameEngine;
-import parade.renderer.debug.DebugRenderer;
-import parade.renderer.debug.DebugRendererProvider;
-import parade.renderer.debug.impl.ConsoleDebugRenderer;
-import parade.renderer.debug.impl.ConsoleJsonDebugRenderer;
-import parade.renderer.debug.impl.FileJsonDebugRenderer;
-import parade.renderer.debug.impl.NopDebugRenderer;
-import parade.renderer.text.TextRenderer;
-import parade.renderer.text.TextRendererProvider;
-import parade.renderer.text.impl.BasicTextRenderer;
+import parade.logger.Logger;
+import parade.logger.LoggerProvider;
+import parade.logger.impl.JsonLogger;
+import parade.logger.impl.MultiLogger;
+import parade.logger.impl.NopLogger;
+import parade.logger.impl.PrettyLogger;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -28,93 +28,78 @@ public class Main {
                 .fromClasspath("config.properties")
                 .build();
 
-        DebugRenderer debugRenderer = setupDebugRenderer();
-        TextRenderer textRenderer = setupTextRenderer();
-        GameEngine gameEngine = setupGameEngine();
+        setupLogger();
+        Runtime.getRuntime()
+                .addShutdownHook(new Thread(() -> LoggerProvider.getInstance().close()));
+        setupGameEngine().start();
+    }
 
-        textRenderer.renderWelcome();
-        Scanner scanner = new Scanner(System.in);
-        debugRenderer.debug("Prompting user to start game in menu");
-        while (true) {
-            textRenderer.renderMenu();
-            try {
-                int input = scanner.nextInt();
-                scanner.nextLine();
-                if (input != 1 && input != 2) {
-                    textRenderer.renderln("Invalid input, please only type only 1 or 2.");
-                    continue;
-                }
+    private static void setupLogger() throws IOException {
+        Settings settings = Settings.getInstance();
 
-                if (input == 1) {
-                    debugRenderer.debug("User is starting the game");
-                    break;
-                } else {
-                    debugRenderer.debug("User is exiting the game");
-                    textRenderer.renderBye();
-                    System.exit(0);
+        String loggerTypes = settings.get(SettingKey.LOGGER_TYPES);
+        boolean shouldLog = settings.getBoolean(SettingKey.LOGGER_ENABLED);
+        Logger logger;
+        if (!shouldLog) {
+            logger = new NopLogger();
+        } else {
+            String[] loggerTypesArr = loggerTypes.split(",");
+            // Handles duplicate logger types and trim whitespace
+            Set<String> loggerTypesSet =
+                    Stream.of(loggerTypesArr).map(String::trim).collect(Collectors.toSet());
+            if (loggerTypesSet.size() == 1) {
+                logger = new PrettyLogger();
+            } else {
+                Logger[] loggers = new Logger[loggerTypesSet.size()];
+                int i = 0;
+                for (String loggerType : loggerTypesSet) {
+                    loggers[i++] = determineLoggerType(loggerType);
                 }
-            } catch (NoSuchElementException e) {
-                debugRenderer.debug("Invalid input received", e);
-                textRenderer.renderln("Invalid input, please try again.");
+                logger = new MultiLogger(loggers);
             }
         }
-
-        gameEngine.start();
+        LoggerProvider.setInstance(logger);
+        logger.log("Initialised logger");
     }
 
-    private static DebugRenderer setupDebugRenderer() throws IOException {
-        Settings settings = Settings.getInstance();
-
-        String debugType = settings.get(SettingKey.CONFIG_DEBUG_TYPE);
-        boolean shouldPrint = settings.getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
-        DebugRenderer debugRenderer =
-                shouldPrint
-                        ? switch (debugType) {
-                            case "console" -> new ConsoleDebugRenderer();
-                            case "console_json" -> new ConsoleJsonDebugRenderer();
-                            case "file_json" ->
-                                    new FileJsonDebugRenderer(
-                                            settings.get(SettingKey.CONFIG_DEBUG_FILE));
-                            default ->
-                                    throw new IllegalStateException(
-                                            "Unknown debug type in settings: " + debugType);
-                        }
-                        : new NopDebugRenderer();
-        DebugRendererProvider.setInstance(debugRenderer);
-        debugRenderer.debug("Initialised debug renderer");
-
-        return debugRenderer;
+    private static Logger determineLoggerType(String loggerType)
+            throws IllegalStateException, IOException {
+        return switch (loggerType) {
+            case "console" -> new PrettyLogger();
+            case "console_json" -> new JsonLogger(System.out);
+            case "file_json" -> {
+                String filePath = Settings.getInstance().get(SettingKey.LOGGER_FILE);
+                if (filePath == null || filePath.isEmpty()) {
+                    throw new IllegalStateException("File path for logger is not set in settings");
+                }
+                // Creates the directory if it does not exist
+                Path path = Path.of(filePath);
+                Path parentDir = path.getParent();
+                if (parentDir != null && !Files.exists(parentDir)) {
+                    Files.createDirectories(parentDir);
+                }
+                yield new JsonLogger(filePath);
+            }
+            default ->
+                    throw new IllegalStateException(
+                            "Unknown logger type in settings: " + loggerType);
+        };
     }
 
-    private static TextRenderer setupTextRenderer() {
+    /**
+     * Sets up the game engine based on the gameplay mode specified in the settings.
+     *
+     * @return the game engine
+     * @throws IllegalStateException if the gameplay mode is not set or wrongly set in the settings
+     * @throws UnsupportedOperationException if the gameplay mode is not supported
+     */
+    private static GameEngine setupGameEngine()
+            throws IllegalStateException, UnsupportedOperationException {
         Settings settings = Settings.getInstance();
-        DebugRenderer debugRenderer = DebugRendererProvider.getInstance();
-
-        String gameplayTextRenderer = settings.get(SettingKey.GAMEPLAY_TEXT_RENDERER);
-        debugRenderer.debug("Gameplay text renderer is using " + gameplayTextRenderer);
-        TextRenderer textRenderer =
-                switch (gameplayTextRenderer) {
-                    case "basic" -> new BasicTextRenderer();
-                    case "advanced" ->
-                            throw new UnsupportedOperationException(
-                                    "Advanced text renderer is not yet supported");
-                    default ->
-                            throw new IllegalStateException(
-                                    "Unknown gameplay text renderer in settings: "
-                                            + gameplayTextRenderer);
-                };
-        TextRendererProvider.setInstance(textRenderer);
-        debugRenderer.debug("Initialised text renderer");
-
-        return textRenderer;
-    }
-
-    private static GameEngine setupGameEngine() {
-        Settings settings = Settings.getInstance();
-        DebugRenderer debugRenderer = DebugRendererProvider.getInstance();
+        Logger logger = LoggerProvider.getInstance();
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
-        debugRenderer.debug("Gameplay is starting in " + gameplayMode + " mode");
+        logger.log("Gameplay is starting in " + gameplayMode + " mode");
         GameEngine gameEngine =
                 switch (gameplayMode) {
                     case "local" -> new LocalGameEngine();
@@ -125,7 +110,7 @@ public class Main {
                             throw new IllegalStateException(
                                     "Unknown gameplay mode in settings: " + gameplayMode);
                 };
-        debugRenderer.debug("Initialised game engine");
+        logger.log("Initialised game engine");
 
         return gameEngine;
     }
