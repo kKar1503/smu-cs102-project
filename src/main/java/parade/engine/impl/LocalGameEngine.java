@@ -99,7 +99,7 @@ public class LocalGameEngine extends GameEngine {
 
         waitForPlayersLobby();
 
-        if (lobbyHasEnoughPlayers()) {
+        if (!lobbyHasEnoughPlayers()) {
             logger.logf("Insufficient players to start the game, found %d", getPlayersCount());
             throw new IllegalStateException("Server requires at least two players");
         }
