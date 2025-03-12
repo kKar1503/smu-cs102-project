@@ -133,11 +133,9 @@ public abstract class Logger {
         }
 
         private String[] formatStackTrace(StackTraceElement[] stackTrace) {
-            String[] formattedStackTrace = new String[stackTrace.length];
-            for (int i = 0; i < stackTrace.length; i++) {
-                formattedStackTrace[i] = stackTrace[i].toString();
-            }
-            return formattedStackTrace;
+            return Arrays.stream(stackTrace)
+                    .map(StackTraceElement::toString)
+                    .toArray(String[]::new);
         }
 
         @Override
