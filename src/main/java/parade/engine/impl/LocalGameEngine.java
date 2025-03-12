@@ -4,8 +4,8 @@ import parade.common.*;
 import parade.engine.GameEngine;
 import parade.player.Player;
 import parade.player.human.LocalHuman;
-import parade.renderer.debug.DebugRenderer;
-import parade.renderer.debug.DebugRendererProvider;
+import parade.renderer.log.LogRenderer;
+import parade.renderer.log.LogRendererProvider;
 import parade.renderer.text.TextRenderer;
 import parade.renderer.text.TextRendererProvider;
 
@@ -16,12 +16,12 @@ import java.util.*;
  * flow.
  */
 public class LocalGameEngine extends GameEngine {
-    private final DebugRenderer debugRenderer;
+    private final LogRenderer debugRenderer;
     private final TextRenderer textRenderer;
 
     /** Initializes the game server with a deck. */
     public LocalGameEngine() {
-        debugRenderer = DebugRendererProvider.getInstance();
+        debugRenderer = LogRendererProvider.getInstance();
         textRenderer = TextRendererProvider.getInstance();
     }
 

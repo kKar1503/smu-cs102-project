@@ -2,12 +2,9 @@ package parade;
 
 import parade.engine.GameEngine;
 import parade.engine.impl.LocalGameEngine;
-import parade.renderer.debug.DebugRenderer;
-import parade.renderer.debug.DebugRendererProvider;
-import parade.renderer.debug.impl.ConsoleDebugRenderer;
-import parade.renderer.debug.impl.ConsoleJsonDebugRenderer;
-import parade.renderer.debug.impl.FileJsonDebugRenderer;
-import parade.renderer.debug.impl.NopDebugRenderer;
+import parade.renderer.log.LogRenderer;
+import parade.renderer.log.LogRendererProvider;
+import parade.renderer.log.impl.*;
 import parade.renderer.text.TextRenderer;
 import parade.renderer.text.TextRendererProvider;
 import parade.renderer.text.impl.BasicTextRenderer;
@@ -15,8 +12,11 @@ import parade.settings.SettingKey;
 import parade.settings.Settings;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -28,7 +28,7 @@ public class Main {
                 .fromClasspath("config.properties")
                 .build();
 
-        DebugRenderer debugRenderer = setupDebugRenderer();
+        LogRenderer debugRenderer = setupDebugRenderer();
         TextRenderer textRenderer = setupTextRenderer();
         GameEngine gameEngine = setupGameEngine();
 
@@ -62,33 +62,63 @@ public class Main {
         gameEngine.start();
     }
 
-    private static DebugRenderer setupDebugRenderer() throws IOException {
+    private static LogRenderer setupDebugRenderer() throws IOException {
         Settings settings = Settings.getInstance();
 
-        String debugType = settings.get(SettingKey.CONFIG_DEBUG_TYPE);
+        String debugTypes = settings.get(SettingKey.CONFIG_DEBUG_TYPE);
         boolean shouldPrint = settings.getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
-        DebugRenderer debugRenderer =
-                shouldPrint
-                        ? switch (debugType) {
-                            case "console" -> new ConsoleDebugRenderer();
-                            case "console_json" -> new ConsoleJsonDebugRenderer();
-                            case "file_json" ->
-                                    new FileJsonDebugRenderer(
-                                            settings.get(SettingKey.CONFIG_DEBUG_FILE));
-                            default ->
-                                    throw new IllegalStateException(
-                                            "Unknown debug type in settings: " + debugType);
-                        }
-                        : new NopDebugRenderer();
-        DebugRendererProvider.setInstance(debugRenderer);
+        LogRenderer debugRenderer;
+        if (!shouldPrint) {
+            debugRenderer = new NopLogRenderer();
+        } else {
+            String[] debugTypesArr = debugTypes.split(",");
+            // Handles duplicate debug types and trim whitespace
+            Set<String> debugTypesSet =
+                    Stream.of(debugTypesArr).map(String::trim).collect(Collectors.toSet());
+            if (debugTypesSet.size() == 1) {
+                debugRenderer = new PrettyLogRenderer();
+            } else {
+                LogRenderer[] debugRenderers = new LogRenderer[debugTypesSet.size()];
+                int i = 0;
+                for (String debugType : debugTypesSet) {
+                    debugRenderers[i++] = determineDebugRendererType(debugType);
+                }
+                debugRenderer = new MultiLogRenderer(debugRenderers);
+            }
+        }
+        LogRendererProvider.setInstance(debugRenderer);
         debugRenderer.debug("Initialised debug renderer");
 
         return debugRenderer;
     }
 
+    private static LogRenderer determineDebugRendererType(String debugType)
+            throws IllegalStateException, IOException {
+        return switch (debugType) {
+            case "console" -> new PrettyLogRenderer();
+            case "console_json" -> new JsonLogRenderer(System.out);
+            case "file_json" -> {
+                String filePath = Settings.getInstance().get(SettingKey.CONFIG_DEBUG_FILE);
+                if (filePath == null || filePath.isEmpty()) {
+                    throw new IllegalStateException(
+                            "File path for debug renderer is not set in settings");
+                }
+                // Creates the directory if it does not exist
+                Path path = Path.of(filePath);
+                Path parentDir = path.getParent();
+                if (parentDir != null && !Files.exists(parentDir)) {
+                    Files.createDirectories(parentDir);
+                }
+                yield new JsonLogRenderer(filePath);
+            }
+            default ->
+                    throw new IllegalStateException("Unknown debug type in settings: " + debugType);
+        };
+    }
+
     private static TextRenderer setupTextRenderer() {
         Settings settings = Settings.getInstance();
-        DebugRenderer debugRenderer = DebugRendererProvider.getInstance();
+        LogRenderer debugRenderer = LogRendererProvider.getInstance();
 
         String gameplayTextRenderer = settings.get(SettingKey.GAMEPLAY_TEXT_RENDERER);
         debugRenderer.debug("Gameplay text renderer is using " + gameplayTextRenderer);
@@ -111,7 +141,7 @@ public class Main {
 
     private static GameEngine setupGameEngine() {
         Settings settings = Settings.getInstance();
-        DebugRenderer debugRenderer = DebugRendererProvider.getInstance();
+        LogRenderer debugRenderer = LogRendererProvider.getInstance();
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
         debugRenderer.debug("Gameplay is starting in " + gameplayMode + " mode");
