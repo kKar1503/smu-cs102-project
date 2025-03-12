@@ -35,7 +35,13 @@ public abstract class GameEngine {
         players.add(player);
     }
 
-    // Helper function to count occurrences of each colour
+    /**
+     * Counts the occurrences of each colour in a list of cards.
+     *
+     * @param cards The list of cards to process. Must not be null, and each card and its colour must also not be null.
+     * @return A map where the key is the {@link Colour} and the value is the count of its occurrences.
+     * @throws IllegalArgumentException If the card list is null or contains null cards or colours.
+     */
     private Map<Colour, Integer> countColours(List<Card> cards) {
         Map<Colour, Integer> colourCount = new HashMap<>();
 
@@ -136,7 +142,7 @@ public abstract class GameEngine {
 
         return score;
     }
-    
+
     /**
      * Gets the list of players in the game.
      *
