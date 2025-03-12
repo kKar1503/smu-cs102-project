@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
@@ -52,14 +51,14 @@ public class Main {
         } else {
             String[] loggerTypesArr = loggerTypes.split(",");
             // Handles duplicate logger types and trim whitespace
-            Set<String> loggerTypesSet =
-                    Stream.of(loggerTypesArr).map(String::trim).collect(Collectors.toSet());
-            if (loggerTypesSet.size() == 1) {
-                logger = new PrettyLogger();
+            List<String> loggerTypesArrNoDuplicates =
+                    Stream.of(loggerTypesArr).map(String::trim).distinct().toList();
+            if (loggerTypesArrNoDuplicates.size() == 1) {
+                logger = determineLoggerType(loggerTypesArrNoDuplicates.getFirst());
             } else {
-                Logger[] loggers = new Logger[loggerTypesSet.size()];
+                Logger[] loggers = new Logger[loggerTypesArrNoDuplicates.size()];
                 int i = 0;
-                for (String loggerType : loggerTypesSet) {
+                for (String loggerType : loggerTypesArrNoDuplicates) {
                     loggers[i++] = determineLoggerType(loggerType);
                 }
                 logger = new MultiLogger(loggers);
