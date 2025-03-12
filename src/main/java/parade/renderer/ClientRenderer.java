@@ -1,4 +1,4 @@
-package parade.renderer.text;
+package parade.renderer;
 
 import parade.common.Card;
 import parade.player.Player;
@@ -6,7 +6,7 @@ import parade.player.Player;
 import java.util.List;
 import java.util.Map;
 
-public interface TextRenderer {
+public interface ClientRenderer {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *

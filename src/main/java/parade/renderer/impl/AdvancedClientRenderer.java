@@ -1,9 +1,9 @@
-package parade.renderer.text.impl;
+package parade.renderer.impl;
 
 import parade.common.Card;
 import parade.engine.GameEngine;
 import parade.player.Player;
-import parade.renderer.text.TextRenderer;
+import parade.renderer.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class AdvancedTextRenderer implements TextRenderer {
-    public AdvancedTextRenderer() {}
+public class AdvancedClientRenderer implements ClientRenderer {
+    public AdvancedClientRenderer() {}
 
     @Override
     public void render(String message) {

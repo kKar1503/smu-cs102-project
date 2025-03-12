@@ -1,17 +1,17 @@
-package parade.renderer.text.impl;
+package parade.renderer.impl;
 
 import parade.common.Card;
 import parade.engine.GameEngine;
 import parade.player.Player;
-import parade.renderer.text.TextRenderer;
+import parade.renderer.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class BasicTextRenderer implements TextRenderer {
-    public BasicTextRenderer() {}
+public class BasicLocalClientRenderer implements ClientRenderer {
+    public BasicLocalClientRenderer() {}
 
     @Override
     public void render(String message) {
