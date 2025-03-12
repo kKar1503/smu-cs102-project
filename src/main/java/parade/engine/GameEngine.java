@@ -26,6 +26,15 @@ public abstract class GameEngine {
     }
 
     /**
+     * Adds a player to the game.
+     *
+     * @param player The player to be added.
+     */
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
+    /**
      * Gets the list of players in the game.
      *
      * @return An unmodifiable copy of the list of players.
@@ -166,8 +175,7 @@ public abstract class GameEngine {
         // Calculate majority colours for each player
         Map<Player, List<Colour>> majorityColours = new HashMap<>();
         for (Player player : players) {
-            majorityColours.put(
-                    player, decideMajority(playerHands, player).get(player));
+            majorityColours.put(player, decideMajority(playerHands, player).get(player));
         }
 
         Map<Player, Integer> playerScores = new HashMap<>();
@@ -178,15 +186,6 @@ public abstract class GameEngine {
         }
 
         return playerScores;
-    }
-
-        /**
-     * Adds a player to the game.
-     *
-     * @param player The player to be added.
-     */
-    public void addPlayer(Player player) {
-        players.add(player);
     }
 
     /**
