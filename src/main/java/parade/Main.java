@@ -31,7 +31,14 @@ public class Main {
         setupLogger();
         Runtime.getRuntime()
                 .addShutdownHook(new Thread(() -> LoggerProvider.getInstance().close()));
-        setupGameEngine().start();
+        GameEngine gameEngine = setupGameEngine();
+
+        try {
+            gameEngine.start();
+        } catch (Exception e) {
+            LoggerProvider.getInstance().log("Error occurred during game execution", e);
+            System.exit(1);
+        }
     }
 
     private static void setupLogger() throws IOException {
