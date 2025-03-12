@@ -8,8 +8,8 @@ public enum SettingKey {
     SERVER_HOST("server.host", true),
     SERVER_THREADS("server.threads", true),
     SERVER_TIMEOUT("server.timeout", true),
-    GAMEPLAY_MODE("gameplay.mode", true),
-    GAMEPLAY_TEXT_RENDERER("gameplay.textrenderer", false);
+    CLIENT_RENDERER("client.renderer", false),
+    GAMEPLAY_MODE("gameplay.mode", true);
 
     private final String key;
     private final boolean required;

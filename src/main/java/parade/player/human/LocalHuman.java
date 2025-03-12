@@ -2,7 +2,7 @@ package parade.player.human;
 
 import parade.common.Card;
 import parade.player.Player;
-import parade.renderer.text.TextRendererProvider;
+import parade.renderer.ClientRendererProvider;
 
 import java.util.InputMismatchException;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public class LocalHuman implements Player {
 
         Scanner sc = new Scanner(System.in);
         int input;
-        TextRendererProvider.getInstance().renderPlayerTurn(this, latestDrawnCard, parade);
+        ClientRendererProvider.getInstance().renderPlayerTurn(this, latestDrawnCard, parade);
 
         while (true) {
             try {
@@ -51,12 +51,12 @@ public class LocalHuman implements Player {
                 }
                 break;
             } catch (InputMismatchException e) {
-                TextRendererProvider.getInstance().render("Invalid input. Please try again");
+                ClientRendererProvider.getInstance().render("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
-                TextRendererProvider.getInstance()
+                ClientRendererProvider.getInstance()
                         .render("Invalid choice. Please select a valid index");
             }
-            TextRendererProvider.getInstance().render("Select a card to play:");
+            ClientRendererProvider.getInstance().render("Select a card to play:");
             sc.nextLine();
         }
         latestDrawnCard = null;

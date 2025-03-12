@@ -6,8 +6,12 @@ import parade.logger.Logger;
 import parade.logger.LoggerProvider;
 import parade.player.Player;
 import parade.player.human.LocalHuman;
-import parade.renderer.text.TextRenderer;
-import parade.renderer.text.TextRendererProvider;
+import parade.renderer.ClientRenderer;
+import parade.renderer.ClientRendererProvider;
+import parade.renderer.impl.AdvancedClientRenderer;
+import parade.renderer.impl.BasicLocalClientRenderer;
+import parade.settings.SettingKey;
+import parade.settings.Settings;
 
 import java.util.*;
 
@@ -17,12 +21,14 @@ import java.util.*;
  */
 public class LocalGameEngine extends GameEngine {
     private final Logger logger;
-    private final TextRenderer textRenderer;
+    private final ClientRenderer clientRenderer;
+    private final Scanner scanner;
 
     /** Initializes the game server with a deck. */
     public LocalGameEngine() {
         logger = LoggerProvider.getInstance();
-        textRenderer = TextRendererProvider.getInstance();
+        scanner = new Scanner(System.in);
+        clientRenderer = setupClientRenderer();
     }
 
     @Override
@@ -35,21 +41,21 @@ public class LocalGameEngine extends GameEngine {
         logger.logf("Waiting for players to join lobby");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            textRenderer.renderPlayersLobby(getPlayers());
+            clientRenderer.renderPlayersLobby(getPlayers());
             int input = scanner.nextInt();
             scanner.nextLine();
             if (input == 1) {
                 logger.log("Adding a new player");
                 if (isLobbyFull()) {
-                    textRenderer.renderln("Lobby is full.");
+                    clientRenderer.renderln("Lobby is full.");
                     continue;
                 }
-                textRenderer.render("Enter player name: ");
+                clientRenderer.render("Enter player name: ");
                 String name = scanner.nextLine();
                 addPlayer(new LocalHuman(name));
             } else if (input == 2) {
                 if (!lobbyHasEnoughPlayers()) {
-                    textRenderer.renderln("Lobby does not have enough players.");
+                    clientRenderer.renderln("Lobby does not have enough players.");
                     continue;
                 }
                 logger.log("User requested to start the game");
@@ -65,6 +71,32 @@ public class LocalGameEngine extends GameEngine {
      */
     @Override
     public void start() throws IllegalStateException {
+        clientRenderer.renderWelcome();
+        logger.log("Prompting user to start game in menu");
+        while (true) {
+            clientRenderer.renderMenu();
+            try {
+                int input = scanner.nextInt();
+                scanner.nextLine();
+                if (input != 1 && input != 2) {
+                    clientRenderer.renderln("Invalid input, please only type only 1 or 2.");
+                    continue;
+                }
+
+                if (input == 1) {
+                    logger.log("User is starting the game");
+                    break;
+                } else {
+                    logger.log("User is exiting the game");
+                    clientRenderer.renderBye();
+                    return;
+                }
+            } catch (NoSuchElementException e) {
+                logger.log("Invalid input received", e);
+                clientRenderer.renderln("Invalid input, please try again.");
+            }
+        }
+
         waitForPlayersLobby();
 
         if (lobbyHasEnoughPlayers()) {
@@ -108,7 +140,7 @@ public class LocalGameEngine extends GameEngine {
 
         // After the game loop finishes, the extra round is played.
         logger.log("Game loop finished, running final round");
-        textRenderer.renderln("Final round started. Players do not draw a card.");
+        clientRenderer.renderln("Final round started. Players do not draw a card.");
         for (int i = 0; i < getPlayersCount(); i++) {
             playerPlayCard(getCurrentPlayer());
             nextPlayer();
@@ -118,7 +150,7 @@ public class LocalGameEngine extends GameEngine {
         Map<Player, Integer> playerScores = tabulateScores();
 
         // Declare the final results
-        textRenderer.renderln("Game Over! Final Scores:");
+        clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
@@ -127,7 +159,7 @@ public class LocalGameEngine extends GameEngine {
         logger.logf("%s playing a card", player.getName());
         Card playedCard = player.playCard(getParadeCards());
         logger.logf("%s played and placed card into parade: %s", player.getName(), playedCard);
-        textRenderer.renderln(player.getName() + " played: " + playedCard);
+        clientRenderer.renderln(player.getName() + " played: " + playedCard);
 
         // Place card in parade and receive cards from parade
         List<Card> cardsFromParade = placeCardInParade(playedCard); // Apply parade logic
@@ -137,7 +169,7 @@ public class LocalGameEngine extends GameEngine {
                 player.getName(),
                 cardsFromParade.size(),
                 Arrays.toString(cardsFromParade.toArray()));
-        textRenderer.renderf(
+        clientRenderer.renderf(
                 "%s received %s from parade.%n",
                 player.getName(), Arrays.toString(cardsFromParade.toArray()));
     }
@@ -155,10 +187,39 @@ public class LocalGameEngine extends GameEngine {
         }
 
         if (winner != null) {
-            textRenderer.render(
+            clientRenderer.render(
                     "Winner: " + winner.getName() + " with " + lowestScore + " points!");
         } else {
-            textRenderer.render("The game ended in a tie!");
+            clientRenderer.render("The game ended in a tie!");
         }
+    }
+
+    /**
+     * Sets up the client renderer.
+     *
+     * @return the client renderer
+     */
+    private ClientRenderer setupClientRenderer() {
+        Settings settings = Settings.getInstance();
+
+        String clientRendererType = settings.get(SettingKey.CLIENT_RENDERER);
+
+        ClientRenderer clientRenderer =
+                switch (clientRendererType) {
+                    case "basic_local" -> new BasicLocalClientRenderer();
+                    case "advanced_local" -> new AdvancedClientRenderer();
+                    case "basic_network" ->
+                            throw new UnsupportedOperationException(
+                                    "Basic network renderer is not supported for local game");
+                    default ->
+                            throw new IllegalStateException(
+                                    "Unknown client renderer in settings: " + clientRendererType);
+                };
+        logger.log("Gameplay client renderer is using " + clientRendererType);
+
+        ClientRendererProvider.setInstance(clientRenderer);
+        logger.log("Initialised client renderer");
+
+        return clientRenderer;
     }
 }

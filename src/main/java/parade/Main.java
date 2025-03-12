@@ -8,9 +8,6 @@ import parade.logger.impl.JsonLogger;
 import parade.logger.impl.MultiLogger;
 import parade.logger.impl.NopLogger;
 import parade.logger.impl.PrettyLogger;
-import parade.renderer.text.TextRenderer;
-import parade.renderer.text.TextRendererProvider;
-import parade.renderer.text.impl.BasicTextRenderer;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
@@ -31,41 +28,11 @@ public class Main {
                 .fromClasspath("config.properties")
                 .build();
 
-        Logger logger = setupLogger();
-        TextRenderer textRenderer = setupTextRenderer();
-        GameEngine gameEngine = setupGameEngine();
-
-        textRenderer.renderWelcome();
-        Scanner scanner = new Scanner(System.in);
-        logger.log("Prompting user to start game in menu");
-        while (true) {
-            textRenderer.renderMenu();
-            try {
-                int input = scanner.nextInt();
-                scanner.nextLine();
-                if (input != 1 && input != 2) {
-                    textRenderer.renderln("Invalid input, please only type only 1 or 2.");
-                    continue;
-                }
-
-                if (input == 1) {
-                    logger.log("User is starting the game");
-                    break;
-                } else {
-                    logger.log("User is exiting the game");
-                    textRenderer.renderBye();
-                    System.exit(0);
-                }
-            } catch (NoSuchElementException e) {
-                logger.log("Invalid input received", e);
-                textRenderer.renderln("Invalid input, please try again.");
-            }
-        }
-
-        gameEngine.start();
+        setupLogger();
+        setupGameEngine().start();
     }
 
-    private static Logger setupLogger() throws IOException {
+    private static void setupLogger() throws IOException {
         Settings settings = Settings.getInstance();
 
         String loggerTypes = settings.get(SettingKey.LOGGER_TYPES);
@@ -91,8 +58,6 @@ public class Main {
         }
         LoggerProvider.setInstance(logger);
         logger.log("Initialised logger");
-
-        return logger;
     }
 
     private static Logger determineLoggerType(String loggerType)
@@ -119,30 +84,15 @@ public class Main {
         };
     }
 
-    private static TextRenderer setupTextRenderer() {
-        Settings settings = Settings.getInstance();
-        Logger logger = LoggerProvider.getInstance();
-
-        String gameplayTextRenderer = settings.get(SettingKey.GAMEPLAY_TEXT_RENDERER);
-        logger.log("Gameplay text renderer is using " + gameplayTextRenderer);
-        TextRenderer textRenderer =
-                switch (gameplayTextRenderer) {
-                    case "basic" -> new BasicTextRenderer();
-                    case "advanced" ->
-                            throw new UnsupportedOperationException(
-                                    "Advanced text renderer is not yet supported");
-                    default ->
-                            throw new IllegalStateException(
-                                    "Unknown gameplay text renderer in settings: "
-                                            + gameplayTextRenderer);
-                };
-        TextRendererProvider.setInstance(textRenderer);
-        logger.log("Initialised text renderer");
-
-        return textRenderer;
-    }
-
-    private static GameEngine setupGameEngine() {
+    /**
+     * Sets up the game engine based on the gameplay mode specified in the settings.
+     *
+     * @return the game engine
+     * @throws IllegalStateException if the gameplay mode is not set or wrongly set in the settings
+     * @throws UnsupportedOperationException if the gameplay mode is not supported
+     */
+    private static GameEngine setupGameEngine()
+            throws IllegalStateException, UnsupportedOperationException {
         Settings settings = Settings.getInstance();
         Logger logger = LoggerProvider.getInstance();
 
