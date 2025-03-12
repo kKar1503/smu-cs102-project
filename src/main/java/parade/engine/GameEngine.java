@@ -37,8 +37,10 @@ public abstract class GameEngine {
     /**
      * Counts the occurrences of each colour in a list of cards.
      *
-     * @param cards The list of cards to process. Must not be null, and each card and its colour must also not be null.
-     * @return A map where the key is the {@link Colour} and the value is the count of its occurrences.
+     * @param cards The list of cards to process. Must not be null, and each card and its colour
+     *     must also not be null.
+     * @return A map where the key is the {@link Colour} and the value is the count of its
+     *     occurrences.
      * @throws IllegalArgumentException If the card list is null or contains null cards or colours.
      */
     private Map<Colour, Integer> countColours(List<Card> cards) {
@@ -59,19 +61,23 @@ public abstract class GameEngine {
     }
 
     /**
-     * Determines the majority colours for a specific player based on their card collection 
-     * compared to other players.
+     * Determines the majority colours for a specific player based on their card collection compared
+     * to other players.
      *
-     * <p>In a two-player game, a player holds a majority if they have at least two more cards 
-     * of a particular colour than their opponent. In multiplayer, a player must simply have 
-     * more cards of a particular colour than any other player.</p>
+     * <p>In a two-player game, a player holds a majority if they have at least two more cards of a
+     * particular colour than their opponent. In multiplayer, a player must simply have more cards
+     * of a particular colour than any other player.
      *
-     * @param playerCards A map where the key is a {@link Player} and the value is their list of cards. Must not be null.
-     * @param targetPlayer The player for whom to determine majority colours. Must not be null and must exist in {@code playerCards}.
-     * @return A map where the key is the {@link Player} and the value is a list of {@link Colour} where they hold a majority.
-     * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or if the target player is not present in the map.
+     * @param playerCards A map where the key is a {@link Player} and the value is their list of
+     *     cards. Must not be null.
+     * @param targetPlayer The player for whom to determine majority colours. Must not be null and
+     *     must exist in {@code playerCards}.
+     * @return A map where the key is the {@link Player} and the value is a list of {@link Colour}
+     *     where they hold a majority.
+     * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or
+     *     if the target player is not present in the map.
      */
-    public static Map<Player, List<Colour>> decideMajority(
+    public Map<Player, List<Colour>> decideMajority(
             Map<Player, List<Card>> playerCards, Player targetPlayer) {
 
         if (playerCards == null || targetPlayer == null) {
@@ -125,15 +131,18 @@ public abstract class GameEngine {
      * Calculates the score of a player based on their cards and majority colours.
      *
      * <p>If a card's colour is among the player's majority colours, its score is counted as 1.
-     * Otherwise, the card's actual number value is added to the score.</p>
+     * Otherwise, the card's actual number value is added to the score.
      *
      * @param targetPlayer The player whose score is to be calculated. Must not be null.
-     * @param playerCards A map where the key is a {@link Player} and the value is their list of cards. Must not be null.
-     * @param majorityColours A map where the key is a {@link Player} and the value is a list of {@link Colour} that are majority for that player. Must not be null.
+     * @param playerCards A map where the key is a {@link Player} and the value is their list of
+     *     cards. Must not be null.
+     * @param majorityColours A map where the key is a {@link Player} and the value is a list of
+     *     {@link Colour} that are majority for that player. Must not be null.
      * @return The calculated score of the target player.
-     * @throws IllegalArgumentException If any argument is null, or if the target player does not have a card list.
+     * @throws IllegalArgumentException If any argument is null, or if the target player does not
+     *     have a card list.
      */
-    public static int calculateScore(
+    public int calculateScore(
             Player targetPlayer,
             Map<Player, List<Card>> playerCards,
             Map<Player, List<Colour>> majorityColours) {
@@ -153,7 +162,7 @@ public abstract class GameEngine {
             if (card == null || card.getColour() == null) {
                 throw new IllegalArgumentException("Card or card colour cannot be null.");
             }
-            
+
             // Only add the value of the card if it's NOT in the player's majority colours
             if (!playerMajorityColours.contains(card.getColour())) {
                 score += card.getNumber();
@@ -307,13 +316,13 @@ public abstract class GameEngine {
         Map<Player, List<Colour>> majorityColours = new HashMap<>();
         for (Player player : players) {
             majorityColours.put(
-                    player, ScoreUtility.decideMajority(playerHands, player).get(player));
+                    player, decideMajority(playerHands, player).get(player));
         }
 
         Map<Player, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
         for (Player player : players) {
-            int score = ScoreUtility.calculateScore(player, playerHands, majorityColours);
+            int score = calculateScore(player, playerHands, majorityColours);
             playerScores.put(player, score);
         }
 
