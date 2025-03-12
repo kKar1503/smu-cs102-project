@@ -1,7 +1,7 @@
 package parade.logger.impl;
 
 import parade.logger.Logger;
-import parade.renderer.ConsoleColors;
+import parade.utils.ConsoleColors;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;

@@ -3,8 +3,8 @@ package parade.renderer.text.impl;
 import parade.common.Card;
 import parade.engine.GameEngine;
 import parade.player.Player;
-import parade.renderer.ConsoleColors;
 import parade.renderer.text.TextRenderer;
+import parade.utils.ConsoleColors;
 
 import java.util.Comparator;
 import java.util.List;
