@@ -29,8 +29,8 @@ public class PrettyLogger extends Logger {
                         .filter(loggerFrameFilter)
                         .map(StackTraceElement::toString)
                         .toList();
-        writeln(ConsoleColors.RED + stackTrace.getFirst());
-        stackTrace.stream().skip(1).forEach(x -> writeln("    " + x));
+        writeln(ConsoleColors.RED + e);
+        stackTrace.forEach(x -> writeln("    " + x));
         write(ConsoleColors.RESET);
         flush();
     }
