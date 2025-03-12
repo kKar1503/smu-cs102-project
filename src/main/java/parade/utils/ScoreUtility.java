@@ -14,7 +14,15 @@ public class ScoreUtility {
     // Helper function to count occurrences of each colour
     private static Map<Colour, Integer> countColours(List<Card> cards) {
         Map<Colour, Integer> colourCount = new HashMap<>();
+
+        if (cards == null) {
+            throw new IllegalArgumentException("Card list cannot be null.");
+        }
+
         for (Card card : cards) {
+            if (card == null || card.getColour() == null) {
+                throw new IllegalArgumentException("Card or card colour cannot be null.");
+            }
             Colour colour = card.getColour();
             colourCount.put(colour, colourCount.getOrDefault(colour, 0) + 1);
         }
