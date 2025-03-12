@@ -103,6 +103,40 @@ public abstract class GameEngine {
 
         return majorityColours;
     }
+
+    // Method to calculate the score of a player
+    public static int calculateScore(
+            Player targetPlayer,
+            Map<Player, List<Card>> playerCards,
+            Map<Player, List<Colour>> majorityColours) {
+        int score = 0;
+        if (targetPlayer == null || playerCards == null || majorityColours == null) {
+            throw new IllegalArgumentException("Arguments cannot be null.");
+        }
+        List<Card> playerCardList = playerCards.get(targetPlayer);
+        if (playerCardList == null) {
+            throw new IllegalArgumentException("Target player has no card list.");
+        }
+
+        List<Colour> playerMajorityColours =
+                majorityColours.getOrDefault(targetPlayer, new ArrayList<>());
+
+        for (Card card : playerCardList) {
+            if (card == null || card.getColour() == null) {
+                throw new IllegalArgumentException("Card or card colour cannot be null.");
+            }
+            
+            // Only add the value of the card if it's NOT in the player's majority colours
+            if (!playerMajorityColours.contains(card.getColour())) {
+                score += card.getNumber();
+            } else {
+                score += 1;
+            }
+        }
+
+        return score;
+    }
+    
     /**
      * Gets the list of players in the game.
      *
