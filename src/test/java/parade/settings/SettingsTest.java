@@ -23,19 +23,19 @@ class SettingsTest {
     @Test
     void testLoadIntegerProperty() {
         int port = settings.getInt(SettingKey.SERVER_PORT);
-        assertEquals(8080, port, "Server port should be 8080");
+        assertEquals(8080, port, "SERVER_PORT should be 8080");
     }
 
     @Test
     void testLoadStringProperty() {
         String host = settings.get(SettingKey.SERVER_HOST);
-        assertEquals("127.0.0.1", host, "Server host should be 127.0.0.1");
+        assertEquals("127.0.0.1", host, "SERVER_HOST should be 127.0.0.1");
     }
 
     @Test
     void testLoadBooleanProperty() {
-        boolean debug = settings.getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
-        assertTrue(debug, "Config debug should be true");
+        boolean loggerEnabled = settings.getBoolean(SettingKey.LOGGER_ENABLED);
+        assertTrue(loggerEnabled, "LOGGER_ENABLED should be true");
     }
 
     @Test

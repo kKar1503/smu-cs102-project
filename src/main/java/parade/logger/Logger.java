@@ -1,4 +1,4 @@
-package parade.renderer.log;
+package parade.logger;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,13 +8,13 @@ import java.util.Date;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class LogRenderer {
-    private static final String DEBUG_PACKAGE = LogRenderer.class.getPackage().getName();
+public abstract class Logger {
+    private static final String LOGGER_PACKAGE = Logger.class.getPackage().getName();
 
     private final PrintWriter writer;
 
-    public LogRenderer() {
-        // Defaults to no-op debug renderer
+    public Logger() {
+        // Defaults to no-op logger
         this(
                 new Writer() {
                     @Override
@@ -28,27 +28,27 @@ public abstract class LogRenderer {
                 });
     }
 
-    public LogRenderer(String fileName) throws FileNotFoundException {
+    public Logger(String fileName) throws FileNotFoundException {
         this.writer = new PrintWriter(fileName);
     }
 
-    public LogRenderer(Writer writer) {
+    public Logger(Writer writer) {
         this.writer = new PrintWriter(writer);
     }
 
-    public LogRenderer(OutputStream out) {
+    public Logger(OutputStream out) {
         this.writer = new PrintWriter(out);
     }
 
-    public void debug(String message) {
+    public void log(String message) {
         writelnFlush(new LogInfo(message));
     }
 
-    public void debug(String message, Exception e) {
+    public void log(String message, Exception e) {
         writelnFlush(new LogInfo(message, e));
     }
 
-    public void debugf(String format, Object... args) {
+    public void logf(String format, Object... args) {
         writelnFlush(new LogInfo(String.format(format, args)));
     }
 
@@ -119,14 +119,14 @@ public abstract class LogRenderer {
         }
 
         private String deriveCaller() {
-            Predicate<StackWalker.StackFrame> debugFrameFilter =
-                    frame -> !frame.getClassName().startsWith(DEBUG_PACKAGE);
+            Predicate<StackWalker.StackFrame> logFrameFilter =
+                    frame -> !frame.getClassName().startsWith(LOGGER_PACKAGE);
             Function<StackWalker.StackFrame, String> stackFrameMapper =
                     frame -> frame.toStackTraceElement().toString();
             return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
                     .walk(
                             frames ->
-                                    frames.filter(debugFrameFilter)
+                                    frames.filter(logFrameFilter)
                                             .findFirst()
                                             .map(stackFrameMapper)
                                             .orElse("Unknown"));

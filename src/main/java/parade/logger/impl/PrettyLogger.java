@@ -1,7 +1,7 @@
-package parade.renderer.log.impl;
+package parade.logger.impl;
 
+import parade.logger.Logger;
 import parade.renderer.ConsoleColors;
-import parade.renderer.log.LogRenderer;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -9,24 +9,24 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class PrettyLogRenderer extends LogRenderer {
-    public PrettyLogRenderer() {
+public class PrettyLogger extends Logger {
+    public PrettyLogger() {
         super(new PrintWriter(System.out));
     }
 
     @Override
-    public void debug(String message) {
+    public void log(String message) {
         writelnFlush(format(message));
     }
 
     @Override
-    public void debug(String message, Exception e) {
+    public void log(String message, Exception e) {
         writeln(format(message));
-        Predicate<StackTraceElement> debugFrameFilter =
+        Predicate<StackTraceElement> loggerFrameFilter =
                 elem -> !elem.getClassName().startsWith(this.getClass().getPackageName());
         List<String> stackTrace =
                 Stream.of(e.getStackTrace())
-                        .filter(debugFrameFilter)
+                        .filter(loggerFrameFilter)
                         .map(StackTraceElement::toString)
                         .toList();
         writeln(ConsoleColors.RED + stackTrace.getFirst());
@@ -36,7 +36,7 @@ public class PrettyLogRenderer extends LogRenderer {
     }
 
     @Override
-    public void debugf(String format, Object... args) {
+    public void logf(String format, Object... args) {
         writelnFlush(format(String.format(format, args)));
     }
 

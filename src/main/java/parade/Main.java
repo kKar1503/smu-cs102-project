@@ -2,9 +2,12 @@ package parade;
 
 import parade.engine.GameEngine;
 import parade.engine.impl.LocalGameEngine;
-import parade.renderer.log.LogRenderer;
-import parade.renderer.log.LogRendererProvider;
-import parade.renderer.log.impl.*;
+import parade.logger.Logger;
+import parade.logger.LoggerProvider;
+import parade.logger.impl.JsonLogger;
+import parade.logger.impl.MultiLogger;
+import parade.logger.impl.NopLogger;
+import parade.logger.impl.PrettyLogger;
 import parade.renderer.text.TextRenderer;
 import parade.renderer.text.TextRendererProvider;
 import parade.renderer.text.impl.BasicTextRenderer;
@@ -28,13 +31,13 @@ public class Main {
                 .fromClasspath("config.properties")
                 .build();
 
-        LogRenderer debugRenderer = setupDebugRenderer();
+        Logger logger = setupLogger();
         TextRenderer textRenderer = setupTextRenderer();
         GameEngine gameEngine = setupGameEngine();
 
         textRenderer.renderWelcome();
         Scanner scanner = new Scanner(System.in);
-        debugRenderer.debug("Prompting user to start game in menu");
+        logger.log("Prompting user to start game in menu");
         while (true) {
             textRenderer.renderMenu();
             try {
@@ -46,15 +49,15 @@ public class Main {
                 }
 
                 if (input == 1) {
-                    debugRenderer.debug("User is starting the game");
+                    logger.log("User is starting the game");
                     break;
                 } else {
-                    debugRenderer.debug("User is exiting the game");
+                    logger.log("User is exiting the game");
                     textRenderer.renderBye();
                     System.exit(0);
                 }
             } catch (NoSuchElementException e) {
-                debugRenderer.debug("Invalid input received", e);
+                logger.log("Invalid input received", e);
                 textRenderer.renderln("Invalid input, please try again.");
             }
         }
@@ -62,46 +65,45 @@ public class Main {
         gameEngine.start();
     }
 
-    private static LogRenderer setupDebugRenderer() throws IOException {
+    private static Logger setupLogger() throws IOException {
         Settings settings = Settings.getInstance();
 
-        String debugTypes = settings.get(SettingKey.CONFIG_DEBUG_TYPE);
-        boolean shouldPrint = settings.getBoolean(SettingKey.CONFIG_DEBUG_ENABLED);
-        LogRenderer debugRenderer;
-        if (!shouldPrint) {
-            debugRenderer = new NopLogRenderer();
+        String loggerTypes = settings.get(SettingKey.LOGGER_TYPES);
+        boolean shouldLog = settings.getBoolean(SettingKey.LOGGER_ENABLED);
+        Logger logger;
+        if (!shouldLog) {
+            logger = new NopLogger();
         } else {
-            String[] debugTypesArr = debugTypes.split(",");
-            // Handles duplicate debug types and trim whitespace
-            Set<String> debugTypesSet =
-                    Stream.of(debugTypesArr).map(String::trim).collect(Collectors.toSet());
-            if (debugTypesSet.size() == 1) {
-                debugRenderer = new PrettyLogRenderer();
+            String[] loggerTypesArr = loggerTypes.split(",");
+            // Handles duplicate logger types and trim whitespace
+            Set<String> loggerTypesSet =
+                    Stream.of(loggerTypesArr).map(String::trim).collect(Collectors.toSet());
+            if (loggerTypesSet.size() == 1) {
+                logger = new PrettyLogger();
             } else {
-                LogRenderer[] debugRenderers = new LogRenderer[debugTypesSet.size()];
+                Logger[] loggers = new Logger[loggerTypesSet.size()];
                 int i = 0;
-                for (String debugType : debugTypesSet) {
-                    debugRenderers[i++] = determineDebugRendererType(debugType);
+                for (String loggerType : loggerTypesSet) {
+                    loggers[i++] = determineLoggerType(loggerType);
                 }
-                debugRenderer = new MultiLogRenderer(debugRenderers);
+                logger = new MultiLogger(loggers);
             }
         }
-        LogRendererProvider.setInstance(debugRenderer);
-        debugRenderer.debug("Initialised debug renderer");
+        LoggerProvider.setInstance(logger);
+        logger.log("Initialised logger");
 
-        return debugRenderer;
+        return logger;
     }
 
-    private static LogRenderer determineDebugRendererType(String debugType)
+    private static Logger determineLoggerType(String loggerType)
             throws IllegalStateException, IOException {
-        return switch (debugType) {
-            case "console" -> new PrettyLogRenderer();
-            case "console_json" -> new JsonLogRenderer(System.out);
+        return switch (loggerType) {
+            case "console" -> new PrettyLogger();
+            case "console_json" -> new JsonLogger(System.out);
             case "file_json" -> {
-                String filePath = Settings.getInstance().get(SettingKey.CONFIG_DEBUG_FILE);
+                String filePath = Settings.getInstance().get(SettingKey.LOGGER_FILE);
                 if (filePath == null || filePath.isEmpty()) {
-                    throw new IllegalStateException(
-                            "File path for debug renderer is not set in settings");
+                    throw new IllegalStateException("File path for logger is not set in settings");
                 }
                 // Creates the directory if it does not exist
                 Path path = Path.of(filePath);
@@ -109,19 +111,20 @@ public class Main {
                 if (parentDir != null && !Files.exists(parentDir)) {
                     Files.createDirectories(parentDir);
                 }
-                yield new JsonLogRenderer(filePath);
+                yield new JsonLogger(filePath);
             }
             default ->
-                    throw new IllegalStateException("Unknown debug type in settings: " + debugType);
+                    throw new IllegalStateException(
+                            "Unknown logger type in settings: " + loggerType);
         };
     }
 
     private static TextRenderer setupTextRenderer() {
         Settings settings = Settings.getInstance();
-        LogRenderer debugRenderer = LogRendererProvider.getInstance();
+        Logger logger = LoggerProvider.getInstance();
 
         String gameplayTextRenderer = settings.get(SettingKey.GAMEPLAY_TEXT_RENDERER);
-        debugRenderer.debug("Gameplay text renderer is using " + gameplayTextRenderer);
+        logger.log("Gameplay text renderer is using " + gameplayTextRenderer);
         TextRenderer textRenderer =
                 switch (gameplayTextRenderer) {
                     case "basic" -> new BasicTextRenderer();
@@ -134,17 +137,17 @@ public class Main {
                                             + gameplayTextRenderer);
                 };
         TextRendererProvider.setInstance(textRenderer);
-        debugRenderer.debug("Initialised text renderer");
+        logger.log("Initialised text renderer");
 
         return textRenderer;
     }
 
     private static GameEngine setupGameEngine() {
         Settings settings = Settings.getInstance();
-        LogRenderer debugRenderer = LogRendererProvider.getInstance();
+        Logger logger = LoggerProvider.getInstance();
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
-        debugRenderer.debug("Gameplay is starting in " + gameplayMode + " mode");
+        logger.log("Gameplay is starting in " + gameplayMode + " mode");
         GameEngine gameEngine =
                 switch (gameplayMode) {
                     case "local" -> new LocalGameEngine();
@@ -155,7 +158,7 @@ public class Main {
                             throw new IllegalStateException(
                                     "Unknown gameplay mode in settings: " + gameplayMode);
                 };
-        debugRenderer.debug("Initialised game engine");
+        logger.log("Initialised game engine");
 
         return gameEngine;
     }
