@@ -59,7 +59,19 @@ public abstract class GameEngine {
         return colourCount;
     }
 
-    // Method to determine majority colours for a specific player
+    /**
+     * Determines the majority colours for a specific player based on their card collection 
+     * compared to other players.
+     *
+     * <p>In a two-player game, a player holds a majority if they have at least two more cards 
+     * of a particular colour than their opponent. In multiplayer, a player must simply have 
+     * more cards of a particular colour than any other player.</p>
+     *
+     * @param playerCards A map where the key is a {@link Player} and the value is their list of cards. Must not be null.
+     * @param targetPlayer The player for whom to determine majority colours. Must not be null and must exist in {@code playerCards}.
+     * @return A map where the key is the {@link Player} and the value is a list of {@link Colour} where they hold a majority.
+     * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or if the target player is not present in the map.
+     */
     public static Map<Player, List<Colour>> decideMajority(
             Map<Player, List<Card>> playerCards, Player targetPlayer) {
 
