@@ -17,4 +17,7 @@ public class NopLogger extends Logger {
 
     @Override
     public void logf(String format, Object... args) {}
+
+    @Override
+    public void close() {}
 }

@@ -33,4 +33,11 @@ public class MultiLogger extends Logger {
             delegate.logf(format, args);
         }
     }
+
+    @Override
+    public void close() {
+        for (Logger delegate : delegates) {
+            delegate.close();
+        }
+    }
 }
