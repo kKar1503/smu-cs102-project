@@ -29,6 +29,8 @@ public class Main {
                 .build();
 
         setupLogger();
+        Runtime.getRuntime()
+                .addShutdownHook(new Thread(() -> LoggerProvider.getInstance().close()));
         setupGameEngine().start();
     }
 
