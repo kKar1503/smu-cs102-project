@@ -32,6 +32,15 @@ public class ScoreUtility {
     // Method to determine majority colours for a specific player
     public static Map<Player, List<Colour>> decideMajority(
             Map<Player, List<Card>> playerCards, Player targetPlayer) {
+
+        if (playerCards == null || targetPlayer == null) {
+            throw new IllegalArgumentException("Player cards and target player cannot be null.");
+        }
+
+        if (!playerCards.containsKey(targetPlayer)) {
+            throw new IllegalArgumentException("Target player is not present in player cards.");
+        }
+
         Map<Player, List<Colour>> majorityColours = new HashMap<>();
         List<Colour> targetMajorityColours = new ArrayList<>();
 
