@@ -122,7 +122,18 @@ public abstract class GameEngine {
         return majorityColours;
     }
 
-    // Method to calculate the score of a player
+    /**
+     * Calculates the score of a player based on their cards and majority colours.
+     *
+     * <p>If a card's colour is among the player's majority colours, its score is counted as 1.
+     * Otherwise, the card's actual number value is added to the score.</p>
+     *
+     * @param targetPlayer The player whose score is to be calculated. Must not be null.
+     * @param playerCards A map where the key is a {@link Player} and the value is their list of cards. Must not be null.
+     * @param majorityColours A map where the key is a {@link Player} and the value is a list of {@link Colour} that are majority for that player. Must not be null.
+     * @return The calculated score of the target player.
+     * @throws IllegalArgumentException If any argument is null, or if the target player does not have a card list.
+     */
     public static int calculateScore(
             Player targetPlayer,
             Map<Player, List<Card>> playerCards,
