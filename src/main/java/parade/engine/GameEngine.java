@@ -53,6 +53,56 @@ public abstract class GameEngine {
         return colourCount;
     }
 
+    // Method to determine majority colours for a specific player
+    public static Map<Player, List<Colour>> decideMajority(
+            Map<Player, List<Card>> playerCards, Player targetPlayer) {
+
+        if (playerCards == null || targetPlayer == null) {
+            throw new IllegalArgumentException("Player cards and target player cannot be null.");
+        }
+
+        if (!playerCards.containsKey(targetPlayer)) {
+            throw new IllegalArgumentException("Target player is not present in player cards.");
+        }
+
+        Map<Player, List<Colour>> majorityColours = new HashMap<>();
+        List<Colour> targetMajorityColours = new ArrayList<>();
+
+        // Step 1: Count occurrences of each colour for the target player
+        Map<Colour, Integer> targetColourCounts = countColours(playerCards.get(targetPlayer));
+
+        // Step 2: Compare against all other players
+        for (Map.Entry<Colour, Integer> colourEntry : targetColourCounts.entrySet()) {
+            Colour colour = colourEntry.getKey();
+            int targetCount = colourEntry.getValue();
+
+            boolean isMajority = true; // Assume majority until proven otherwise
+
+            for (Map.Entry<Player, List<Card>> entry : playerCards.entrySet()) {
+                Player otherPlayer = entry.getKey();
+                if (!otherPlayer.equals(targetPlayer)) { // Don't compare against self
+                    int otherCount = countColours(entry.getValue()).getOrDefault(colour, 0);
+                    if ((playerCards.size() == 2 && otherCount > targetCount - 2)
+                            || // 2 player mode (majority -> 2 or more cards)
+                            (playerCards.size() > 2
+                                    && otherCount > targetCount)) { // multiplayer mode
+                        isMajority = false;
+                        break;
+                    }
+                }
+            }
+
+            // If target player holds a majority in this colour, add it
+            if (isMajority) {
+                targetMajorityColours.add(colour);
+            }
+        }
+
+        // Ensure the player has an empty list instead of null if they have no majority
+        majorityColours.put(targetPlayer, targetMajorityColours);
+
+        return majorityColours;
+    }
     /**
      * Gets the list of players in the game.
      *
