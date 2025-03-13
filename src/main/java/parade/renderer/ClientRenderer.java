@@ -52,6 +52,12 @@ public interface ClientRenderer {
     void renderPlayersLobby(List<Player> players);
 
     /**
+     * Render the screen for a human player, this is to display for the player to prompt them for
+     * input to choose the difficulty of the computer player.
+     */
+    void renderComputerDifficulty();
+
+    /**
      * Render the screen for a single player, this is to display for the player to prompt them for
      * input.
      *

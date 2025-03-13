@@ -112,7 +112,7 @@ public abstract class GameEngine {
      * @return The drawn card.
      */
     protected Card drawFromDeck() {
-        return deck.draw();
+        return deck.pop();
     }
 
     /**

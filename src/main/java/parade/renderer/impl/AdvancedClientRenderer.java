@@ -77,6 +77,9 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     @Override
+    public void renderComputerDifficulty() {};
+
+    @Override
     public void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
