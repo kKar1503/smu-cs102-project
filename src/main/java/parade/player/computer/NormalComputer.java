@@ -15,8 +15,8 @@ public class NormalComputer extends Computer {
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
      */
-    public NormalComputer(List<Card> cards) {
-        super(cards, "Normal AI");
+    public NormalComputer(List<Card> cards, String name) {
+        super(cards, name + "[Normal Comp]");
     }
 
     /**
