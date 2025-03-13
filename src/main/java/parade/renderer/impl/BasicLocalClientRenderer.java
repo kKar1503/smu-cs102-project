@@ -55,9 +55,20 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                 "1. Add Player"
                         + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
         System.out.println(
-                "2. Start Game"
+                "2. Add Computer"
+                        + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+        System.out.println(
+                "3. Start Game"
                         + (players.size() < GameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
+    }
+
+    @Override
+    public void renderComputerDifficulty() {
+        System.out.println("Choose computer player's difficulty");
+        System.out.println("1. Easy");
+        System.out.println("2. Normal");
+        System.out.println("3. Hard");
     }
 
     @Override
