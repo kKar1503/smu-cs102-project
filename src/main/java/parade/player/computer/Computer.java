@@ -76,4 +76,13 @@ public abstract class Computer implements Player {
     public String getName() {
         return name;
     }
+
+    /**
+     * Set the name of computer player
+     * 
+     * @param input The desired name of the computer player
+     */
+    public void setName(String input) {
+        name = input;
+    }
 }
