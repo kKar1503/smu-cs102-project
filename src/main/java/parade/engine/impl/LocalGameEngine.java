@@ -5,6 +5,9 @@ import parade.engine.GameEngine;
 import parade.logger.Logger;
 import parade.logger.LoggerProvider;
 import parade.player.Player;
+import parade.player.computer.EasyComputer;
+import parade.player.computer.HardComputer;
+import parade.player.computer.NormalComputer;
 import parade.player.human.LocalHuman;
 import parade.renderer.ClientRenderer;
 import parade.renderer.ClientRendererProvider;
@@ -54,6 +57,25 @@ public class LocalGameEngine extends GameEngine {
                 String name = scanner.nextLine();
                 addPlayer(new LocalHuman(name));
             } else if (input == 2) {
+                logger.log("Adding a new computer");
+                if (isLobbyFull()) {
+                    clientRenderer.renderln("Lobby is full.");
+                    continue;
+                }
+                clientRenderer.render("Enter computer's name:");
+                String name = scanner.nextLine();
+                clientRenderer.renderComputerDifficulty();
+                int compInput = scanner.nextInt();
+                scanner.nextLine();
+                if (compInput == 1) {
+                    addPlayer(new EasyComputer(getParadeCards(), name));
+                } else if (compInput == 2) {
+                    addPlayer(new NormalComputer(getParadeCards(), name));
+                } else if (compInput == 3) {
+                    addPlayer(new HardComputer(getParadeCards(), name));
+                }
+
+            } else if (input == 3) {
                 if (!lobbyHasEnoughPlayers()) {
                     clientRenderer.renderln("Lobby does not have enough players.");
                     continue;
