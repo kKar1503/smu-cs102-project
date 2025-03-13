@@ -24,25 +24,16 @@ public class Deck extends Stack<Card>{
         Collections.shuffle(this);
     }
 
-    @Override
-    public boolean isEmpty() {
-        return super.isEmpty();
-    }
-
-    @Override
-    public int size() {
-        return super.size();
-    }
-
     /**
      * Removes the top card from the deck and returns it.
      *
      * @return The top card from the deck.
      * @throws EmptyDeckException if the deck is empty.
      */
-    public Card draw() throws EmptyDeckException {
+    @Override
+    public Card pop() throws EmptyDeckException {
         if (this.isEmpty()) throw new EmptyDeckException();
-        return this.pop();
+        return super.pop();
     }
 
     /**
@@ -53,7 +44,7 @@ public class Deck extends Stack<Card>{
      * @throws EmptyDeckException if the deck is empty.
      * @throws InsufficientCardException if there are not enough cards in the deck.
      */
-    public List<Card> draw(int n) throws EmptyDeckException, InsufficientCardException {
+    public List<Card> pop(int n) throws EmptyDeckException, InsufficientCardException {
         if (this.isEmpty()) {
             throw new EmptyDeckException();
         }
@@ -62,8 +53,7 @@ public class Deck extends Stack<Card>{
         }
         List<Card> drawnCards = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            Card drawnCard = this.pop();
-            drawnCards.add(drawnCard);
+            drawnCards.add(this.pop());
         }
         return drawnCards;
     }
