@@ -45,7 +45,15 @@ public class LocalGameEngine extends GameEngine {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             clientRenderer.renderPlayersLobby(getPlayers());
-            int input = scanner.nextInt();
+            int input;
+            try {
+                input = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                clientRenderer.render("Invalid input, please try again");
+                scanner.nextLine();
+            } catch (NoSuchElementException e) {
+                clientRenderer.render("Input not found, please try again");
+            }
             scanner.nextLine();
             if (input == 1) {
                 logger.log("Adding a new player");
@@ -54,7 +62,11 @@ public class LocalGameEngine extends GameEngine {
                     continue;
                 }
                 clientRenderer.render("Enter player name: ");
-                String name = scanner.nextLine();
+                try {
+                    String name = scanner.nextLine();
+                } catch (NoSuchElementException e) {
+                    clientRenderer.render("Input not found, please try again");
+                }
                 addPlayer(new LocalHuman(name));
             } else if (input == 2) {
                 logger.log("Adding a new computer");
@@ -65,7 +77,14 @@ public class LocalGameEngine extends GameEngine {
                 clientRenderer.render("Enter computer's name:");
                 String name = scanner.nextLine();
                 clientRenderer.renderComputerDifficulty();
-                int compInput = scanner.nextInt();
+                try {
+                    int compInput = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    clientRenderer.render("Invalid input, please try again");
+                    scanner.nextLine();
+                } catch (NoSuchElementException e) {
+                    clientRenderer.render("Input not found, please try again");
+                }
                 scanner.nextLine();
                 if (compInput == 1) {
                     addPlayer(new EasyComputer(getParadeCards(), name));
