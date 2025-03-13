@@ -15,8 +15,8 @@ public class EasyComputer extends Computer {
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
      */
-    public EasyComputer(List<Card> cards) {
-        super(cards, "Easy AI");
+    public EasyComputer(List<Card> cards, String name) {
+        super(cards, name + "[Easy Comp]");
     }
 
     /**
