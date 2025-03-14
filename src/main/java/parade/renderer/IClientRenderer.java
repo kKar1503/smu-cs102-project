@@ -49,7 +49,7 @@ public interface IClientRenderer {
      * Render the screen for a single player, this is to display for the player to prompt them for
      * input to join the lobby.
      */
-    void renderPlayersLobby(List<Player> players);
+    void renderPlayersLobby(List<IPlayer> players);
 
     /**
      * Render the screen for a human player, this is to display for the player to prompt them for
