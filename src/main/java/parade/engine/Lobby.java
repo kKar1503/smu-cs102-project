@@ -21,7 +21,7 @@ public class Lobby {
     }
 
     /** Increments the index of the current player to the next player in the list. */
-    protected void nextPlayer() {
+    public void nextPlayer() {
         currentPlayerIdx = (currentPlayerIdx + 1) % players.size();
     }
 }
