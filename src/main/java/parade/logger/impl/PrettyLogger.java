@@ -1,6 +1,7 @@
 package parade.logger.impl;
 
-import parade.logger.Logger;
+import parade.logger.AbstractLogger;
+import parade.logger.AbstractLogger.LogInfo;
 import parade.utils.ConsoleColors;
 
 import java.io.PrintWriter;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class PrettyLogger extends Logger {
+public class PrettyLogger extends AbstractLogger {
     public PrettyLogger() {
         super(new PrintWriter(System.out));
     }
