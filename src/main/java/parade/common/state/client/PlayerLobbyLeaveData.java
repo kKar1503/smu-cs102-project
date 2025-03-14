@@ -1,6 +1,6 @@
 package parade.common.state.client;
 
-import parade.player.IPlayer;
+import parade.common.Player;
 
 import java.io.Serial;
 
@@ -9,7 +9,7 @@ public class PlayerLobbyLeaveData extends AbstractClientData {
 
     private final String lobbyName;
 
-    public PlayerLobbyLeaveData(IPlayer caller, String lobbyName) {
+    public PlayerLobbyLeaveData(Player caller, String lobbyName) {
         super(caller, ClientAction.LOBBY_LEAVE);
         this.lobbyName = lobbyName;
     }

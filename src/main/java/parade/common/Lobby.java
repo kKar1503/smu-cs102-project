@@ -1,7 +1,5 @@
 package parade.common;
 
-import parade.player.IPlayer;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,11 +14,11 @@ public class Lobby implements Serializable {
     private final String name;
     private final int maxPlayers;
     private final transient String password;
-    private final List<IPlayer> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
     private final boolean isPublic;
-    private final IPlayer owner;
+    private final Player owner;
 
-    public Lobby(String name, int maxPlayers, IPlayer owner, boolean isPublic) {
+    public Lobby(String name, int maxPlayers, Player owner, boolean isPublic) {
         this.name = name;
         this.password = null;
         this.maxPlayers = maxPlayers;
@@ -28,7 +26,7 @@ public class Lobby implements Serializable {
         this.isPublic = isPublic;
     }
 
-    public Lobby(String name, String password, int maxPlayers, IPlayer owner, boolean isPublic) {
+    public Lobby(String name, String password, int maxPlayers, Player owner, boolean isPublic) {
         this.name = name;
         this.password = password;
         this.maxPlayers = maxPlayers;
@@ -57,7 +55,7 @@ public class Lobby implements Serializable {
         return password;
     }
 
-    public IPlayer getOwner() {
+    public Player getOwner() {
         return owner;
     }
 
@@ -65,7 +63,7 @@ public class Lobby implements Serializable {
         return isPublic;
     }
 
-    public void addPlayer(IPlayer player) {
+    public void addPlayer(Player player) {
         if (players.size() < maxPlayers) {
             players.add(player);
         } else {
@@ -73,11 +71,11 @@ public class Lobby implements Serializable {
         }
     }
 
-    public void removePlayer(IPlayer player) {
+    public void removePlayer(Player player) {
         players.remove(player);
     }
 
-    public List<IPlayer> getPlayers() {
+    public List<Player> getPlayers() {
         return Collections.unmodifiableList(players);
     }
 

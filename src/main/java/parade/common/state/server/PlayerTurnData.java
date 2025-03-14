@@ -1,7 +1,7 @@
 package parade.common.state.server;
 
 import parade.common.Card;
-import parade.player.IPlayer;
+import parade.common.Player;
 
 import java.io.Serial;
 import java.util.Arrays;
@@ -9,15 +9,15 @@ import java.util.Arrays;
 public class PlayerTurnData extends AbstractServerData {
     @Serial private static final long serialVersionUID = -4944069289012740768L;
 
-    private final IPlayer[] players;
-    private final IPlayer currentTurnPlayer;
+    private final Player[] players;
+    private final Player currentTurnPlayer;
     private final Card[] parade;
     private final int deckSize;
     private final int playerHandSize;
 
     public PlayerTurnData(
-            IPlayer[] players,
-            IPlayer currentTurnPlayer,
+            Player[] players,
+            Player currentTurnPlayer,
             Card[] parade,
             int deckSize,
             int playerHandSize) {
@@ -29,11 +29,11 @@ public class PlayerTurnData extends AbstractServerData {
         this.playerHandSize = playerHandSize;
     }
 
-    public IPlayer[] getPlayers() {
+    public Player[] getPlayers() {
         return players;
     }
 
-    public IPlayer getCurrentTurnPlayer() {
+    public Player getCurrentTurnPlayer() {
         return currentTurnPlayer;
     }
 

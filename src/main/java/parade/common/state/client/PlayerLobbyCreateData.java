@@ -1,7 +1,6 @@
 package parade.common.state.client;
 
-import parade.player.IPlayer;
-import parade.player.Player;
+import parade.common.Player;
 
 import java.io.Serial;
 
@@ -13,7 +12,7 @@ public class PlayerLobbyCreateData extends AbstractClientData {
     private final int maxPlayers;
 
     public PlayerLobbyCreateData(
-            IPlayer caller, String lobbyName, String lobbyPassword, int maxPlayers) {
+            Player caller, String lobbyName, String lobbyPassword, int maxPlayers) {
         super(caller, ClientAction.LOBBY_CREATE);
         this.lobbyName = lobbyName;
         this.lobbyPassword = lobbyPassword;

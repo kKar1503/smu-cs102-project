@@ -1,7 +1,7 @@
 package parade.common.state.client;
 
 import parade.common.Card;
-import parade.player.IPlayer;
+import parade.common.Player;
 
 import java.io.Serial;
 
@@ -10,7 +10,7 @@ public class PlayerCardPlayData extends AbstractClientData {
 
     private final Card card;
 
-    public PlayerCardPlayData(IPlayer caller, Card card) {
+    public PlayerCardPlayData(Player caller, Card card) {
         super(caller, ClientAction.CARD_PLAY);
         this.card = card;
     }

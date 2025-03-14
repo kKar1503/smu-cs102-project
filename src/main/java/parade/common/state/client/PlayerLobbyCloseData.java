@@ -1,6 +1,6 @@
 package parade.common.state.client;
 
-import parade.player.IPlayer;
+import parade.common.Player;
 
 import java.io.Serial;
 
@@ -10,7 +10,7 @@ public class PlayerLobbyCloseData extends AbstractClientData {
     private final String lobbyName;
     private final String lobbyPassword;
 
-    public PlayerLobbyCloseData(IPlayer caller, String lobbyName, String lobbyPassword) {
+    public PlayerLobbyCloseData(Player caller, String lobbyName, String lobbyPassword) {
         super(caller, ClientAction.LOBBY_CLOSE);
         this.lobbyName = lobbyName;
         this.lobbyPassword = lobbyPassword;

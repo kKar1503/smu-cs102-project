@@ -1,6 +1,6 @@
 package parade.common.state.client;
 
-import parade.player.IPlayer;
+import parade.common.Player;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -8,15 +8,15 @@ import java.io.Serializable;
 public abstract class AbstractClientData implements Serializable {
     @Serial private static final long serialVersionUID = -3525120046343996754L;
 
-    private final IPlayer caller;
+    private final Player caller;
     private final ClientAction clientAction;
 
-    public AbstractClientData(IPlayer caller, ClientAction clientAction) {
+    public AbstractClientData(Player caller, ClientAction clientAction) {
         this.caller = caller;
         this.clientAction = clientAction;
     }
 
-    public IPlayer getCaller() {
+    public Player getCaller() {
         return caller;
     }
 
