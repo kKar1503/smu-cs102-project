@@ -2,7 +2,7 @@ package parade.player.human;
 
 import parade.common.Card;
 import parade.player.Player;
-import parade.renderer.ClientRendererProvider;
+import parade.renderer.local.ClientRendererProvider;
 
 import java.util.InputMismatchException;
 import java.util.LinkedList;

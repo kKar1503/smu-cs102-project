@@ -6,10 +6,10 @@ import parade.logger.Logger;
 import parade.logger.LoggerProvider;
 import parade.player.Player;
 import parade.player.human.LocalHuman;
-import parade.renderer.ClientRenderer;
-import parade.renderer.ClientRendererProvider;
-import parade.renderer.impl.AdvancedClientRenderer;
-import parade.renderer.impl.BasicLocalClientRenderer;
+import parade.renderer.local.ClientRenderer;
+import parade.renderer.local.ClientRendererProvider;
+import parade.renderer.local.impl.AdvancedClientRenderer;
+import parade.renderer.local.impl.BasicLocalClientRenderer;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
