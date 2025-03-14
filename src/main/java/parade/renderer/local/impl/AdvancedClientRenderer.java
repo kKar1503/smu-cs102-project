@@ -1,8 +1,8 @@
 package parade.renderer.local.impl;
 
 import parade.common.Card;
+import parade.controller.Player;
 import parade.engine.GameEngine;
-import parade.player.Player;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 

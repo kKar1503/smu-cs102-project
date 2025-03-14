@@ -1,7 +1,7 @@
 package parade.renderer.local;
 
 import parade.common.Card;
-import parade.player.Player;
+import parade.controller.Player;
 
 import java.util.List;
 import java.util.Map;

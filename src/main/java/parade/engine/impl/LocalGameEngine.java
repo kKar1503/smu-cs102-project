@@ -1,11 +1,11 @@
 package parade.engine.impl;
 
 import parade.common.*;
+import parade.controller.Player;
+import parade.controller.local.LocalHuman;
 import parade.engine.GameEngine;
 import parade.logger.Logger;
 import parade.logger.LoggerProvider;
-import parade.player.Player;
-import parade.player.human.LocalHuman;
 import parade.renderer.local.ClientRenderer;
 import parade.renderer.local.ClientRendererProvider;
 import parade.renderer.local.impl.AdvancedClientRenderer;

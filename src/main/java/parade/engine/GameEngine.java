@@ -4,7 +4,7 @@ import parade.common.Card;
 import parade.common.Colour;
 import parade.common.Deck;
 import parade.common.Parade;
-import parade.player.Player;
+import parade.controller.Player;
 
 import java.util.*;
 
