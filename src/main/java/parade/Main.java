@@ -1,6 +1,6 @@
 package parade;
 
-import parade.engine.GameEngine;
+import parade.engine.AbstractGameEngine;
 import parade.engine.impl.LocalGameEngine;
 import parade.logger.Logger;
 import parade.logger.LoggerProvider;
@@ -30,7 +30,7 @@ public class Main {
         setupLogger();
         Runtime.getRuntime()
                 .addShutdownHook(new Thread(() -> LoggerProvider.getInstance().close()));
-        GameEngine gameEngine = setupGameEngine();
+        AbstractGameEngine gameEngine = setupGameEngine();
 
         try {
             gameEngine.start();
@@ -99,14 +99,14 @@ public class Main {
      * @throws IllegalStateException if the gameplay mode is not set or wrongly set in the settings
      * @throws UnsupportedOperationException if the gameplay mode is not supported
      */
-    private static GameEngine setupGameEngine()
+    private static AbstractGameEngine setupGameEngine()
             throws IllegalStateException, UnsupportedOperationException {
         Settings settings = Settings.getInstance();
         Logger logger = LoggerProvider.getInstance();
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
         logger.log("Gameplay is starting in " + gameplayMode + " mode");
-        GameEngine gameEngine =
+        AbstractGameEngine gameEngine =
                 switch (gameplayMode) {
                     case "local" -> new LocalGameEngine();
                     case "network" ->

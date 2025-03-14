@@ -3,7 +3,7 @@ package parade.engine.impl;
 import parade.common.*;
 import parade.controller.Player;
 import parade.controller.local.LocalHuman;
-import parade.engine.GameEngine;
+import parade.engine.AbstractGameEngine;
 import parade.logger.Logger;
 import parade.logger.LoggerProvider;
 import parade.renderer.local.ClientRenderer;
@@ -19,7 +19,7 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class LocalGameEngine extends GameEngine {
+public class LocalGameEngine extends AbstractGameEngine {
     private final Logger logger;
     private final ClientRenderer clientRenderer;
     private final Scanner scanner;

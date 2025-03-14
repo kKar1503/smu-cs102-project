@@ -2,7 +2,7 @@ package parade.renderer.local.impl;
 
 import parade.common.Card;
 import parade.controller.Player;
-import parade.engine.GameEngine;
+import parade.engine.AbstractGameEngine;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
@@ -53,10 +53,14 @@ public class BasicLocalClientRenderer implements ClientRenderer {
         System.out.println();
         System.out.println(
                 "1. Add Player"
-                        + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
         System.out.println(
                 "2. Start Game"
-                        + (players.size() < GameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
+                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
+                                ? " (Not enough players)"
+                                : ""));
         System.out.print("Please select an option: ");
     }
 
