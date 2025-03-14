@@ -3,14 +3,15 @@ package parade.logger.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import parade.logger.Logger;
+import parade.logger.AbstractLogger;
+import parade.logger.AbstractLogger.LogInfo;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-public class JsonLogger extends Logger {
+public class JsonLogger extends AbstractLogger {
     private final Gson gson =
             new GsonBuilder()
                     .disableHtmlEscaping()
