@@ -6,7 +6,7 @@ import parade.controller.IPlayer;
 import java.util.List;
 import java.util.Map;
 
-public interface ClientRenderer {
+public interface IClientRenderer {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *

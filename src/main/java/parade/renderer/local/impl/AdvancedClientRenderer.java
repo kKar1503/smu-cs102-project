@@ -3,7 +3,7 @@ package parade.renderer.local.impl;
 import parade.common.Card;
 import parade.controller.IPlayer;
 import parade.engine.AbstractGameEngine;
-import parade.renderer.local.ClientRenderer;
+import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class AdvancedClientRenderer implements ClientRenderer {
+public class AdvancedClientRenderer implements IClientRenderer {
     public AdvancedClientRenderer() {}
 
     @Override

@@ -3,14 +3,14 @@ package parade.renderer.local.impl;
 import parade.common.Card;
 import parade.controller.IPlayer;
 import parade.engine.AbstractGameEngine;
-import parade.renderer.local.ClientRenderer;
+import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class BasicLocalClientRenderer implements ClientRenderer {
+public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
 
     @Override
