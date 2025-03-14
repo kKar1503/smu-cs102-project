@@ -2,7 +2,7 @@ package parade;
 
 import parade.engine.AbstractGameEngine;
 import parade.engine.impl.LocalGameEngine;
-import parade.logger.Logger;
+import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.logger.impl.JsonLogger;
 import parade.logger.impl.MultiLogger;
@@ -45,7 +45,7 @@ public class Main {
 
         String loggerTypes = settings.get(SettingKey.LOGGER_TYPES);
         boolean shouldLog = settings.getBoolean(SettingKey.LOGGER_ENABLED);
-        Logger logger;
+        AbstractLogger logger;
         if (!shouldLog) {
             logger = new NopLogger();
         } else {
@@ -56,7 +56,7 @@ public class Main {
             if (loggerTypesArrNoDuplicates.size() == 1) {
                 logger = determineLoggerType(loggerTypesArrNoDuplicates.getFirst());
             } else {
-                Logger[] loggers = new Logger[loggerTypesArrNoDuplicates.size()];
+                AbstractLogger[] loggers = new AbstractLogger[loggerTypesArrNoDuplicates.size()];
                 int i = 0;
                 for (String loggerType : loggerTypesArrNoDuplicates) {
                     loggers[i++] = determineLoggerType(loggerType);
@@ -68,7 +68,7 @@ public class Main {
         logger.log("Initialised logger");
     }
 
-    private static Logger determineLoggerType(String loggerType)
+    private static AbstractLogger determineLoggerType(String loggerType)
             throws IllegalStateException, IOException {
         return switch (loggerType) {
             case "console" -> new PrettyLogger();
@@ -102,7 +102,7 @@ public class Main {
     private static AbstractGameEngine setupGameEngine()
             throws IllegalStateException, UnsupportedOperationException {
         Settings settings = Settings.getInstance();
-        Logger logger = LoggerProvider.getInstance();
+        AbstractLogger logger = LoggerProvider.getInstance();
 
         String gameplayMode = settings.get(SettingKey.GAMEPLAY_MODE);
         logger.log("Gameplay is starting in " + gameplayMode + " mode");

@@ -4,7 +4,7 @@ import parade.common.*;
 import parade.controller.Player;
 import parade.controller.local.LocalHuman;
 import parade.engine.AbstractGameEngine;
-import parade.logger.Logger;
+import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.renderer.local.ClientRenderer;
 import parade.renderer.local.ClientRendererProvider;
@@ -20,7 +20,7 @@ import java.util.*;
  * flow.
  */
 public class LocalGameEngine extends AbstractGameEngine {
-    private final Logger logger;
+    private final AbstractLogger logger;
     private final ClientRenderer clientRenderer;
     private final Scanner scanner;
 
