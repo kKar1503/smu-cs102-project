@@ -17,6 +17,7 @@ public class Lobby implements Serializable {
     private final List<Player> players = new ArrayList<>();
     private final boolean isPublic;
     private final Player owner;
+    private LobbyStatus status;
 
     public Lobby(String name, int maxPlayers, Player owner, boolean isPublic) {
         this.name = name;
@@ -24,6 +25,16 @@ public class Lobby implements Serializable {
         this.maxPlayers = maxPlayers;
         this.owner = owner;
         this.isPublic = isPublic;
+        this.status = LobbyStatus.WAITING_FOR_PLAYERS;
+    }
+
+    public Lobby(String name, int maxPlayers, Player owner, boolean isPublic, LobbyStatus status) {
+        this.name = name;
+        this.password = null;
+        this.maxPlayers = maxPlayers;
+        this.owner = owner;
+        this.isPublic = isPublic;
+        this.status = status;
     }
 
     public Lobby(String name, String password, int maxPlayers, Player owner, boolean isPublic) {
@@ -32,6 +43,7 @@ public class Lobby implements Serializable {
         this.maxPlayers = maxPlayers;
         this.owner = owner;
         this.isPublic = isPublic;
+        this.status = LobbyStatus.WAITING_FOR_PLAYERS;
     }
 
     public String getId() {
@@ -61,6 +73,14 @@ public class Lobby implements Serializable {
 
     public boolean isPublic() {
         return isPublic;
+    }
+
+    public LobbyStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LobbyStatus status) {
+        this.status = status;
     }
 
     public void addPlayer(Player player) {
