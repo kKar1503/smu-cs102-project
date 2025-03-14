@@ -16,7 +16,7 @@ public class Lobby {
      *
      * @return The current player.
      */
-    protected Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 
