@@ -18,8 +18,6 @@ public abstract class GameEngine {
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
 
-    private int currentPlayerIdx = 0; // The index of the current player
-
     protected GameEngine() {
         List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
         parade = new Parade(parade_cards);
@@ -52,20 +50,6 @@ public abstract class GameEngine {
      */
     protected Player getPlayer(int index) throws IndexOutOfBoundsException {
         return players.get(index);
-    }
-
-    /**
-     * Gets the current player.
-     *
-     * @return The current player.
-     */
-    protected Player getCurrentPlayer() {
-        return players.get(currentPlayerIdx);
-    }
-
-    /** Increments the index of the current player to the next player in the list. */
-    protected void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % players.size();
     }
 
     /**
