@@ -58,7 +58,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                 "2. Add Computer"
                         + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
         System.out.println(
-                "3. Start Game"
+                "3. Remove player/computer"
+                        + (players.isEmpty() ? " (Lobby is empty)" : ""));
+        System.out.println(
+                "4. Start Game"
                         + (players.size() < GameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
