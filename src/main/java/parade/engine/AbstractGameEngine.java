@@ -4,7 +4,7 @@ import parade.common.Card;
 import parade.common.Colour;
 import parade.common.Deck;
 import parade.common.Parade;
-import parade.controller.Player;
+import parade.controller.IPlayer;
 
 import java.util.*;
 
@@ -14,7 +14,7 @@ public abstract class AbstractGameEngine {
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
-    private final List<Player> players = new ArrayList<>(); // List of players in the game
+    private final List<IPlayer> players = new ArrayList<>(); // List of players in the game
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
 
@@ -30,7 +30,7 @@ public abstract class AbstractGameEngine {
      *
      * @param player The player to be added.
      */
-    public void addPlayer(Player player) {
+    public void addPlayer(IPlayer player) {
         players.add(player);
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractGameEngine {
      *
      * @return An unmodifiable copy of the list of players.
      */
-    protected List<Player> getPlayers() {
+    protected List<IPlayer> getPlayers() {
         return Collections.unmodifiableList(players);
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractGameEngine {
      * @return The player at the specified index.
      * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
-    protected Player getPlayer(int index) throws IndexOutOfBoundsException {
+    protected IPlayer getPlayer(int index) throws IndexOutOfBoundsException {
         return players.get(index);
     }
 
@@ -59,7 +59,7 @@ public abstract class AbstractGameEngine {
      *
      * @return The current player.
      */
-    protected Player getCurrentPlayer() {
+    protected IPlayer getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 
@@ -154,7 +154,7 @@ public abstract class AbstractGameEngine {
             // Game ends when the deck is empty
             return false;
         }
-        for (Player player : players) {
+        for (IPlayer player : players) {
             Set<Colour> uniqueColours = new HashSet<>();
             for (Card card : player.getBoard()) {
                 uniqueColours.add(card.getColour());
@@ -166,21 +166,21 @@ public abstract class AbstractGameEngine {
         return true;
     }
 
-    protected Map<Player, Integer> tabulateScores() {
-        Map<Player, List<Card>> playerHands = new HashMap<>();
-        for (Player player : players) {
+    protected Map<IPlayer, Integer> tabulateScores() {
+        Map<IPlayer, List<Card>> playerHands = new HashMap<>();
+        for (IPlayer player : players) {
             playerHands.put(player, player.getHand());
         }
 
         // Calculate majority colours for each player
-        Map<Player, List<Colour>> majorityColours = new HashMap<>();
-        for (Player player : players) {
+        Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
+        for (IPlayer player : players) {
             majorityColours.put(player, decideMajority(playerHands, player).get(player));
         }
 
-        Map<Player, Integer> playerScores = new HashMap<>();
+        Map<IPlayer, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
-        for (Player player : players) {
+        for (IPlayer player : players) {
             int score = calculateScore(player, playerHands, majorityColours);
             playerScores.put(player, score);
         }
@@ -222,17 +222,17 @@ public abstract class AbstractGameEngine {
      * particular colour than their opponent. In multiplayer, a player must simply have more cards
      * of a particular colour than any other player.
      *
-     * @param playerCards A map where the key is a {@link Player} and the value is their list of
+     * @param playerCards A map where the key is a {@link IPlayer} and the value is their list of
      *     cards. Must not be null.
      * @param targetPlayer The player for whom to determine majority colours. Must not be null and
      *     must exist in {@code playerCards}.
-     * @return A map where the key is the {@link Player} and the value is a list of {@link Colour}
+     * @return A map where the key is the {@link IPlayer} and the value is a list of {@link Colour}
      *     where they hold a majority.
      * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or
      *     if the target player is not present in the map.
      */
-    public Map<Player, List<Colour>> decideMajority(
-            Map<Player, List<Card>> playerCards, Player targetPlayer) {
+    public Map<IPlayer, List<Colour>> decideMajority(
+            Map<IPlayer, List<Card>> playerCards, IPlayer targetPlayer) {
 
         if (playerCards == null || targetPlayer == null) {
             throw new IllegalArgumentException("Player cards and target player cannot be null.");
@@ -242,7 +242,7 @@ public abstract class AbstractGameEngine {
             throw new IllegalArgumentException("Target player is not present in player cards.");
         }
 
-        Map<Player, List<Colour>> majorityColours = new HashMap<>();
+        Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
         List<Colour> targetMajorityColours = new ArrayList<>();
 
         // Step 1: Count occurrences of each colour for the target player
@@ -255,8 +255,8 @@ public abstract class AbstractGameEngine {
 
             boolean isMajority = true; // Assume majority until proven otherwise
 
-            for (Map.Entry<Player, List<Card>> entry : playerCards.entrySet()) {
-                Player otherPlayer = entry.getKey();
+            for (Map.Entry<IPlayer, List<Card>> entry : playerCards.entrySet()) {
+                IPlayer otherPlayer = entry.getKey();
                 if (!otherPlayer.equals(targetPlayer)) { // Don't compare against self
                     int otherCount = countColours(entry.getValue()).getOrDefault(colour, 0);
                     if ((playerCards.size() == 2 && otherCount > targetCount - 2)
@@ -288,18 +288,18 @@ public abstract class AbstractGameEngine {
      * Otherwise, the card's actual number value is added to the score.
      *
      * @param targetPlayer The player whose score is to be calculated. Must not be null.
-     * @param playerCards A map where the key is a {@link Player} and the value is their list of
+     * @param playerCards A map where the key is a {@link IPlayer} and the value is their list of
      *     cards. Must not be null.
-     * @param majorityColours A map where the key is a {@link Player} and the value is a list of
+     * @param majorityColours A map where the key is a {@link IPlayer} and the value is a list of
      *     {@link Colour} that are majority for that player. Must not be null.
      * @return The calculated score of the target player.
      * @throws IllegalArgumentException If any argument is null, or if the target player does not
      *     have a card list.
      */
     public int calculateScore(
-            Player targetPlayer,
-            Map<Player, List<Card>> playerCards,
-            Map<Player, List<Colour>> majorityColours) {
+            IPlayer targetPlayer,
+            Map<IPlayer, List<Card>> playerCards,
+            Map<IPlayer, List<Colour>> majorityColours) {
         int score = 0;
         if (targetPlayer == null || playerCards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");

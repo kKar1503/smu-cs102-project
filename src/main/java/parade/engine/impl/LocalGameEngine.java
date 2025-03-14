@@ -1,7 +1,7 @@
 package parade.engine.impl;
 
 import parade.common.*;
-import parade.controller.Player;
+import parade.controller.IPlayer;
 import parade.controller.local.LocalHuman;
 import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
@@ -32,7 +32,7 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     @Override
-    public void addPlayer(Player player) {
+    public void addPlayer(IPlayer player) {
         super.addPlayer(player);
         logger.logf("Player %s added to the game", player.getName());
     }
@@ -114,7 +114,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         // Dish out the cards one by one, like real life you know? Like not getting the direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            Player player = getPlayer(i);
+            IPlayer player = getPlayer(i);
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.draw(drawnCard);
@@ -126,7 +126,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            Player player = getCurrentPlayer();
+            IPlayer player = getCurrentPlayer();
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
@@ -147,14 +147,14 @@ public class LocalGameEngine extends AbstractGameEngine {
         }
 
         logger.log("Tabulating scores");
-        Map<Player, Integer> playerScores = tabulateScores();
+        Map<IPlayer, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
-    private void playerPlayCard(Player player) {
+    private void playerPlayCard(IPlayer player) {
         // Playing card
         logger.logf("%s playing a card", player.getName());
         Card playedCard = player.playCard(getParadeCards());
@@ -175,11 +175,11 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<Player, Integer> playerScores) {
-        Player winner = null;
+    private void declareWinner(Map<IPlayer, Integer> playerScores) {
+        IPlayer winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();

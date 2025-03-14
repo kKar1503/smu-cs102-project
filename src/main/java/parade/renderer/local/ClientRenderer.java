@@ -1,7 +1,7 @@
 package parade.renderer.local;
 
 import parade.common.Card;
-import parade.controller.Player;
+import parade.controller.IPlayer;
 
 import java.util.List;
 import java.util.Map;
@@ -49,7 +49,7 @@ public interface ClientRenderer {
      * Render the screen for a single player, this is to display for the player to prompt them for
      * input to join the lobby.
      */
-    void renderPlayersLobby(List<Player> players);
+    void renderPlayersLobby(List<IPlayer> players);
 
     /**
      * Render the screen for a single player, this is to display for the player to prompt them for
@@ -66,7 +66,7 @@ public interface ClientRenderer {
      * @param newlyDrawnCard the card that the player has drawn
      * @param parade the parade cards on the table
      */
-    void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade);
+    void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade);
 
     /**
      * Render the end game message for all players. This method is used for the naive implementation
@@ -74,7 +74,7 @@ public interface ClientRenderer {
      *
      * @param playerScores a map of players and their scores
      */
-    void renderEndGame(Map<Player, Integer> playerScores);
+    void renderEndGame(Map<IPlayer, Integer> playerScores);
 
     /**
      * Render the end game message for a single player, this is probably only used when this is a
@@ -83,7 +83,7 @@ public interface ClientRenderer {
      * @param player the player to render the end game screen for
      * @param score the player's score
      */
-    void renderSinglePlayerEndGame(Player player, int score);
+    void renderSinglePlayerEndGame(IPlayer player, int score);
 
     /** Bye bye buddy. */
     void renderBye();

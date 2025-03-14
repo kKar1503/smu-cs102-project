@@ -1,7 +1,7 @@
 package parade.renderer.local.impl;
 
 import parade.common.Card;
-import parade.controller.Player;
+import parade.controller.IPlayer;
 import parade.engine.AbstractGameEngine;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
@@ -45,7 +45,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderPlayersLobby(List<Player> players) {
+    public void renderPlayersLobby(List<IPlayer> players) {
         System.out.println("Players in lobby: ");
         for (int i = 1; i <= players.size(); i++) {
             System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
@@ -65,7 +65,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade) {
+    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
@@ -100,15 +100,15 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
         System.out.println("Game Over!");
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
             System.out.println(entry.getKey().getName() + ": " + entry.getValue());
         }
     }
 
     @Override
-    public void renderSinglePlayerEndGame(Player player, int score) {
+    public void renderSinglePlayerEndGame(IPlayer player, int score) {
         System.out.println("Game Over, " + player.getName() + "!");
         System.out.println("Your score: " + score);
     }

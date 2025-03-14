@@ -1,7 +1,7 @@
 package parade.controller.local;
 
 import parade.common.Card;
-import parade.controller.Player;
+import parade.controller.IPlayer;
 import parade.renderer.local.ClientRendererProvider;
 
 import java.util.InputMismatchException;
@@ -13,7 +13,7 @@ import java.util.Scanner;
  * The Human class represents a human player in the game. It implements the Player interface and
  * provides functionality for a human player such as drawing and playing cards.
  */
-public class LocalHuman implements Player {
+public class LocalHuman implements IPlayer {
 
     private final String name;
     private final LinkedList<Card> hand;
