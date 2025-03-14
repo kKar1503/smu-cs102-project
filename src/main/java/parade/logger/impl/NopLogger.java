@@ -1,12 +1,12 @@
 package parade.logger.impl;
 
-import parade.logger.Logger;
+import parade.logger.AbstractLogger;
 
 /**
  * A no-operation (NOP) implementation of the Logger interface. This class is used when logging is
  * disabled or not needed. It does not perform any logging or output.
  */
-public class NopLogger extends Logger {
+public class NopLogger extends AbstractLogger {
     public NopLogger() {}
 
     @Override
