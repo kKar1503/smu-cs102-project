@@ -10,33 +10,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class Deck implements Serializable {
+public class Deck extends Stack<Card> implements Serializable {
     @Serial private static final long serialVersionUID = -4386350060875707474L;
 
-    private final Stack<Card> cards;
-
     public Deck() {
-        cards = new Stack<>();
-        cards.ensureCapacity(66); // We know it'll always be 6 (color) * 11 (0-10) cards
+        this.ensureCapacity(66); // We know it'll always be 6 (color) * 11 (0-10) cards
         for (Colour colour : Colour.values()) {
             for (int i = 0; i <= 10; i++) {
-                cards.add(new Card(i, colour));
+                this.push(new Card(i, colour));
             }
         }
-
         shuffle();
     }
 
     private void shuffle() {
-        Collections.shuffle(cards);
-    }
-
-    public boolean isEmpty() {
-        return cards.isEmpty();
-    }
-
-    public int size() {
-        return cards.size();
+        Collections.shuffle(this);
     }
 
     /**
@@ -45,9 +33,10 @@ public class Deck implements Serializable {
      * @return The top card from the deck.
      * @throws EmptyDeckException if the deck is empty.
      */
-    public Card draw() throws EmptyDeckException {
-        if (cards.isEmpty()) throw new EmptyDeckException();
-        return cards.pop();
+    @Override
+    public Card pop() throws EmptyDeckException {
+        if (this.isEmpty()) throw new EmptyDeckException();
+        return super.pop();
     }
 
     /**
@@ -58,17 +47,16 @@ public class Deck implements Serializable {
      * @throws EmptyDeckException if the deck is empty.
      * @throws InsufficientCardException if there are not enough cards in the deck.
      */
-    public List<Card> draw(int n) throws EmptyDeckException, InsufficientCardException {
-        if (cards.isEmpty()) {
+    public List<Card> pop(int n) throws EmptyDeckException, InsufficientCardException {
+        if (this.isEmpty()) {
             throw new EmptyDeckException();
         }
-        if (cards.size() < n) {
+        if (this.size() < n) {
             throw new InsufficientCardException();
         }
         List<Card> drawnCards = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            Card drawnCard = cards.pop();
-            drawnCards.add(drawnCard);
+            drawnCards.add(this.pop());
         }
         return drawnCards;
     }

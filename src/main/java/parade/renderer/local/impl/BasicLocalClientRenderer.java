@@ -57,11 +57,24 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                                 ? " (Lobby is full)"
                                 : ""));
         System.out.println(
-                "2. Start Game"
+                "2. Add Computer"
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
+        System.out.println(
+                "3. Start Game"
                         + (players.size() < AbstractGameEngine.MIN_PLAYERS
                                 ? " (Not enough players)"
                                 : ""));
         System.out.print("Please select an option: ");
+    }
+
+    @Override
+    public void renderComputerDifficulty() {
+        System.out.println("Choose computer player's difficulty");
+        System.out.println("1. Easy");
+        System.out.println("2. Normal");
+        System.out.println("3. Hard");
     }
 
     @Override
@@ -86,13 +99,17 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
-                "\n\nYour board\n===========================================================================");
+                "\n\n"
+                    + "Your board\n"
+                    + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
-                "\n\nYour hand\n==========================================================================");
+                "\n\n"
+                    + "Your hand\n"
+                    + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }

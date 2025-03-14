@@ -81,6 +81,10 @@ public class AdvancedClientRenderer implements IClientRenderer {
     }
 
     @Override
+    public void renderComputerDifficulty() {}
+    ;
+
+    @Override
     public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
@@ -102,13 +106,17 @@ public class AdvancedClientRenderer implements IClientRenderer {
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
-                "\n\nYour board\n===========================================================================");
+                "\n\n"
+                    + "Your board\n"
+                    + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
-                "\n\nYour hand\n==========================================================================");
+                "\n\n"
+                    + "Your hand\n"
+                    + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }

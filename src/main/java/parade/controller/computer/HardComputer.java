@@ -17,8 +17,8 @@ public class HardComputer extends AbstractComputer {
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
      */
-    public HardComputer(List<Card> cards) {
-        super(cards, "Hard AI");
+    public HardComputer(List<Card> cards, String name) {
+        super(cards, name + "[Hard Comp]");
     }
 
     /**

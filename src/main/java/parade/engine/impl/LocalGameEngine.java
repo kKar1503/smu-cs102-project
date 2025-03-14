@@ -2,6 +2,9 @@ package parade.engine.impl;
 
 import parade.common.*;
 import parade.controller.IPlayer;
+import parade.controller.computer.EasyComputer;
+import parade.controller.computer.HardComputer;
+import parade.controller.computer.NormalComputer;
 import parade.controller.local.LocalHuman;
 import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
@@ -42,7 +45,15 @@ public class LocalGameEngine extends AbstractGameEngine {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             clientRenderer.renderPlayersLobby(getPlayers());
-            int input = scanner.nextInt();
+            int input = 0;
+            try {
+                input = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                clientRenderer.render("Invalid input, please try again");
+                scanner.nextLine();
+            } catch (NoSuchElementException e) {
+                clientRenderer.render("Input not found, please try again");
+            }
             scanner.nextLine();
             if (input == 1) {
                 logger.log("Adding a new player");
@@ -51,9 +62,41 @@ public class LocalGameEngine extends AbstractGameEngine {
                     continue;
                 }
                 clientRenderer.render("Enter player name: ");
-                String name = scanner.nextLine();
+                String name = "";
+                try {
+                    name = scanner.nextLine();
+                } catch (NoSuchElementException e) {
+                    clientRenderer.render("Input not found, please try again");
+                }
                 addPlayer(new LocalHuman(name));
             } else if (input == 2) {
+                logger.log("Adding a new computer");
+                if (isLobbyFull()) {
+                    clientRenderer.renderln("Lobby is full.");
+                    continue;
+                }
+                clientRenderer.render("Enter computer's name:");
+                String name = scanner.nextLine();
+                clientRenderer.renderComputerDifficulty();
+                int compInput = 0;
+                try {
+                    compInput = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    clientRenderer.render("Invalid input, please try again");
+                    scanner.nextLine();
+                } catch (NoSuchElementException e) {
+                    clientRenderer.render("Input not found, please try again");
+                }
+                scanner.nextLine();
+                if (compInput == 1) {
+                    addPlayer(new EasyComputer(getParadeCards(), name));
+                } else if (compInput == 2) {
+                    addPlayer(new NormalComputer(getParadeCards(), name));
+                } else if (compInput == 3) {
+                    addPlayer(new HardComputer(getParadeCards(), name));
+                }
+
+            } else if (input == 3) {
                 if (!lobbyHasEnoughPlayers()) {
                     clientRenderer.renderln("Lobby does not have enough players.");
                     continue;

@@ -17,12 +17,12 @@ public abstract class AbstractGameEngine {
     private final List<IPlayer> players = new ArrayList<>(); // List of players in the game
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
-
-    private int currentPlayerIdx = 0; // The index of the current player
+    private final Lobby lobby;
 
     protected AbstractGameEngine() {
-        List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
+        List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
+        lobby = new Lobby(players);
     }
 
     /**
@@ -55,17 +55,17 @@ public abstract class AbstractGameEngine {
     }
 
     /**
-     * Gets the current player.
+     * Gets the current player by delegating to the Lobby.
      *
      * @return The current player.
      */
     protected IPlayer getCurrentPlayer() {
-        return players.get(currentPlayerIdx);
+        return lobby.getCurrentPlayer();
     }
 
-    /** Increments the index of the current player to the next player in the list. */
+    /** Advances to the next player by delegating to the Lobby. */
     protected void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % players.size();
+        lobby.nextPlayer();
     }
 
     /**
@@ -112,7 +112,7 @@ public abstract class AbstractGameEngine {
      * @return The drawn card.
      */
     protected Card drawFromDeck() {
-        return deck.draw();
+        return deck.pop();
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class AbstractGameEngine {
      * @return The drawn card.
      */
     protected List<Card> drawFromDeck(int n) {
-        return deck.draw(n);
+        return deck.pop(n);
     }
 
     /**
