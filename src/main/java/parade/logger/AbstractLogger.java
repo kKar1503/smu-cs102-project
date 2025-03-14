@@ -8,12 +8,12 @@ import java.util.Date;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class Logger {
-    private static final String LOGGER_PACKAGE = Logger.class.getPackage().getName();
+public abstract class AbstractLogger {
+    private static final String LOGGER_PACKAGE = AbstractLogger.class.getPackage().getName();
 
     private final PrintWriter writer;
 
-    public Logger() {
+    public AbstractLogger() {
         // Defaults to no-op logger
         this(
                 new Writer() {
@@ -28,15 +28,15 @@ public abstract class Logger {
                 });
     }
 
-    public Logger(String fileName) throws FileNotFoundException {
+    public AbstractLogger(String fileName) throws FileNotFoundException {
         this.writer = new PrintWriter(fileName);
     }
 
-    public Logger(Writer writer) {
+    public AbstractLogger(Writer writer) {
         this.writer = new PrintWriter(writer);
     }
 
-    public Logger(OutputStream out) {
+    public AbstractLogger(OutputStream out) {
         this.writer = new PrintWriter(out);
     }
 
