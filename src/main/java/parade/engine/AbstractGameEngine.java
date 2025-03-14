@@ -8,7 +8,7 @@ import parade.player.Player;
 
 import java.util.*;
 
-public abstract class GameEngine {
+public abstract class AbstractGameEngine {
     public static final int MIN_PLAYERS = 2; // Minimum number of players required to start the game
     public static final int MAX_PLAYERS = 6; // Maximum number of players allowed
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
@@ -19,7 +19,7 @@ public abstract class GameEngine {
     private final Parade parade; // The list of cards currently in the parade
     private final Lobby lobby;
 
-    protected GameEngine() {
+    protected AbstractGameEngine() {
         List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
         parade = new Parade(parade_cards);
         lobby = new Lobby(players);
