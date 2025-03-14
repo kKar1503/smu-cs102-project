@@ -17,10 +17,12 @@ public abstract class GameEngine {
     private final List<Player> players = new ArrayList<>(); // List of players in the game
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
+    private final Lobby lobby;
 
     protected GameEngine() {
         List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
         parade = new Parade(parade_cards);
+        lobby = new Lobby(players);
     }
 
     /**
