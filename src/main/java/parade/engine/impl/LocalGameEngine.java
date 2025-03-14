@@ -40,6 +40,81 @@ public class LocalGameEngine extends GameEngine {
         logger.logf("Player %s added to the game", player.getName());
     }
 
+    @Override
+    public void removePlayer(Player player) {
+        super.removePlayer(player);
+        logger.logf("Player %s removed from the game", player.getName());
+    }
+
+    private void chooseComputerDifficulty(String name) {
+        while (true) {
+            try {
+                clientRenderer.renderComputerDifficulty();
+                int compInput = scanner.nextInt();
+                if (compInput == 1) {
+                    addPlayer(new EasyComputer(getParadeCards(), name));
+                } else if (compInput == 2) {
+                    addPlayer(new NormalComputer(getParadeCards(), name));
+                } else if (compInput == 3) {
+                    addPlayer(new HardComputer(getParadeCards(), name));
+                } else {
+                    throw new NoSuchElementException();
+                }
+                return;
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Input not found, please try again");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private void addComputerDisplay() {
+        while (true) {
+            clientRenderer.render("Enter computer's name:");
+            try {
+                String name = scanner.nextLine();
+                chooseComputerDifficulty(name);
+                return;
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Input not found, please try again");
+            } finally {
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private void removePlayerDisplay(List<Player> players) {
+        while (true) {
+        int count = 1;
+        clientRenderer.renderln("Select a player to remove.");
+        for (Player p : players) {
+            clientRenderer.renderln(count + ". " + p.getName());
+            count++;
+        }
+        clientRenderer.renderln(count + ". Return back to main menu");
+        int input;
+        try {
+            input = scanner.nextInt();
+            if (input < 1 || input > players.size() + 1) {
+                throw new NoSuchElementException();
+            }
+            if (input == count) {
+                return;
+            }
+            removePlayer(players.get(input - 1));
+            return;
+        } catch (NoSuchElementException e) {
+            logger.log("User entered invalid input", e);
+            clientRenderer.renderln("Invalid input, please try again");
+        } finally {
+            scanner.nextLine();
+        }
+    }
+        
+    }
+
     private void waitForPlayersLobby() {
         logger.logf("Waiting for players to join lobby");
         Scanner scanner = new Scanner(System.in);
@@ -48,59 +123,42 @@ public class LocalGameEngine extends GameEngine {
             int input;
             try {
                 input = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                clientRenderer.render("Invalid input, please try again");
                 scanner.nextLine();
-            } catch (NoSuchElementException e) {
-                clientRenderer.render("Input not found, please try again");
-            }
-            scanner.nextLine();
-            if (input == 1) {
-                logger.log("Adding a new player");
-                if (isLobbyFull()) {
-                    clientRenderer.renderln("Lobby is full.");
-                    continue;
-                }
-                clientRenderer.render("Enter player name: ");
-                try {
+                if (input == 1) {
+                    logger.log("Adding a new player");
+                    if (isLobbyFull()) {
+                        clientRenderer.renderln("Lobby is full.");
+                        continue;
+                    }
+                    clientRenderer.render("Enter player name: ");
                     String name = scanner.nextLine();
-                } catch (NoSuchElementException e) {
-                    clientRenderer.render("Input not found, please try again");
+                    addPlayer(new LocalHuman(name));
+                } else if (input == 2) {
+                    logger.log("Adding a new computer");
+                    if (isLobbyFull()) {
+                        clientRenderer.renderln("Lobby is full.");
+                        continue;
+                    }
+                    addComputerDisplay();
+                } else if (input == 3) {
+                    if (isLobbyEmpty()) {
+                        clientRenderer.renderln("Lobby has no players.");
+                        continue;
+                    }
+                    logger.log("Removing a player from lobby");
+                    removePlayerDisplay(getPlayers());
+                } else if (input == 4) {
+                    if (!lobbyHasEnoughPlayers()) {
+                        clientRenderer.renderln("Lobby does not have enough players.");
+                        continue;
+                    }
+                    logger.log("User requested to start the game");
+                    return;
                 }
-                addPlayer(new LocalHuman(name));
-            } else if (input == 2) {
-                logger.log("Adding a new computer");
-                if (isLobbyFull()) {
-                    clientRenderer.renderln("Lobby is full.");
-                    continue;
-                }
-                clientRenderer.render("Enter computer's name:");
-                String name = scanner.nextLine();
-                clientRenderer.renderComputerDifficulty();
-                try {
-                    int compInput = scanner.nextInt();
-                } catch (InputMismatchException e) {
-                    clientRenderer.render("Invalid input, please try again");
-                    scanner.nextLine();
-                } catch (NoSuchElementException e) {
-                    clientRenderer.render("Input not found, please try again");
-                }
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Input not found, please try again");
                 scanner.nextLine();
-                if (compInput == 1) {
-                    addPlayer(new EasyComputer(getParadeCards(), name));
-                } else if (compInput == 2) {
-                    addPlayer(new NormalComputer(getParadeCards(), name));
-                } else if (compInput == 3) {
-                    addPlayer(new HardComputer(getParadeCards(), name));
-                }
-
-            } else if (input == 3) {
-                if (!lobbyHasEnoughPlayers()) {
-                    clientRenderer.renderln("Lobby does not have enough players.");
-                    continue;
-                }
-                logger.log("User requested to start the game");
-                return;
             }
         }
     }
@@ -118,7 +176,6 @@ public class LocalGameEngine extends GameEngine {
             clientRenderer.renderMenu();
             try {
                 int input = scanner.nextInt();
-                scanner.nextLine();
                 if (input != 1 && input != 2) {
                     clientRenderer.renderln("Invalid input, please only type only 1 or 2.");
                     continue;
@@ -135,6 +192,8 @@ public class LocalGameEngine extends GameEngine {
             } catch (NoSuchElementException e) {
                 logger.log("Invalid input received", e);
                 clientRenderer.renderln("Invalid input, please try again.");
+            } finally {
+                scanner.nextLine();
             }
         }
 
@@ -152,7 +211,8 @@ public class LocalGameEngine extends GameEngine {
         logger.logf("Dealing %d cards to %d players", numCardsToDraw, getPlayersCount());
         List<Card> drawnCards = drawFromDeck(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
-        // Dish out the cards one by one, like real life you know? Like not getting the direct next
+        // Dish out the cards one by one, like real life you know? Like not getting the
+        // direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
             Player player = getPlayer(i);

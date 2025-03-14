@@ -14,14 +14,14 @@ public abstract class GameEngine {
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
-    private final List<Player> players = new ArrayList<>(); // List of players in the game
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
 
     private int currentPlayerIdx = 0; // The index of the current player
+    private List<Player> players = new ArrayList<>(); // List of players in the game
 
     protected GameEngine() {
-        List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
+        List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
     }
 
@@ -35,12 +35,21 @@ public abstract class GameEngine {
     }
 
     /**
+     * Removes a player from the game.
+     *
+     * @param player The player to be removed.
+     */
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
+    /**
      * Gets the list of players in the game.
      *
-     * @return An unmodifiable copy of the list of players.
+     * @return A copy of the list of players.
      */
     protected List<Player> getPlayers() {
-        return Collections.unmodifiableList(players);
+        return players;
     }
 
     /**
@@ -87,6 +96,15 @@ public abstract class GameEngine {
     }
 
     /**
+     * Checks if the lobby is empty.
+     *
+     * @return True if the lobby is empty, false otherwise.
+     */
+    protected boolean isLobbyEmpty() {
+        return players.isEmpty();
+    }
+
+    /**
      * Checks if the lobby has enough players to start the game.
      *
      * @return True if the lobby has enough players, false otherwise.
@@ -121,7 +139,7 @@ public abstract class GameEngine {
      * @return The drawn card.
      */
     protected List<Card> drawFromDeck(int n) {
-        return deck.draw(n);
+        return deck.pop(n);
     }
 
     /**
