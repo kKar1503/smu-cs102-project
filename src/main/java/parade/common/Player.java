@@ -16,8 +16,8 @@ public class Player implements Serializable {
         this.name = name;
     }
 
-    public UUID getId() {
-        return id;
+    public String getId() {
+        return id.toString();
     }
 
     public String getName() {
