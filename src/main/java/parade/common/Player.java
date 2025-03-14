@@ -40,6 +40,10 @@ public class Player implements Serializable {
         return hand.remove(card);
     }
 
+    public Card removeFromHand(int index) {
+        return hand.remove(index);
+    }
+
     public List<Card> getBoard() {
         return Collections.unmodifiableList(board);
     }
