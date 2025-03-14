@@ -1,16 +1,16 @@
 package parade.renderer.impl;
 
 import parade.common.Card;
-import parade.engine.GameEngine;
-import parade.player.Player;
-import parade.renderer.ClientRenderer;
+import parade.engine.AbstractGameEngine;
+import parade.player.IPlayer;
+import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class BasicLocalClientRenderer implements ClientRenderer {
+public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
 
     @Override
@@ -45,7 +45,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderPlayersLobby(List<Player> players) {
+    public void renderPlayersLobby(List<IPlayer> players) {
         System.out.println("Players in lobby: ");
         for (int i = 1; i <= players.size(); i++) {
             System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
@@ -53,13 +53,13 @@ public class BasicLocalClientRenderer implements ClientRenderer {
         System.out.println();
         System.out.println(
                 "1. Add Player"
-                        + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
         System.out.println(
                 "2. Add Computer"
-                        + (players.size() == GameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
         System.out.println(
                 "3. Start Game"
-                        + (players.size() < GameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
+                        + (players.size() < AbstractGameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
@@ -72,7 +72,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderPlayerTurn(Player player, Card newlyDrawnCard, List<Card> parade) {
+    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
@@ -107,15 +107,15 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
         System.out.println("Game Over!");
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
             System.out.println(entry.getKey().getName() + ": " + entry.getValue());
         }
     }
 
     @Override
-    public void renderSinglePlayerEndGame(Player player, int score) {
+    public void renderSinglePlayerEndGame(IPlayer player, int score) {
         System.out.println("Game Over, " + player.getName() + "!");
         System.out.println("Your score: " + score);
     }
