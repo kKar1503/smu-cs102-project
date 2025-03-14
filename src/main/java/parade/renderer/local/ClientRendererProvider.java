@@ -1,4 +1,4 @@
-package parade.renderer;
+package parade.renderer.local;
 
 public class ClientRendererProvider {
     private static ClientRenderer instance = null;

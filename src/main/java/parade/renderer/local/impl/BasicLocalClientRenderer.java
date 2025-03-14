@@ -1,19 +1,17 @@
-package parade.renderer.impl;
+package parade.renderer.local.impl;
 
 import parade.common.Card;
 import parade.engine.GameEngine;
 import parade.player.Player;
-import parade.renderer.ClientRenderer;
+import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
-import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
-public class AdvancedClientRenderer implements ClientRenderer {
-    public AdvancedClientRenderer() {}
+public class BasicLocalClientRenderer implements ClientRenderer {
+    public BasicLocalClientRenderer() {}
 
     @Override
     public void render(String message) {
@@ -32,25 +30,11 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
     @Override
     public void renderWelcome() throws IllegalStateException {
-        // the stream holding the file content
-        InputStream inFromFile =
-                getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
-        if (inFromFile == null) {
-            throw new IllegalStateException("parade_ascii_art.txt not found");
-        }
-        Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
-        String paradeWelcome = s.hasNext() ? s.next() : "";
-
-        if (paradeWelcome != null) {
-            System.out.println(
-                    ConsoleColors.PURPLE_BOLD
-                            + "============================= Welcome to Parade!"
-                            + " =============================="
-                            + ConsoleColors.RESET);
-            System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
-            System.out.println(
-                    "===================================================================================");
-        }
+        System.out.println(
+                ConsoleColors.PURPLE_BOLD
+                        + "============================= Welcome to Parade!"
+                        + " =============================="
+                        + ConsoleColors.RESET);
     }
 
     @Override
