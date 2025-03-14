@@ -1,4 +1,4 @@
-package parade.player.computer;
+package parade.controller.computer;
 
 import parade.common.Card;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * own losses while maximising the difficulty for the opponent. It uses predictive analysis to
  * determine the best card to play.
  */
-public class HardComputer extends Computer {
+public class HardComputer extends AbstractComputer {
 
     /**
      * Constructs a HardComputer instance with an initial hand of cards.

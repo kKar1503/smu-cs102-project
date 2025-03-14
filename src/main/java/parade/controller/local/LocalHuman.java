@@ -1,7 +1,7 @@
-package parade.player.human;
+package parade.controller.local;
 
 import parade.common.Card;
-import parade.player.Player;
+import parade.controller.Player;
 import parade.renderer.local.ClientRendererProvider;
 
 import java.util.InputMismatchException;

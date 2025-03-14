@@ -1,4 +1,4 @@
-package parade.player;
+package parade.controller;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ public interface Player {
     Card playCard(List<Card> parade);
 
     /**
-     * Adds multiple cards to the player's board (collected cards).
-     * This allows adding more than one card at a time.
+     * Adds multiple cards to the player's board (collected cards). This allows adding more than one
+     * card at a time.
      *
      * @param cards The list of cards to add to the board.
      */
@@ -44,8 +44,8 @@ public interface Player {
     List<Card> getBoard();
 
     /**
-     * Retrieves the player's name.
-     * This helps differentiate between different types of players (human or AI).
+     * Retrieves the player's name. This helps differentiate between different types of players
+     * (human or AI).
      *
      * @return The player's name as a string.
      */
