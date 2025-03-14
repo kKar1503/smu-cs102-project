@@ -55,6 +55,22 @@ public abstract class GameEngine {
     }
 
     /**
+     * Gets the current player by delegating to the Lobby.
+     *
+     * @return The current player.
+     */
+    protected Player getCurrentPlayer() {
+        return lobby.getCurrentPlayer();
+    }
+
+    /**
+     * Advances to the next player by delegating to the Lobby.
+     */
+    protected void nextPlayer() {
+        lobby.nextPlayer();
+    }
+
+    /**
      * Get the number of players in the game
      *
      * @return The number of players in the game
