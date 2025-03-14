@@ -60,4 +60,18 @@ public class Player implements Serializable {
         }
         return board.addAll(List.of(cards));
     }
+
+    @Override
+    public String toString() {
+        return "Player{"
+                + "id='"
+                + id
+                + "', name='"
+                + name
+                + "', hand="
+                + Arrays.toString(hand.toArray(Card[]::new))
+                + ", board="
+                + Arrays.toString(board.toArray(Card[]::new))
+                + '}';
+    }
 }
