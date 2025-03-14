@@ -28,11 +28,9 @@ public class Player implements Serializable {
         return Collections.unmodifiableList(hand);
     }
 
-    public boolean addToHand(Card card) {
-        if (card == null) {
-            throw new IllegalArgumentException("Card cannot be null");
-        }
-        return hand.add(card);
+    public boolean addToHand(Card... cards) {
+        verifyCards(cards);
+        return hand.addAll(List.of(cards));
     }
 
     public boolean removeFromHand(Card card) {
@@ -47,6 +45,11 @@ public class Player implements Serializable {
     }
 
     public boolean addToBoard(Card... cards) {
+        verifyCards(cards);
+        return board.addAll(List.of(cards));
+    }
+
+    private void verifyCards(Card[] cards) {
         if (cards == null) {
             throw new IllegalArgumentException("Cards cannot be null");
         }
@@ -58,7 +61,6 @@ public class Player implements Serializable {
                 throw new IllegalArgumentException("Cards cannot contain null values");
             }
         }
-        return board.addAll(List.of(cards));
     }
 
     @Override
