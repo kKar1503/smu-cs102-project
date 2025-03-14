@@ -3,12 +3,15 @@ package parade.common;
 import parade.common.exceptions.EmptyDeckException;
 import parade.common.exceptions.InsufficientCardException;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class Deck {
+public class Deck implements Serializable {
+    @Serial private static final long serialVersionUID = -4386350060875707474L;
 
     private final Stack<Card> cards;
 
