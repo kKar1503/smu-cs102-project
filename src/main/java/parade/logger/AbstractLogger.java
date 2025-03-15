@@ -77,7 +77,7 @@ public abstract class AbstractLogger {
         writer.close();
     }
 
-    public static class LogInfo {
+    protected static class LogInfo {
         private String message;
         private String caller;
         private String error;
