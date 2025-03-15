@@ -49,7 +49,7 @@ public class LocalGameEngine extends GameEngine {
     @Override
     public void removePlayer(int index) {
         super.removePlayer(index);
-        logger.logf("Player %s removed from the game", player.getName());
+        logger.logf("Player %s removed from the game", players.get(index).getName());
     }
 
     private void chooseComputerDifficulty(String name) {
