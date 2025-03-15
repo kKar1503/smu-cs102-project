@@ -1,6 +1,7 @@
 package parade.engine;
 
 import parade.player.IPlayer;
+
 import java.util.List;
 
 public class Lobby {
@@ -18,6 +19,10 @@ public class Lobby {
      */
     public IPlayer getCurrentPlayer() {
         return players.get(currentPlayerIdx);
+    }
+
+    public List<IPlayer> getPlayers() {
+        return this.players;
     }
 
     /** Increments the index of the current player to the next player in the list. */

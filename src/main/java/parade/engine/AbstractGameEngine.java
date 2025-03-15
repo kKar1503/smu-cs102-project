@@ -32,7 +32,7 @@ public abstract class AbstractGameEngine {
      */
     public void addPlayer(IPlayer player) {
         players.add(player);
-        lobby = new Lobby(players);
+        lobby.getPlayers().add(player);
     }
 
     /**
@@ -64,9 +64,7 @@ public abstract class AbstractGameEngine {
         return lobby.getCurrentPlayer();
     }
 
-    /**
-     * Advances to the next player by delegating to the Lobby.
-     */
+    /** Advances to the next player by delegating to the Lobby. */
     protected void nextPlayer() {
         lobby.nextPlayer();
     }
@@ -300,7 +298,7 @@ public abstract class AbstractGameEngine {
      *     have a card list.
      */
     public int calculateScore(
-        IPlayer targetPlayer,
+            IPlayer targetPlayer,
             Map<IPlayer, List<Card>> playerCards,
             Map<IPlayer, List<Colour>> majorityColours) {
         int score = 0;
