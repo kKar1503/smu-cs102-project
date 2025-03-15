@@ -46,6 +46,12 @@ public class LocalGameEngine extends GameEngine {
         logger.logf("Player %s removed from the game", player.getName());
     }
 
+    @Override
+    public void removePlayer(int index) {
+        super.removePlayer(index);
+        logger.logf("Player %s removed from the game", player.getName());
+    }
+
     private void chooseComputerDifficulty(String name) {
         while (true) {
             try {
@@ -85,12 +91,12 @@ public class LocalGameEngine extends GameEngine {
         }
     }
 
-    private void removePlayerDisplay(List<Player> players) {
+    private void removePlayerDisplay() {
         while (true) {
         int count = 1;
         clientRenderer.renderln("Select a player to remove.");
-        for (Player p : players) {
-            clientRenderer.renderln(count + ". " + p.getName());
+        for (Player player : players) {
+            clientRenderer.renderln(count + ". " + player.getName());
             count++;
         }
         clientRenderer.renderln(count + ". Return back to main menu");
@@ -103,7 +109,7 @@ public class LocalGameEngine extends GameEngine {
             if (input == count) {
                 return;
             }
-            removePlayer(players.get(input - 1));
+            removePlayer(input - 1);
             return;
         } catch (NoSuchElementException e) {
             logger.log("User entered invalid input", e);
@@ -146,7 +152,7 @@ public class LocalGameEngine extends GameEngine {
                         continue;
                     }
                     logger.log("Removing a player from lobby");
-                    removePlayerDisplay(getPlayers());
+                    removePlayerDisplay();
                 } else if (input == 4) {
                     if (!lobbyHasEnoughPlayers()) {
                         clientRenderer.renderln("Lobby does not have enough players.");

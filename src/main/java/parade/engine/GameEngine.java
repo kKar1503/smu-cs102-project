@@ -14,11 +14,11 @@ public abstract class GameEngine {
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
+    private final List<Player> players = new ArrayList<>(); // List of players in the game
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
 
     private int currentPlayerIdx = 0; // The index of the current player
-    private List<Player> players = new ArrayList<>(); // List of players in the game
 
     protected GameEngine() {
         List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
@@ -44,12 +44,21 @@ public abstract class GameEngine {
     }
 
     /**
+     * Removes a player from the game.
+     *
+     * @param index The index of the player to be removed.
+     */
+    public void removePlayer(int index) {
+        players.remove(index);
+    }
+
+    /**
      * Gets the list of players in the game.
      *
-     * @return A copy of the list of players.
+     * @return An unmodifiable copy of the list of players.
      */
     protected List<Player> getPlayers() {
-        return players;
+        return Collections.unmodifiable(players);
     }
 
     /**
