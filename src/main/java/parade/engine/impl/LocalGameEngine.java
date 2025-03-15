@@ -1,15 +1,15 @@
 package parade.engine.impl;
 
 import parade.common.*;
-import parade.engine.GameEngine;
-import parade.logger.Logger;
+import parade.engine.AbstractGameEngine;
+import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
-import parade.player.Player;
+import parade.player.IPlayer;
 import parade.player.computer.EasyComputer;
 import parade.player.computer.HardComputer;
 import parade.player.computer.NormalComputer;
 import parade.player.human.LocalHuman;
-import parade.renderer.ClientRenderer;
+import parade.renderer.IClientRenderer;
 import parade.renderer.ClientRendererProvider;
 import parade.renderer.impl.AdvancedClientRenderer;
 import parade.renderer.impl.BasicLocalClientRenderer;
@@ -22,9 +22,9 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class LocalGameEngine extends GameEngine {
-    private final Logger logger;
-    private final ClientRenderer clientRenderer;
+public class LocalGameEngine extends AbstractGameEngine {
+    private final AbstractLogger logger;
+    private final IClientRenderer clientRenderer;
     private final Scanner scanner;
 
     /** Initializes the game server with a deck. */
@@ -35,7 +35,7 @@ public class LocalGameEngine extends GameEngine {
     }
 
     @Override
-    public void addPlayer(Player player) {
+    public void addPlayer(IPlayer player) {
         super.addPlayer(player);
         logger.logf("Player %s added to the game", player.getName());
     }
@@ -155,7 +155,7 @@ public class LocalGameEngine extends GameEngine {
         // Dish out the cards one by one, like real life you know? Like not getting the direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            Player player = getPlayer(i);
+            IPlayer player = getPlayer(i);
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.draw(drawnCard);
@@ -167,7 +167,7 @@ public class LocalGameEngine extends GameEngine {
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            Player player = getCurrentPlayer();
+            IPlayer player = getCurrentPlayer();
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
@@ -188,14 +188,14 @@ public class LocalGameEngine extends GameEngine {
         }
 
         logger.log("Tabulating scores");
-        Map<Player, Integer> playerScores = tabulateScores();
+        Map<IPlayer, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
-    private void playerPlayCard(Player player) {
+    private void playerPlayCard(IPlayer player) {
         // Playing card
         logger.logf("%s playing a card", player.getName());
         Card playedCard = player.playCard(getParadeCards());
@@ -216,11 +216,11 @@ public class LocalGameEngine extends GameEngine {
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<Player, Integer> playerScores) {
-        Player winner = null;
+    private void declareWinner(Map<IPlayer, Integer> playerScores) {
+        IPlayer winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();
@@ -240,12 +240,12 @@ public class LocalGameEngine extends GameEngine {
      *
      * @return the client renderer
      */
-    private ClientRenderer setupClientRenderer() {
+    private IClientRenderer setupClientRenderer() {
         Settings settings = Settings.getInstance();
 
         String clientRendererType = settings.get(SettingKey.CLIENT_RENDERER);
 
-        ClientRenderer clientRenderer =
+        IClientRenderer clientRenderer =
                 switch (clientRendererType) {
                     case "basic_local" -> new BasicLocalClientRenderer();
                     case "advanced_local" -> new AdvancedClientRenderer();
