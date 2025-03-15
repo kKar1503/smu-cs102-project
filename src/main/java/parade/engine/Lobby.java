@@ -1,13 +1,14 @@
 package parade.engine;
 
-import parade.player.Player;
+import parade.controller.IPlayer;
+
 import java.util.List;
 
 public class Lobby {
-    private final List<Player> players;
+    private final List<IPlayer> players;
     private int currentPlayerIdx = 0;
 
-    public Lobby(List<Player> players) {
+    public Lobby(List<IPlayer> players) {
         this.players = players;
     }
 
@@ -16,7 +17,7 @@ public class Lobby {
      *
      * @return The current player.
      */
-    public Player getCurrentPlayer() {
+    public IPlayer getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 

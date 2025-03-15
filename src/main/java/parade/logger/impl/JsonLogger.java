@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import parade.logger.AbstractLogger;
-import parade.logger.AbstractLogger.LogInfo;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package parade.player.computer;
+package parade.controller.computer;
 
 import parade.common.Card;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
  * its losses by avoiding taking too many cards.
  */
-public class NormalComputer extends Computer {
+public class NormalComputer extends AbstractComputer {
 
     /**
      * Constructs a NormalComputer instance with an initial hand of cards.

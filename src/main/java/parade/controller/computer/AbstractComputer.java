@@ -1,27 +1,27 @@
-package parade.player.computer;
+package parade.controller.computer;
+
+import parade.common.Card;
+import parade.controller.IPlayer;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import parade.common.Card;
-import parade.player.IPlayer;
-
 /**
- * The Computer class is an abstract representation of an AI player in the game.
- * It contains common functionality shared among different AI difficulty levels.
+ * The Computer class is an abstract representation of an AI player in the game. It contains common
+ * functionality shared among different AI difficulty levels.
  */
-public abstract class Computer implements IPlayer {
+public abstract class AbstractComputer implements IPlayer {
     protected LinkedList<Card> hand; // Represents the player's current hand.
     protected LinkedList<Card> board; // Represents the cards collected from the parade.
-    protected String name;            // Stores the name of the AI player.
+    protected String name; // Stores the name of the AI player.
 
     /**
      * Constructs a Computer player with a given name and initial hand.
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
-     * @param name  The name of the AI player.
+     * @param name The name of the AI player.
      */
-    public Computer(List<Card> cards, String name) {
+    public AbstractComputer(List<Card> cards, String name) {
         this.hand = new LinkedList<>(cards);
         this.board = new LinkedList<>();
         this.name = name;
@@ -79,7 +79,7 @@ public abstract class Computer implements IPlayer {
 
     /**
      * Set the name of computer player
-     * 
+     *
      * @param input The desired name of the computer player
      */
     public void setName(String input) {

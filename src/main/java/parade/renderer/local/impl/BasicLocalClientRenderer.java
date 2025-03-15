@@ -1,19 +1,17 @@
-package parade.renderer.impl;
+package parade.renderer.local.impl;
 
 import parade.common.Card;
+import parade.controller.IPlayer;
 import parade.engine.AbstractGameEngine;
-import parade.player.IPlayer;
-import parade.renderer.IClientRenderer;
+import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
 
-import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
-public class AdvancedClientRenderer implements IClientRenderer {
-    public AdvancedClientRenderer() {}
+public class BasicLocalClientRenderer implements IClientRenderer {
+    public BasicLocalClientRenderer() {}
 
     @Override
     public void render(String message) {
@@ -32,25 +30,11 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     @Override
     public void renderWelcome() throws IllegalStateException {
-        // the stream holding the file content
-        InputStream inFromFile =
-                getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
-        if (inFromFile == null) {
-            throw new IllegalStateException("parade_ascii_art.txt not found");
-        }
-        Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
-        String paradeWelcome = s.hasNext() ? s.next() : "";
-
-        if (paradeWelcome != null) {
-            System.out.println(
-                    ConsoleColors.PURPLE_BOLD
-                            + "============================= Welcome to Parade!"
-                            + " =============================="
-                            + ConsoleColors.RESET);
-            System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
-            System.out.println(
-                    "===================================================================================");
-        }
+        System.out.println(
+                ConsoleColors.PURPLE_BOLD
+                        + "============================= Welcome to Parade!"
+                        + " =============================="
+                        + ConsoleColors.RESET);
     }
 
     @Override
@@ -69,15 +53,29 @@ public class AdvancedClientRenderer implements IClientRenderer {
         System.out.println();
         System.out.println(
                 "1. Add Player"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
         System.out.println(
-                "2. Start Game"
-                        + (players.size() < AbstractGameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
+                "2. Add Computer"
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
+        System.out.println(
+                "3. Start Game"
+                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
+                                ? " (Not enough players)"
+                                : ""));
         System.out.print("Please select an option: ");
     }
 
     @Override
-    public void renderComputerDifficulty() {};
+    public void renderComputerDifficulty() {
+        System.out.println("Choose computer player's difficulty");
+        System.out.println("1. Easy");
+        System.out.println("2. Normal");
+        System.out.println("3. Hard");
+    }
 
     @Override
     public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
@@ -101,13 +99,17 @@ public class AdvancedClientRenderer implements IClientRenderer {
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
-                "\n\nYour board\n===========================================================================");
+                "\n\n"
+                    + "Your board\n"
+                    + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
-                "\n\nYour hand\n==========================================================================");
+                "\n\n"
+                    + "Your hand\n"
+                    + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }

@@ -1,8 +1,8 @@
-package parade.player;
-
-import java.util.List;
+package parade.controller;
 
 import parade.common.Card;
+
+import java.util.List;
 
 public interface IPlayer {
     /**
@@ -14,8 +14,8 @@ public interface IPlayer {
     Card playCard(List<Card> parade);
 
     /**
-     * Adds multiple cards to the player's board (collected cards).
-     * This allows adding more than one card at a time.
+     * Adds multiple cards to the player's board (collected cards). This allows adding more than one
+     * card at a time.
      *
      * @param cards The list of cards to add to the board.
      */
@@ -44,8 +44,8 @@ public interface IPlayer {
     List<Card> getBoard();
 
     /**
-     * Retrieves the player's name.
-     * This helps differentiate between different types of players (human or AI).
+     * Retrieves the player's name. This helps differentiate between different types of players
+     * (human or AI).
      *
      * @return The player's name as a string.
      */

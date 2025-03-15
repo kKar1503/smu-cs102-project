@@ -1,7 +1,7 @@
-package parade.renderer;
+package parade.renderer.local;
 
 import parade.common.Card;
-import parade.player.IPlayer;
+import parade.controller.IPlayer;
 
 import java.util.List;
 import java.util.Map;
