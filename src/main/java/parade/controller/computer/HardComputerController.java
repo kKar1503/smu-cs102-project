@@ -1,8 +1,9 @@
 package parade.controller.computer;
 
 import parade.common.Card;
+import parade.common.state.server.PlayerTurnData;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -10,14 +11,14 @@ import java.util.List;
  * own losses while maximising the difficulty for the opponent. It uses predictive analysis to
  * determine the best card to play.
  */
-public class HardComputer extends AbstractComputer {
+public class HardComputerController extends AbstractComputerController {
 
     /**
      * Constructs a HardComputer instance with an initial hand of cards.
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
      */
-    public HardComputer(List<Card> cards, String name) {
+    public HardComputerController(List<Card> cards, String name) {
         super(cards, name + "[Hard Comp]");
     }
 
@@ -29,21 +30,26 @@ public class HardComputer extends AbstractComputer {
      * <p>The AI simulates the loss it would incur for each possible move and also predicts how much
      * it can force the opponent to lose.
      *
-     * @param parade The current lineup of cards in the parade.
+     * @param playerTurnData data object that contains sufficient information for the player to make
+     *     a decision for their turn.
      * @return The best card determined based on predictive analysis.
      */
     @Override
-    public Card playCard(List<Card> parade) {
+    public Card playCard(PlayerTurnData playerTurnData) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE; // Tracks the smallest number of cards taken by this AI
         int maxOpponentLoss =
                 Integer.MIN_VALUE; // Tracks the largest number of cards an opponent would take
 
         // Iterate through each card in hand to determine the best move
-        for (Card card : hand) {
-            int selfLoss = simulateLoss(card, parade); // How many cards this AI would take
+        for (Card card : player.getHand()) {
+            int selfLoss =
+                    simulateLoss(
+                            card, playerTurnData.getParade()); // How many cards this AI would take
             int opponentLoss =
-                    simulateOpponentLoss(card, parade); // How many cards the opponent might take
+                    simulateOpponentLoss(
+                            card,
+                            playerTurnData.getParade()); // How many cards the opponent might take
 
             /**
              * Decision-making process: - Select the card that minimises self-loss. - If multiple
@@ -68,14 +74,14 @@ public class HardComputer extends AbstractComputer {
      * @param parade The current parade lineup.
      * @return The number of cards this AI would take from the parade.
      */
-    private int simulateLoss(Card card, List<Card> parade) {
+    private int simulateLoss(Card card, Card[] parade) {
         int loss = 0;
         int position =
-                parade.size() - card.getNumber(); // The point in the parade where checking begins
+                parade.length - card.getNumber(); // The point in the parade where checking begins
 
         // Iterate through the parade from the calculated position
-        for (int i = Math.max(0, position); i < parade.size(); i++) {
-            Card paradeCard = parade.get(i);
+        for (int i = Math.max(0, position); i < parade.length; i++) {
+            Card paradeCard = parade[i];
 
             // AI will take this card if:
             // - Its number is less than or equal to the played card's number.
@@ -98,16 +104,16 @@ public class HardComputer extends AbstractComputer {
      * @param parade The current parade lineup.
      * @return The maximum number of cards an opponent might take based on this move.
      */
-    private int simulateOpponentLoss(Card card, List<Card> parade) {
+    private int simulateOpponentLoss(Card card, Card[] parade) {
         // Create a simulated parade where this card has been played
-        List<Card> simulatedParade = new LinkedList<>(parade);
-        simulatedParade.add(card); // Add the card to the simulated parade
+        Card[] simulatedParade = Arrays.copyOf(parade, parade.length + 1);
+        simulatedParade[simulatedParade.length - 1] = card; // Add the card to the simulated parade
 
         int maxOpponentGain =
                 Integer.MIN_VALUE; // Keeps track of the worst-case scenario for the opponent
 
         // Simulate the opponent playing each of their cards
-        for (Card opponentCard : hand) {
+        for (Card opponentCard : player.getHand()) {
             int opponentGain =
                     simulateLoss(opponentCard, simulatedParade); // Compute the opponent's loss
 

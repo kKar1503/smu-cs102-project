@@ -2,18 +2,18 @@ package parade.controller.local;
 
 import parade.common.Card;
 import parade.common.Player;
-import parade.controller.IPlayer;
+import parade.common.state.server.PlayerTurnData;
+import parade.controller.IPlayerController;
 import parade.renderer.local.ClientRendererProvider;
 
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Scanner;
 
 /**
  * The Human class represents a human player in the game. It implements the Player interface and
  * provides functionality for a human player such as drawing and playing cards.
  */
-public class LocalHumanController implements IPlayer {
+public class LocalHumanController implements IPlayerController {
     private final Player player;
     private Card latestDrawnCard;
 
@@ -32,10 +32,11 @@ public class LocalHumanController implements IPlayer {
      * @param parade The current lineup of cards in the parade.
      * @return The card chosen by the player.
      */
-    public Card playCard(List<Card> parade) {
+    public Card playCard(PlayerTurnData playerTurnData) {
         Scanner sc = new Scanner(System.in);
         int input;
-        ClientRendererProvider.getInstance().renderPlayerTurn(player, latestDrawnCard, parade);
+        ClientRendererProvider.getInstance()
+                .renderPlayerTurn(player, latestDrawnCard, playerTurnData);
 
         while (true) {
             try {
