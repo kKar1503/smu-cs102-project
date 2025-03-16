@@ -207,7 +207,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         }
 
         logger.log("Tabulating scores");
-        Map<Player, Integer> playerScores = tabulateScores();
+        Map<IPlayerController, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
@@ -237,11 +237,11 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<Player, Integer> playerScores) {
-        Player winner = null;
+    private void declareWinner(Map<IPlayerController, Integer> playerScores) {
+        IPlayerController winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IPlayerController, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();
@@ -250,7 +250,11 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         if (winner != null) {
             clientRenderer.render(
-                    "Winner: " + winner.getName() + " with " + lowestScore + " points!");
+                    "Winner: "
+                            + winner.getPlayer().getName()
+                            + " with "
+                            + lowestScore
+                            + " points!");
         } else {
             clientRenderer.render("The game ended in a tie!");
         }

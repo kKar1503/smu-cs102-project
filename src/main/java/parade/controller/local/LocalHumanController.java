@@ -29,7 +29,7 @@ public class LocalHumanController implements IPlayerController {
     /**
      * Allows player to choose a card to play from their hand
      *
-     * @param parade The current lineup of cards in the parade.
+     * @param playerTurnData The current lineup of cards in the parade.
      * @return The card chosen by the player.
      */
     public Card playCard(PlayerTurnData playerTurnData) {
