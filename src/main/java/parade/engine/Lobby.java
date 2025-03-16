@@ -1,28 +1,28 @@
 package parade.engine;
 
-import parade.controller.IPlayer;
+import parade.controller.IPlayerController;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Lobby {
-    private final List<IPlayer> players;
+    private final List<IPlayerController> players = new ArrayList<>();
     private int currentPlayerIdx = 0;
 
-    public Lobby(List<IPlayer> players) {
-        this.players = players;
-    }
+    public Lobby() {}
 
     /**
      * Gets the current player.
      *
      * @return The current player.
      */
-    public IPlayer getCurrentPlayer() {
+    public IPlayerController getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 
-    public List<IPlayer> getPlayers() {
-        return this.players;
+    public List<IPlayerController> getPlayers() {
+        return Collections.unmodifiableList(players);
     }
 
     /** Increments the index of the current player to the next player in the list. */

@@ -1,10 +1,11 @@
 package parade.engine.impl;
 
 import parade.common.*;
-import parade.controller.IPlayer;
-import parade.controller.computer.EasyComputer;
-import parade.controller.computer.HardComputer;
-import parade.controller.computer.NormalComputer;
+import parade.common.state.server.PlayerTurnData;
+import parade.controller.IPlayerController;
+import parade.controller.computer.EasyComputerController;
+import parade.controller.computer.HardComputerController;
+import parade.controller.computer.NormalComputerController;
 import parade.controller.local.LocalHumanController;
 import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
@@ -35,9 +36,9 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     @Override
-    public void addPlayer(IPlayer player) {
+    public void addPlayer(IPlayerController player) {
         super.addPlayer(player);
-        logger.logf("Player %s added to the game", player.getName());
+        logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
     private void waitForPlayersLobby() {
@@ -68,7 +69,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 } catch (NoSuchElementException e) {
                     clientRenderer.render("Input not found, please try again");
                 }
-                addPlayer(new LocalHumanController(name));
+                addPlayer(new LocalHumanController(new Player(name)));
             } else if (input == 2) {
                 logger.log("Adding a new computer");
                 if (isLobbyFull()) {
@@ -88,12 +89,13 @@ public class LocalGameEngine extends AbstractGameEngine {
                     clientRenderer.render("Input not found, please try again");
                 }
                 scanner.nextLine();
+                List<Card> paradeCards = getParadeCards();
                 if (compInput == 1) {
-                    addPlayer(new EasyComputer(getParadeCards(), name));
+                    addPlayer(new EasyComputerController(paradeCards, name));
                 } else if (compInput == 2) {
-                    addPlayer(new NormalComputer(getParadeCards(), name));
+                    addPlayer(new NormalComputerController(paradeCards, name));
                 } else if (compInput == 3) {
-                    addPlayer(new HardComputer(getParadeCards(), name));
+                    addPlayer(new HardComputerController(paradeCards, name));
                 }
 
             } else if (input == 3) {
@@ -157,11 +159,11 @@ public class LocalGameEngine extends AbstractGameEngine {
         // Dish out the cards one by one, like real life you know? Like not getting the direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayer player = getPlayer(i);
+            IPlayerController player = getPlayer(i);
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
-                player.draw(drawnCard);
-                logger.logf("%s drew: %s", player.getName(), drawnCard);
+                player.getPlayer().addToHand(drawnCard);
+                logger.logf("%s drew: %s", player.getPlayer().getName(), drawnCard);
             }
         }
 
@@ -169,14 +171,21 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            IPlayer player = getCurrentPlayer();
+            IPlayerController player = getCurrentPlayer();
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
-            player.draw(drawnCard);
-            logger.logf("%s drew: %s", player.getName(), drawnCard);
+            player.getPlayer().addToHand(drawnCard);
+            logger.logf("%s drew: %s", player.getPlayer().getName(), drawnCard);
 
-            playerPlayCard(player); // Play a card from their hand
+            playerPlayCard(
+                    player,
+                    new PlayerTurnData(
+                            getPlayers().toArray(Player[]::new),
+                            player.getPlayer(),
+                            getParadeCards().toArray(Card[]::new),
+                            super.getDeckSize(),
+                            player.getPlayer().getHand().size())); // Play a card from their hand
             nextPlayer();
         }
         logger.logf("Game loop finished");
@@ -185,44 +194,54 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
         for (int i = 0; i < getPlayersCount(); i++) {
-            playerPlayCard(getCurrentPlayer());
+            IPlayerController player = getCurrentPlayer();
+            playerPlayCard(
+                    player,
+                    new PlayerTurnData(
+                            getPlayers().toArray(Player[]::new),
+                            player.getPlayer(),
+                            getParadeCards().toArray(Card[]::new),
+                            super.getDeckSize(),
+                            player.getPlayer().getHand().size())); // Play a card from their hand
             nextPlayer();
         }
 
         logger.log("Tabulating scores");
-        Map<IPlayer, Integer> playerScores = tabulateScores();
+        Map<Player, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
-    private void playerPlayCard(IPlayer player) {
+    private void playerPlayCard(IPlayerController player, PlayerTurnData playerTurnData) {
         // Playing card
-        logger.logf("%s playing a card", player.getName());
-        Card playedCard = player.playCard(getParadeCards());
-        logger.logf("%s played and placed card into parade: %s", player.getName(), playedCard);
-        clientRenderer.renderln(player.getName() + " played: " + playedCard);
+        logger.logf("%s playing a card", player.getPlayer().getName());
+        Card playedCard = player.playCard(playerTurnData);
+        logger.logf(
+                "%s played and placed card into parade: %s",
+                player.getPlayer().getName(), playedCard);
+        clientRenderer.renderln(player.getPlayer().getName() + " played: " + playedCard);
 
         // Place card in parade and receive cards from parade
         List<Card> cardsFromParade = placeCardInParade(playedCard); // Apply parade logic
-        player.addToBoard(cardsFromParade);
+        player.getPlayer().addToBoard(cardsFromParade.toArray(Card[]::new));
         logger.logf(
                 "%s received %d cards from parade to add to board: %s",
-                player.getName(),
+                player.getPlayer().getName(),
                 cardsFromParade.size(),
                 Arrays.toString(cardsFromParade.toArray()));
         clientRenderer.renderf(
                 "%s received %s from parade.%n",
-                player.getName(), Arrays.toString(cardsFromParade.toArray()));
+                player.getPlayer().getName(), Arrays.toString(cardsFromParade.toArray()));
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<IPlayer, Integer> playerScores) {
-        IPlayer winner = null;
+    private void declareWinner(Map<Player, Integer> playerScores) {
+        Player winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();
