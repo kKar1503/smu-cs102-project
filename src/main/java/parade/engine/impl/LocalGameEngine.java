@@ -41,15 +41,16 @@ public class LocalGameEngine extends GameEngine {
     }
 
     @Override
-    public void removePlayer(Player player) {
-        super.removePlayer(player);
+    public boolean removePlayer(Player player) {
         logger.logf("Player %s removed from the game", player.getName());
+        return super.removePlayer(player);
     }
 
     @Override
-    public void removePlayer(int index) {
-        super.removePlayer(index);
-        logger.logf("Player %s removed from the game", players.get(index).getName());
+    public Player removePlayer(int index) {
+        Player removedPlayer = super.removePlayer(index);
+        logger.logf("Player %s removed from the game", removedPlayer.getName());
+        return removedPlayer;
     }
 
     private void chooseComputerDifficulty(String name) {
@@ -84,7 +85,7 @@ public class LocalGameEngine extends GameEngine {
                 return;
             } catch (NoSuchElementException e) {
                 logger.log("User entered invalid input", e);
-                clientRenderer.renderln("Input not found, please try again");
+                clientRenderer.renderln("Invalid input, please try again");
             } finally {
                 scanner.nextLine();
             }
@@ -95,7 +96,7 @@ public class LocalGameEngine extends GameEngine {
         while (true) {
         int count = 1;
         clientRenderer.renderln("Select a player to remove.");
-        for (Player player : players) {
+        for (Player player : getPlayers()) {
             clientRenderer.renderln(count + ". " + player.getName());
             count++;
         }
@@ -103,7 +104,7 @@ public class LocalGameEngine extends GameEngine {
         int input;
         try {
             input = scanner.nextInt();
-            if (input < 1 || input > players.size() + 1) {
+            if (input < 1 || input > getPlayersCount() + 1) {
                 throw new NoSuchElementException();
             }
             if (input == count) {
@@ -160,10 +161,13 @@ public class LocalGameEngine extends GameEngine {
                     }
                     logger.log("User requested to start the game");
                     return;
+                } else {
+                    clientRenderer.renderln("Invalid input, please enter only 1 to 4.");
+                    logger.log("User entered invalid input");
                 }
             } catch (NoSuchElementException e) {
                 logger.log("User entered invalid input", e);
-                clientRenderer.renderln("Input not found, please try again");
+                clientRenderer.renderln("Invalid input, please try again");
                 scanner.nextLine();
             }
         }

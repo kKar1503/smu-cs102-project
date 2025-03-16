@@ -39,8 +39,8 @@ public abstract class GameEngine {
      *
      * @param player The player to be removed.
      */
-    public void removePlayer(Player player) {
-        players.remove(player);
+    public boolean removePlayer(Player player) {
+        return players.remove(player);
     }
 
     /**
@@ -48,8 +48,8 @@ public abstract class GameEngine {
      *
      * @param index The index of the player to be removed.
      */
-    public void removePlayer(int index) {
-        players.remove(index);
+    public Player removePlayer(int index) {
+        return players.remove(index);
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class GameEngine {
      * @return An unmodifiable copy of the list of players.
      */
     protected List<Player> getPlayers() {
-        return Collections.unmodifiable(players);
+        return Collections.unmodifiableList(players);
     }
 
     /**
