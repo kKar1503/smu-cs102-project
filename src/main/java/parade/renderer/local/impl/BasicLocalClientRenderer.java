@@ -1,7 +1,8 @@
 package parade.renderer.local.impl;
 
 import parade.common.Card;
-import parade.controller.IPlayer;
+import parade.common.Player;
+import parade.common.state.server.PlayerTurnData;
 import parade.engine.AbstractGameEngine;
 import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
@@ -45,7 +46,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayersLobby(List<IPlayer> players) {
+    public void renderPlayersLobby(List<Player> players) {
         System.out.println("Players in lobby: ");
         for (int i = 1; i <= players.size(); i++) {
             System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
@@ -78,7 +79,8 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
+    public void renderPlayerTurn(
+            Player player, Card newlyDrawnCard, PlayerTurnData playerTurnData) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
@@ -92,6 +94,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         // print cards in parade
         System.out.println(
                 "\nParade\n======================================================================");
+        List<Card> parade = List.of(playerTurnData.getParade());
         for (Card card : parade) {
             System.out.print((parade.indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
@@ -100,16 +103,16 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 "\n\n"
-                    + "Your board\n"
-                    + "===========================================================================");
+                        + "Your board\n"
+                        + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
                 "\n\n"
-                    + "Your hand\n"
-                    + "==========================================================================");
+                        + "Your hand\n"
+                        + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
@@ -117,15 +120,15 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
+    public void renderEndGame(Map<Player, Integer> playerScores) {
         System.out.println("Game Over!");
-        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
             System.out.println(entry.getKey().getName() + ": " + entry.getValue());
         }
     }
 
     @Override
-    public void renderSinglePlayerEndGame(IPlayer player, int score) {
+    public void renderSinglePlayerEndGame(Player player, int score) {
         System.out.println("Game Over, " + player.getName() + "!");
         System.out.println("Your score: " + score);
     }
