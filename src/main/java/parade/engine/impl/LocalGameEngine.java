@@ -5,7 +5,7 @@ import parade.controller.IPlayer;
 import parade.controller.computer.EasyComputer;
 import parade.controller.computer.HardComputer;
 import parade.controller.computer.NormalComputer;
-import parade.controller.local.LocalHuman;
+import parade.controller.local.LocalHumanController;
 import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
@@ -68,7 +68,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 } catch (NoSuchElementException e) {
                     clientRenderer.render("Input not found, please try again");
                 }
-                addPlayer(new LocalHuman(name));
+                addPlayer(new LocalHumanController(name));
             } else if (input == 2) {
                 logger.log("Adding a new computer");
                 if (isLobbyFull()) {

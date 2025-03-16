@@ -32,6 +32,7 @@ public abstract class AbstractGameEngine {
      */
     public void addPlayer(IPlayer player) {
         players.add(player);
+        lobby.getPlayers().add(player);
     }
 
     /**

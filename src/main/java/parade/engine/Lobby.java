@@ -21,6 +21,10 @@ public class Lobby {
         return players.get(currentPlayerIdx);
     }
 
+    public List<IPlayer> getPlayers() {
+        return this.players;
+    }
+
     /** Increments the index of the current player to the next player in the list. */
     public void nextPlayer() {
         currentPlayerIdx = (currentPlayerIdx + 1) % players.size();
