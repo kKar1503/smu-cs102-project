@@ -5,13 +5,13 @@ import parade.common.Player;
 
 import java.io.Serial;
 
-public class PlayerPlayedCardData extends AbstractServerData {
+public class ServerPlayerPlayedCardData extends AbstractServerData {
     @Serial private static final long serialVersionUID = -4076633650641288697L;
 
     private final Player player;
     private final Card card;
 
-    public PlayerPlayedCardData(Player player, Card card) {
+    public ServerPlayerPlayedCardData(Player player, Card card) {
         super(ServerAction.PLAYER_PLAYED_CARD);
         this.player = player;
         this.card = card;

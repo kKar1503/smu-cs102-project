@@ -4,13 +4,13 @@ import parade.common.Card;
 
 import java.io.Serial;
 
-public class PlayerDrawnCardData extends AbstractServerData {
+public class ServerPlayerDrawnCardData extends AbstractServerData {
     @Serial private static final long serialVersionUID = -4076633650641288697L;
 
     private final Card card;
     private final int remainingDeckSize;
 
-    public PlayerDrawnCardData(Card card, int remainingDeckSize) {
+    public ServerPlayerDrawnCardData(Card card, int remainingDeckSize) {
         super(ServerAction.PLAYER_DRAWN_CARD);
         this.card = card;
         this.remainingDeckSize = remainingDeckSize;

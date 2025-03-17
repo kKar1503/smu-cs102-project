@@ -6,7 +6,7 @@ import parade.common.Player;
 import java.io.Serial;
 import java.util.Arrays;
 
-public class PlayerTurnData extends AbstractServerData {
+public class ServerPlayerTurnData extends AbstractServerData {
     @Serial private static final long serialVersionUID = -4944069289012740768L;
 
     private final Player[] players;
@@ -15,7 +15,7 @@ public class PlayerTurnData extends AbstractServerData {
     private final int deckSize;
     private final int playerHandSize;
 
-    public PlayerTurnData(
+    public ServerPlayerTurnData(
             Player[] players,
             Player currentTurnPlayer,
             Card[] parade,

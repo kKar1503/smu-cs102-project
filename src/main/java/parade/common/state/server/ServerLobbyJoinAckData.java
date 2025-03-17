@@ -2,7 +2,7 @@ package parade.common.state.server;
 
 import java.io.Serial;
 
-public class LobbyJoinAckData extends AbstractServerData {
+public class ServerLobbyJoinAckData extends AbstractServerData {
     @Serial private static final long serialVersionUID = 5799528422932046002L;
 
     private final String lobbyId;
@@ -15,7 +15,7 @@ public class LobbyJoinAckData extends AbstractServerData {
      */
     private final String message;
 
-    public LobbyJoinAckData(String lobbyId, boolean successful, String message) {
+    public ServerLobbyJoinAckData(String lobbyId, boolean successful, String message) {
         super(ServerAction.LOBBY_JOIN_ACK);
         this.lobbyId = lobbyId;
         this.successful = successful;
