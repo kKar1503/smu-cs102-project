@@ -4,14 +4,14 @@ import parade.common.Player;
 
 import java.io.Serial;
 
-public class PlayerLobbyJoinData extends AbstractClientData {
-    @Serial private static final long serialVersionUID = -2464395654042284252L;
+public class ClientLobbyStartData extends AbstractClientData {
+    @Serial private static final long serialVersionUID = 8186840607843712754L;
 
     private final String lobbyName;
     private final String lobbyPassword;
 
-    public PlayerLobbyJoinData(Player caller, String lobbyName, String lobbyPassword) {
-        super(caller, ClientAction.LOBBY_JOIN);
+    public ClientLobbyStartData(Player caller, String lobbyName, String lobbyPassword) {
+        super(caller, ClientAction.LOBBY_START);
         this.lobbyName = lobbyName;
         this.lobbyPassword = lobbyPassword;
     }
