@@ -20,7 +20,7 @@ public abstract class AbstractGameEngine {
     private final Lobby lobby;
 
     protected AbstractGameEngine() {
-        List<Card> parade_cards = new ArrayList<>(deck.draw(PARADE_SIZE));
+        List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
         lobby = new Lobby(players);
     }
@@ -31,8 +31,25 @@ public abstract class AbstractGameEngine {
      * @param player The player to be added.
      */
     public void addPlayer(IPlayer player) {
-        players.add(player);
         lobby.getPlayers().add(player);
+    }
+
+    /**
+     * Removes a player from the game.
+     *
+     * @param player The player to be removed.
+     */
+    public boolean removePlayer(IPlayer player) {
+        return lobby.getPlayers().remove(player);
+    }
+
+    /**
+     * Removes a player from the game.
+     *
+     * @param index The index of the player to be removed.
+     */
+    public IPlayer removePlayer(int index) {
+        return lobby.getPlayers().remove(index);
     }
 
     /**
@@ -88,6 +105,15 @@ public abstract class AbstractGameEngine {
     }
 
     /**
+     * Checks if the lobby is empty.
+     *
+     * @return True if the lobby is empty, false otherwise.
+     */
+    protected boolean isLobbyEmpty() {
+        return players.isEmpty();
+    }
+
+    /**
      * Checks if the lobby has enough players to start the game.
      *
      * @return True if the lobby has enough players, false otherwise.
@@ -122,7 +148,7 @@ public abstract class AbstractGameEngine {
      * @return The drawn card.
      */
     protected List<Card> drawFromDeck(int n) {
-        return deck.draw(n);
+        return deck.pop(n);
     }
 
     /**
