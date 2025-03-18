@@ -92,7 +92,7 @@ public class LocalHumanController implements ILocalPlayerController {
     }
 
     /**
-     * Adds the drawn card to the player's hand.
+     * Adds the drawn card to the player's board.
      *
      * @param playerReceivedParadeCardsData The drawn parade cards data object sent from the server
      *     that contains the drawn card(s) from the parade upon placing down the card.
