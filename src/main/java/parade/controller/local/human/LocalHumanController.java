@@ -25,10 +25,10 @@ public class LocalHumanController implements ILocalPlayerController {
     /**
      * Constructs a human player with a given name and initial hand.
      *
-     * @param player The human player.
+     * @param name The name for the human player.
      */
-    public LocalHumanController(Player player) {
-        this.player = player;
+    public LocalHumanController(String name) {
+        this.player = new Player(name);
     }
 
     @Override
