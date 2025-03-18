@@ -4,13 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import parade.common.Card;
-import parade.player.Player;
+import parade.player.IPlayer;
 
 /**
  * The Computer class is an abstract representation of an AI player in the game.
  * It contains common functionality shared among different AI difficulty levels.
  */
-public abstract class Computer implements Player {
+public abstract class Computer implements IPlayer {
     protected LinkedList<Card> hand; // Represents the player's current hand.
     protected LinkedList<Card> board; // Represents the cards collected from the parade.
     protected String name;            // Stores the name of the AI player.

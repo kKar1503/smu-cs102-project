@@ -4,25 +4,25 @@ import parade.common.Card;
 import parade.common.Colour;
 import parade.common.Deck;
 import parade.common.Parade;
-import parade.player.Player;
+import parade.player.IPlayer;
 
 import java.util.*;
 
-public abstract class GameEngine {
+public abstract class AbstractGameEngine {
     public static final int MIN_PLAYERS = 2; // Minimum number of players required to start the game
     public static final int MAX_PLAYERS = 6; // Maximum number of players allowed
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
-    private final List<Player> players = new ArrayList<>(); // List of players in the game
+    private final List<IPlayer> players = new ArrayList<>(); // List of players in the game
     private final Deck deck = new Deck(); // The deck of cards used in the game
     private final Parade parade; // The list of cards currently in the parade
+    private final Lobby lobby;
 
-    private int currentPlayerIdx = 0; // The index of the current player
-
-    protected GameEngine() {
+    protected AbstractGameEngine() {
         List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
+        lobby = new Lobby(players);
     }
 
     /**
@@ -30,8 +30,8 @@ public abstract class GameEngine {
      *
      * @param player The player to be added.
      */
-    public void addPlayer(Player player) {
-        players.add(player);
+    public void addPlayer(IPlayer player) {
+        lobby.getPlayers().add(player);
     }
 
     /**
@@ -39,8 +39,8 @@ public abstract class GameEngine {
      *
      * @param player The player to be removed.
      */
-    public boolean removePlayer(Player player) {
-        return players.remove(player);
+    public boolean removePlayer(IPlayer player) {
+        return lobby.getPlayers().remove(player);
     }
 
     /**
@@ -48,8 +48,8 @@ public abstract class GameEngine {
      *
      * @param index The index of the player to be removed.
      */
-    public Player removePlayer(int index) {
-        return players.remove(index);
+    public IPlayer removePlayer(int index) {
+        return lobby.getPlayers().remove(index);
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class GameEngine {
      *
      * @return An unmodifiable copy of the list of players.
      */
-    protected List<Player> getPlayers() {
+    protected List<IPlayer> getPlayers() {
         return Collections.unmodifiableList(players);
     }
 
@@ -68,22 +68,22 @@ public abstract class GameEngine {
      * @return The player at the specified index.
      * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
-    protected Player getPlayer(int index) throws IndexOutOfBoundsException {
+    protected IPlayer getPlayer(int index) throws IndexOutOfBoundsException {
         return players.get(index);
     }
 
     /**
-     * Gets the current player.
+     * Gets the current player by delegating to the Lobby.
      *
      * @return The current player.
      */
-    protected Player getCurrentPlayer() {
-        return players.get(currentPlayerIdx);
+    protected IPlayer getCurrentPlayer() {
+        return lobby.getCurrentPlayer();
     }
 
-    /** Increments the index of the current player to the next player in the list. */
+    /** Advances to the next player by delegating to the Lobby. */
     protected void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % players.size();
+        lobby.nextPlayer();
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class GameEngine {
             // Game ends when the deck is empty
             return false;
         }
-        for (Player player : players) {
+        for (IPlayer player : players) {
             Set<Colour> uniqueColours = new HashSet<>();
             for (Card card : player.getBoard()) {
                 uniqueColours.add(card.getColour());
@@ -193,21 +193,21 @@ public abstract class GameEngine {
         return true;
     }
 
-    protected Map<Player, Integer> tabulateScores() {
-        Map<Player, List<Card>> playerHands = new HashMap<>();
-        for (Player player : players) {
+    protected Map<IPlayer, Integer> tabulateScores() {
+        Map<IPlayer, List<Card>> playerHands = new HashMap<>();
+        for (IPlayer player : players) {
             playerHands.put(player, player.getHand());
         }
 
         // Calculate majority colours for each player
-        Map<Player, List<Colour>> majorityColours = new HashMap<>();
-        for (Player player : players) {
+        Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
+        for (IPlayer player : players) {
             majorityColours.put(player, decideMajority(playerHands, player).get(player));
         }
 
-        Map<Player, Integer> playerScores = new HashMap<>();
+        Map<IPlayer, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
-        for (Player player : players) {
+        for (IPlayer player : players) {
             int score = calculateScore(player, playerHands, majorityColours);
             playerScores.put(player, score);
         }
@@ -258,8 +258,8 @@ public abstract class GameEngine {
      * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or
      *     if the target player is not present in the map.
      */
-    public Map<Player, List<Colour>> decideMajority(
-            Map<Player, List<Card>> playerCards, Player targetPlayer) {
+    public Map<IPlayer, List<Colour>> decideMajority(
+            Map<IPlayer, List<Card>> playerCards, IPlayer targetPlayer) {
 
         if (playerCards == null || targetPlayer == null) {
             throw new IllegalArgumentException("Player cards and target player cannot be null.");
@@ -269,7 +269,7 @@ public abstract class GameEngine {
             throw new IllegalArgumentException("Target player is not present in player cards.");
         }
 
-        Map<Player, List<Colour>> majorityColours = new HashMap<>();
+        Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
         List<Colour> targetMajorityColours = new ArrayList<>();
 
         // Step 1: Count occurrences of each colour for the target player
@@ -282,8 +282,8 @@ public abstract class GameEngine {
 
             boolean isMajority = true; // Assume majority until proven otherwise
 
-            for (Map.Entry<Player, List<Card>> entry : playerCards.entrySet()) {
-                Player otherPlayer = entry.getKey();
+            for (Map.Entry<IPlayer, List<Card>> entry : playerCards.entrySet()) {
+                IPlayer otherPlayer = entry.getKey();
                 if (!otherPlayer.equals(targetPlayer)) { // Don't compare against self
                     int otherCount = countColours(entry.getValue()).getOrDefault(colour, 0);
                     if ((playerCards.size() == 2 && otherCount > targetCount - 2)
@@ -324,9 +324,9 @@ public abstract class GameEngine {
      *     have a card list.
      */
     public int calculateScore(
-            Player targetPlayer,
-            Map<Player, List<Card>> playerCards,
-            Map<Player, List<Colour>> majorityColours) {
+            IPlayer targetPlayer,
+            Map<IPlayer, List<Card>> playerCards,
+            Map<IPlayer, List<Colour>> majorityColours) {
         int score = 0;
         if (targetPlayer == null || playerCards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");

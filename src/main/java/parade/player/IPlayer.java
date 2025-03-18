@@ -4,7 +4,7 @@ import java.util.List;
 
 import parade.common.Card;
 
-public interface Player {
+public interface IPlayer {
     /**
      * Chooses a card to play based on the current state of the parade.
      *
