@@ -25,12 +25,12 @@ public abstract class AbstractGameEngine {
     }
 
     /**
-     * Adds a player to the game.
+     * Adds a player controller to the game.
      *
-     * @param player The player to be added.
+     * @param playerController The player controller to be added.
      */
-    public void addPlayer(IPlayerController player) {
-        lobby.getPlayers().add(player);
+    public void addPlayerController(IPlayerController playerController) {
+        lobby.getPlayers().add(playerController);
     }
 
     /**

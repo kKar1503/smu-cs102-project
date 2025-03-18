@@ -4,6 +4,7 @@ import parade.common.*;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.client.ClientCardPlayData;
 import parade.common.state.server.ServerPlayerTurnData;
+import parade.controller.IPlayerController;
 import parade.controller.local.ILocalPlayerController;
 import parade.controller.local.computer.EasyLocalComputerController;
 import parade.controller.local.computer.HardLocalComputerController;
@@ -38,8 +39,8 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     @Override
-    public void addPlayer(ILocalPlayerController player) {
-        super.addPlayer(player);
+    public void addPlayerController(IPlayerController player) {
+        super.addPlayerController(player);
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
@@ -71,7 +72,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 } catch (NoSuchElementException e) {
                     clientRenderer.render("Input not found, please try again");
                 }
-                addPlayer(new LocalHumanController(name));
+                addPlayerController(new LocalHumanController(name));
             } else if (input == 2) {
                 logger.log("Adding a new computer");
                 if (isLobbyFull()) {
@@ -93,11 +94,11 @@ public class LocalGameEngine extends AbstractGameEngine {
                 scanner.nextLine();
                 List<Card> paradeCards = getParadeCards();
                 if (compInput == 1) {
-                    addPlayer(new EasyLocalComputerController(paradeCards, name));
+                    addPlayerController(new EasyLocalComputerController(paradeCards, name));
                 } else if (compInput == 2) {
-                    addPlayer(new NormalLocalComputerController(paradeCards, name));
+                    addPlayerController(new NormalLocalComputerController(paradeCards, name));
                 } else if (compInput == 3) {
-                    addPlayer(new HardLocalComputerController(paradeCards, name));
+                    addPlayerController(new HardLocalComputerController(paradeCards, name));
                 }
 
             } else if (input == 3) {
@@ -161,7 +162,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         // Dish out the cards one by one, like real life you know? Like not getting the direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            ILocalPlayerController player = getPlayer(i);
+            IPlayerController player = getPlayer(i);
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.getPlayer().addToHand(drawnCard);
@@ -173,7 +174,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            ILocalPlayerController player = getCurrentPlayer();
+            IPlayerController player = getCurrentPlayer();
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
@@ -196,7 +197,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
         for (int i = 0; i < getPlayersCount(); i++) {
-            ILocalPlayerController player = getCurrentPlayer();
+            IPlayerController player = getCurrentPlayer();
             playerPlayCard(
                     player,
                     new ServerPlayerTurnData(
@@ -209,25 +210,25 @@ public class LocalGameEngine extends AbstractGameEngine {
         }
 
         logger.log("Tabulating scores");
-        Map<ILocalPlayerController, Integer> playerScores = tabulateScores();
+        Map<IPlayerController, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
-    private void playerPlayCard(
-            ILocalPlayerController player, ServerPlayerTurnData playerTurnData) {
+    private void playerPlayCard(IPlayerController player, ServerPlayerTurnData playerTurnData) {
         // Playing card
         logger.logf("%s playing a card", player.getPlayer().getName());
         AbstractClientData clientData =
-                player.send(
-                        new ServerPlayerTurnData(
-                                getPlayers().toArray(Player[]::new),
-                                player.getPlayer(),
-                                getParadeCards().toArray(Card[]::new),
-                                getDeckSize(),
-                                player.getPlayer().getHand().size()));
+                ((ILocalPlayerController) player) // we can safely cast here
+                        .send(
+                                new ServerPlayerTurnData(
+                                        getPlayers().toArray(Player[]::new),
+                                        player.getPlayer(),
+                                        getParadeCards().toArray(Card[]::new),
+                                        getDeckSize(),
+                                        player.getPlayer().getHand().size()));
 
         Card playedCard;
         if (clientData instanceof ClientCardPlayData cardPlayData) {
@@ -261,11 +262,11 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<ILocalPlayerController, Integer> playerScores) {
-        ILocalPlayerController winner = null;
+    private void declareWinner(Map<IPlayerController, Integer> playerScores) {
+        IPlayerController winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<ILocalPlayerController, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IPlayerController, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();
