@@ -34,6 +34,24 @@ public abstract class AbstractGameEngine {
     }
 
     /**
+     * Removes a player controller from the game.
+     *
+     * @param player The player controller to be removed.
+     */
+    public boolean removePlayer(IPlayerController player) {
+        return lobby.getPlayers().remove(player);
+    }
+
+    /**
+     * Removes a player controller from the game.
+     *
+     * @param index The index of the player controller to be removed.
+     */
+    public IPlayerController removePlayer(int index) {
+        return lobby.getPlayers().remove(index);
+    }
+
+    /**
      * Gets the list of players in the game.
      *
      * @return An unmodifiable copy of the list of players.
@@ -86,6 +104,15 @@ public abstract class AbstractGameEngine {
      */
     protected boolean isLobbyFull() {
         return lobby.getPlayers().size() == MAX_PLAYERS;
+    }
+
+    /**
+     * Checks if the lobby is empty.
+     *
+     * @return True if the lobby is empty, false otherwise.
+     */
+    protected boolean isLobbyEmpty() {
+        return lobby.getPlayers().isEmpty();
     }
 
     /**

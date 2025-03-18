@@ -44,6 +44,87 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
+    @Override
+    public boolean removePlayer(IPlayerController player) {
+        logger.logf("Player %s removed from the game", player.getPlayer().getName());
+        return super.removePlayer(player);
+    }
+
+    @Override
+    public IPlayerController removePlayer(int index) {
+        IPlayerController removedPlayer = super.removePlayer(index);
+        logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
+        return removedPlayer;
+    }
+
+    private void chooseComputerDifficulty(String name) {
+        while (true) {
+            try {
+                clientRenderer.renderComputerDifficulty();
+                int compInput = scanner.nextInt();
+                if (compInput == 1) {
+                    addPlayerController(new EasyLocalComputerController(getParadeCards(), name));
+                } else if (compInput == 2) {
+                    addPlayerController(new NormalLocalComputerController(getParadeCards(), name));
+                } else if (compInput == 3) {
+                    addPlayerController(new HardLocalComputerController(getParadeCards(), name));
+                } else {
+                    throw new NoSuchElementException();
+                }
+                return;
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Input not found, please try again");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private void addComputerDisplay() {
+        while (true) {
+            clientRenderer.render("Enter computer's name:");
+            try {
+                String name = scanner.nextLine();
+                chooseComputerDifficulty(name);
+                return;
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Invalid input, please try again");
+            } finally {
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private void removePlayerDisplay() {
+        while (true) {
+            int count = 1;
+            clientRenderer.renderln("Select a player to remove.");
+            for (Player player : getPlayers()) {
+                clientRenderer.renderln(count + ". " + player.getName());
+                count++;
+            }
+            clientRenderer.renderln(count + ". Return back to main menu");
+            int input;
+            try {
+                input = scanner.nextInt();
+                if (input < 1 || input > getPlayersCount() + 1) {
+                    throw new NoSuchElementException();
+                }
+                if (input == count) {
+                    return;
+                }
+                removePlayer(input - 1);
+                return;
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Invalid input, please try again");
+            } finally {
+                scanner.nextLine();
+            }
+        }
+    }
+
     private void waitForPlayersLobby() {
         logger.logf("Waiting for players to join lobby");
         Scanner scanner = new Scanner(System.in);
@@ -52,62 +133,45 @@ public class LocalGameEngine extends AbstractGameEngine {
             int input = 0;
             try {
                 input = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                clientRenderer.render("Invalid input, please try again");
                 scanner.nextLine();
+                if (input == 1) {
+                    logger.log("Adding a new player");
+                    if (isLobbyFull()) {
+                        clientRenderer.renderln("Lobby is full.");
+                        continue;
+                    }
+                    clientRenderer.render("Enter player name: ");
+                    String name = scanner.nextLine();
+                    addPlayerController(new LocalHumanController(name));
+                } else if (input == 2) {
+                    logger.log("Adding a new computer");
+                    if (isLobbyFull()) {
+                        clientRenderer.renderln("Lobby is full.");
+                        continue;
+                    }
+                    addComputerDisplay();
+                } else if (input == 3) {
+                    if (isLobbyEmpty()) {
+                        clientRenderer.renderln("Lobby has no players.");
+                        continue;
+                    }
+                    logger.log("Removing a player from lobby");
+                    removePlayerDisplay();
+                } else if (input == 4) {
+                    if (!lobbyHasEnoughPlayers()) {
+                        clientRenderer.renderln("Lobby does not have enough players.");
+                        continue;
+                    }
+                    logger.log("User requested to start the game");
+                    return;
+                } else {
+                    clientRenderer.renderln("Invalid input, please enter only 1 to 4.");
+                    logger.log("User entered invalid input");
+                }
             } catch (NoSuchElementException e) {
-                clientRenderer.render("Input not found, please try again");
-            }
-            scanner.nextLine();
-            if (input == 1) {
-                logger.log("Adding a new player");
-                if (isLobbyFull()) {
-                    clientRenderer.renderln("Lobby is full.");
-                    continue;
-                }
-                clientRenderer.render("Enter player name: ");
-                String name = "";
-                try {
-                    name = scanner.nextLine();
-                } catch (NoSuchElementException e) {
-                    clientRenderer.render("Input not found, please try again");
-                }
-                addPlayerController(new LocalHumanController(name));
-            } else if (input == 2) {
-                logger.log("Adding a new computer");
-                if (isLobbyFull()) {
-                    clientRenderer.renderln("Lobby is full.");
-                    continue;
-                }
-                clientRenderer.render("Enter computer's name:");
-                String name = scanner.nextLine();
-                clientRenderer.renderComputerDifficulty();
-                int compInput = 0;
-                try {
-                    compInput = scanner.nextInt();
-                } catch (InputMismatchException e) {
-                    clientRenderer.render("Invalid input, please try again");
-                    scanner.nextLine();
-                } catch (NoSuchElementException e) {
-                    clientRenderer.render("Input not found, please try again");
-                }
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Invalid input, please try again");
                 scanner.nextLine();
-                List<Card> paradeCards = getParadeCards();
-                if (compInput == 1) {
-                    addPlayerController(new EasyLocalComputerController(paradeCards, name));
-                } else if (compInput == 2) {
-                    addPlayerController(new NormalLocalComputerController(paradeCards, name));
-                } else if (compInput == 3) {
-                    addPlayerController(new HardLocalComputerController(paradeCards, name));
-                }
-
-            } else if (input == 3) {
-                if (!lobbyHasEnoughPlayers()) {
-                    clientRenderer.renderln("Lobby does not have enough players.");
-                    continue;
-                }
-                logger.log("User requested to start the game");
-                return;
             }
         }
     }
@@ -125,7 +189,6 @@ public class LocalGameEngine extends AbstractGameEngine {
             clientRenderer.renderMenu();
             try {
                 int input = scanner.nextInt();
-                scanner.nextLine();
                 if (input != 1 && input != 2) {
                     clientRenderer.renderln("Invalid input, please only type only 1 or 2.");
                     continue;
@@ -142,6 +205,8 @@ public class LocalGameEngine extends AbstractGameEngine {
             } catch (NoSuchElementException e) {
                 logger.log("Invalid input received", e);
                 clientRenderer.renderln("Invalid input, please try again.");
+            } finally {
+                scanner.nextLine();
             }
         }
 
@@ -159,7 +224,8 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Dealing %d cards to %d players", numCardsToDraw, getPlayersCount());
         List<Card> drawnCards = drawFromDeck(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
-        // Dish out the cards one by one, like real life you know? Like not getting the direct next
+        // Dish out the cards one by one, like real life you know? Like not getting the
+        // direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
             IPlayerController player = getPlayer(i);
