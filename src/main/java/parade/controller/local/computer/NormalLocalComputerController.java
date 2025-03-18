@@ -1,7 +1,10 @@
-package parade.controller.computer;
+package parade.controller.local.computer;
 
 import parade.common.Card;
-import parade.common.state.server.PlayerTurnData;
+import parade.common.state.client.AbstractClientData;
+import parade.common.state.client.ClientCardPlayData;
+import parade.common.state.server.AbstractServerData;
+import parade.common.state.server.ServerPlayerTurnData;
 
 import java.util.List;
 
@@ -9,15 +12,24 @@ import java.util.List;
  * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
  * its losses by avoiding taking too many cards.
  */
-public class NormalComputerController extends AbstractComputerController {
+public class NormalLocalComputerController extends AbstractLocalComputerController {
 
     /**
      * Constructs a NormalComputer instance with an initial hand of cards.
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
      */
-    public NormalComputerController(List<Card> cards, String name) {
+    public NormalLocalComputerController(List<Card> cards, String name) {
         super(cards, name + "[Normal Comp]");
+    }
+
+    @Override
+    public AbstractClientData send(AbstractServerData serverData)
+            throws UnsupportedOperationException {
+        return switch (serverData) {
+            case ServerPlayerTurnData playerTurnData -> playCard(playerTurnData);
+            default -> super.send(serverData);
+        };
     }
 
     /**
@@ -27,15 +39,14 @@ public class NormalComputerController extends AbstractComputerController {
      *
      * @param playerTurnData data object that contains sufficient information for the player to make
      *     a decision for their turn.
-     * @return The best card determined by the heuristic.
+     * @return {@link ClientCardPlayData} object containing the card to be played.
      */
-    @Override
-    public Card playCard(PlayerTurnData playerTurnData) {
+    private ClientCardPlayData playCard(ServerPlayerTurnData playerTurnData) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE;
         int minColourImpact = Integer.MAX_VALUE;
 
-        for (Card card : player.getHand()) {
+        for (Card card : getPlayer().getHand()) {
             int loss = simulateLoss(card, playerTurnData.getParade());
             int colourImpact = countColourMatches(card, playerTurnData.getParade());
 
@@ -45,7 +56,7 @@ public class NormalComputerController extends AbstractComputerController {
                 bestCard = card;
             }
         }
-        return bestCard;
+        return new ClientCardPlayData(getPlayer(), bestCard);
     }
 
     /**

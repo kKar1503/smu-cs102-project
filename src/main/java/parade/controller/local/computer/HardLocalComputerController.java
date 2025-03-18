@@ -1,7 +1,10 @@
-package parade.controller.computer;
+package parade.controller.local.computer;
 
 import parade.common.Card;
-import parade.common.state.server.PlayerTurnData;
+import parade.common.state.client.AbstractClientData;
+import parade.common.state.client.ClientCardPlayData;
+import parade.common.state.server.AbstractServerData;
+import parade.common.state.server.ServerPlayerTurnData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,15 +14,24 @@ import java.util.List;
  * own losses while maximising the difficulty for the opponent. It uses predictive analysis to
  * determine the best card to play.
  */
-public class HardComputerController extends AbstractComputerController {
+public class HardLocalComputerController extends AbstractLocalComputerController {
 
     /**
      * Constructs a HardComputer instance with an initial hand of cards.
      *
      * @param cards The initial set of cards assigned to the AI player's hand.
      */
-    public HardComputerController(List<Card> cards, String name) {
+    public HardLocalComputerController(List<Card> cards, String name) {
         super(cards, name + "[Hard Comp]");
+    }
+
+    @Override
+    public AbstractClientData send(AbstractServerData serverData)
+            throws UnsupportedOperationException {
+        return switch (serverData) {
+            case ServerPlayerTurnData playerTurnData -> playCard(playerTurnData);
+            default -> super.send(serverData);
+        };
     }
 
     /**
@@ -32,17 +44,16 @@ public class HardComputerController extends AbstractComputerController {
      *
      * @param playerTurnData data object that contains sufficient information for the player to make
      *     a decision for their turn.
-     * @return The best card determined based on predictive analysis.
+     * @return {@link ClientCardPlayData} object containing the card to be played.
      */
-    @Override
-    public Card playCard(PlayerTurnData playerTurnData) {
+    public ClientCardPlayData playCard(ServerPlayerTurnData playerTurnData) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE; // Tracks the smallest number of cards taken by this AI
         int maxOpponentLoss =
                 Integer.MIN_VALUE; // Tracks the largest number of cards an opponent would take
 
         // Iterate through each card in hand to determine the best move
-        for (Card card : player.getHand()) {
+        for (Card card : getPlayer().getHand()) {
             int selfLoss =
                     simulateLoss(
                             card, playerTurnData.getParade()); // How many cards this AI would take
@@ -51,10 +62,8 @@ public class HardComputerController extends AbstractComputerController {
                             card,
                             playerTurnData.getParade()); // How many cards the opponent might take
 
-            /**
-             * Decision-making process: - Select the card that minimises self-loss. - If multiple
-             * cards result in the same loss, choose the one that maximises opponent's loss.
-             */
+            // Decision-making process: - Select the card that minimises self-loss. - If multiple
+            // cards result in the same loss, choose the one that maximises opponent's loss.
             if (selfLoss < minLoss || (selfLoss == minLoss && opponentLoss > maxOpponentLoss)) {
                 minLoss = selfLoss;
                 maxOpponentLoss = opponentLoss;
@@ -62,7 +71,7 @@ public class HardComputerController extends AbstractComputerController {
             }
         }
 
-        return bestCard;
+        return new ClientCardPlayData(getPlayer(), bestCard);
     }
 
     /**
@@ -113,7 +122,7 @@ public class HardComputerController extends AbstractComputerController {
                 Integer.MIN_VALUE; // Keeps track of the worst-case scenario for the opponent
 
         // Simulate the opponent playing each of their cards
-        for (Card opponentCard : player.getHand()) {
+        for (Card opponentCard : getPlayer().getHand()) {
             int opponentGain =
                     simulateLoss(opponentCard, simulatedParade); // Compute the opponent's loss
 
