@@ -2,7 +2,7 @@ package parade.renderer.local.impl;
 
 import parade.common.Card;
 import parade.common.Player;
-import parade.common.state.server.PlayerTurnData;
+import parade.common.state.server.ServerPlayerTurnData;
 import parade.engine.AbstractGameEngine;
 import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
@@ -87,7 +87,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     @Override
     public void renderPlayerTurn(
-            Player player, Card newlyDrawnCard, PlayerTurnData playerTurnData) {
+            Player player, Card newlyDrawnCard, ServerPlayerTurnData playerTurnData) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {

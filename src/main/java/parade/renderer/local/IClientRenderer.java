@@ -2,7 +2,7 @@ package parade.renderer.local;
 
 import parade.common.Card;
 import parade.common.Player;
-import parade.common.state.server.PlayerTurnData;
+import parade.common.state.server.ServerPlayerTurnData;
 
 import java.util.List;
 import java.util.Map;
@@ -74,7 +74,7 @@ public interface IClientRenderer {
      * @param playerTurnData the data object that contains sufficient information for the player to
      *     make a decision for their turn
      */
-    void renderPlayerTurn(Player player, Card newlyDrawnCard, PlayerTurnData playerTurnData);
+    void renderPlayerTurn(Player player, Card newlyDrawnCard, ServerPlayerTurnData playerTurnData);
 
     /**
      * Render the end game message for all players. This method is used for the naive implementation
