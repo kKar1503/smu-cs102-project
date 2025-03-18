@@ -1,22 +1,17 @@
 package parade.controller;
 
-import parade.common.Card;
 import parade.common.Player;
-import parade.common.state.server.PlayerTurnData;
 
 /**
  * The IPlayerController interface defines the contract that a player controller should hold for the
- * local game engine. The local game engine uses this interface to query for the player's actions.
+ * game engine.
  */
 public interface IPlayerController {
     /**
-     * Chooses a card to play based on the current state of the parade.
+     * The player controller should hold a reference to the underlying {@link Player} object, which
+     * represents the player in the game.
      *
-     * @param playerTurnData data object that contains sufficient information for the player to make
-     *     a decision for their turn.
-     * @return The card selected to be played.
+     * @return The {@link Player} associated with this controller.
      */
-    Card playCard(PlayerTurnData playerTurnData);
-
     Player getPlayer();
 }
