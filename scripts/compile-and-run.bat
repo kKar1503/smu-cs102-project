@@ -10,11 +10,18 @@ if "%1"=="" (
 :: Extract the Java file path
 set "JAVA_FILE=%1"
 
-:: Extract the package path and class name
-for %%F in (%JAVA_FILE%) do set "CLASS_NAME=%%~nF"
-set "PACKAGE_PATH=%JAVA_FILE:src\main\java\=%"
-set "PACKAGE_PATH=%PACKAGE_PATH:\=.%.%"
+:: Extract the relative path from src\main\java\
+set "REL_PATH=%JAVA_FILE:src\main\java\=%"
+
+:: Remove leading backslashes (if any)
+for /f "tokens=* delims=\" %%A in ("%REL_PATH%") do set "REL_PATH=%%A"
+
+:: Convert path to package notation
+set "PACKAGE_PATH=%REL_PATH:\=.%"
 set "PACKAGE_PATH=%PACKAGE_PATH:.java=%"
+
+:: Trim trailing periods (if any)
+for /f "tokens=* delims=." %%A in ("%PACKAGE_PATH%") do set "PACKAGE_PATH=%%A"
 
 :: Compile the Java file
 javac -cp src/main/java -d out %JAVA_FILE%
