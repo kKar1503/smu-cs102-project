@@ -16,7 +16,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
     private final Deck deck = new Deck(); // The deck of cards used in the game
-    private final Lobby<T> lobby = new Lobby<>();
+    private final PlayerControllerManager<T> lobby = new PlayerControllerManager<>();
     private final Parade parade; // The list of cards currently in the parade
 
     protected AbstractGameEngine() {

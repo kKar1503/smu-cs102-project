@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Lobby<T extends IPlayerController> {
+public class PlayerControllerManager<T extends IPlayerController> {
     private final List<T> playerControllers = new ArrayList<>();
     private int currentPlayerIdx = 0;
 
