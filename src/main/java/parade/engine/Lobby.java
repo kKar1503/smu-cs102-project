@@ -10,8 +10,6 @@ public class Lobby<T extends IPlayerController> {
     private final List<T> playerControllers = new ArrayList<>();
     private int currentPlayerIdx = 0;
 
-    public Lobby() {}
-
     /**
      * Gets the current player controller.
      *
