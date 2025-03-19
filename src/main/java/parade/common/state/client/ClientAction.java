@@ -17,6 +17,9 @@ public enum ClientAction implements Serializable {
     // Game actions
     CARD_PLAY,
 
+    // This is used within the server to signal that a client has disconnected
+    POISON_PILL,
+
     /*REQUEST_GAME_STATE,
     REQUEST_PLAYER_LIST,
     REQUEST_CARD_LIST,
