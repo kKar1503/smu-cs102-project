@@ -3,10 +3,7 @@ package parade.controller.network;
 import parade.common.Player;
 import parade.common.exceptions.NetworkFailureException;
 import parade.common.exceptions.PlayerControllerInitialisationException;
-import parade.common.state.client.AbstractClientData;
-import parade.common.state.client.ClientCardPlayData;
-import parade.common.state.client.ClientConnectData;
-import parade.common.state.client.ClientPoisonPill;
+import parade.common.state.client.*;
 import parade.common.state.server.*;
 import parade.logger.LoggerProvider;
 
@@ -104,7 +101,6 @@ public class NetworkHumanPlayerController implements INetworkPlayerController, C
     @Override
     public void handle(AbstractClientData clientData) throws NetworkFailureException {
         switch (clientData) {
-            case ClientConnectData connectData -> {}
             case ClientCardPlayData cardPlayData -> {}
             case ClientPoisonPill poisonPill -> {
                 // This is to ensure that when the client is closed, the other thread is
@@ -149,7 +145,7 @@ public class NetworkHumanPlayerController implements INetworkPlayerController, C
                 }
             }
         } catch (EOFException e) {
-            LoggerProvider.getInstance().log("Connection closed by client", e);
+            LoggerProvider.getInstance().log("Connection closed by client");
         } catch (IOException e) {
             LoggerProvider.getInstance().log("I/O error occurred", e);
         } catch (Exception e) {
@@ -194,38 +190,11 @@ public class NetworkHumanPlayerController implements INetworkPlayerController, C
     @Override
     public void close() throws IOException {
         if (!running) {
-            LoggerProvider.getInstance().log("Controller is already closed");
             return;
         }
+
         running = false;
         socket.close();
         clientDataQueue.offer(new ClientPoisonPill());
     }
-
-    //    public void handle(AbstractServerData data) throws NetworkFailureException {
-    //        switch (data) {
-    //            case ServerConnectAckData ackData -> System.out.println(ackData);
-    //            case ServerGameEndData endData -> System.out.println(endData);
-    //            case ServerGameStartData startData -> System.out.println(startData);
-    //            case ServerGameFinalRoundData finalRoundData ->
-    // System.out.println(finalRoundData);
-    //            case ServerPlayerDrawnCardData drawnCardData ->
-    // cards.add(drawnCardData.getCard());
-    //            case ServerPlayerTurnData turnData -> System.out.println(turnData);
-    //            case ServerPlayerReceivedParadeCardsData receivedParadeCardsData ->
-    //                    System.out.println(receivedParadeCardsData);
-    //            case ServerLobbyClosedData closedData -> System.out.println(closedData);
-    //            case ServerLobbyCreateAckData createAckData -> System.out.println(createAckData);
-    //            case ServerLobbyJoinAckData joinAckData -> System.out.println(joinAckData);
-    //            case ServerLobbyListData lobbyListData -> System.out.println(lobbyListData);
-    //            case ServerLobbyPlayerJoinedData playerJoinedData ->
-    //                    System.out.println(playerJoinedData);
-    //            case ServerLobbyPlayerLeftData playerLeftData ->
-    // System.out.println(playerLeftData);
-    //            case null -> System.out.println("Received null data");
-    //            default -> System.out.println("Unknown data type: " +
-    // data.getClass().getSimpleName());
-    //        }
-    //    }
-
 }
