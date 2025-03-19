@@ -1,5 +1,6 @@
 package parade.controller.network;
 
+import parade.common.exceptions.NetworkFailureException;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.AbstractServerData;
 import parade.controller.IPlayerController;
@@ -24,7 +25,7 @@ public interface INetworkPlayerController extends IPlayerController {
      * @param serverData an {@link AbstractServerData} object which contains information from the
      *     server for the player to act.
      */
-    void send(AbstractServerData serverData);
+    void send(AbstractServerData serverData) throws NetworkFailureException;
 
     /**
      * Handles the incoming data from the client. This method is called when the player controller
@@ -33,5 +34,5 @@ public interface INetworkPlayerController extends IPlayerController {
      * @param clientData an {@link AbstractClientData} object which contains sufficient information
      *     for the server to act.
      */
-    void handle(AbstractClientData clientData);
+    void handle(AbstractClientData clientData) throws NetworkFailureException;
 }
