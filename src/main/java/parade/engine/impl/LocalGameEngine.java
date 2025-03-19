@@ -4,7 +4,6 @@ import parade.common.*;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.client.ClientCardPlayData;
 import parade.common.state.server.ServerPlayerTurnData;
-import parade.controller.IPlayerController;
 import parade.controller.local.ILocalPlayerController;
 import parade.controller.local.computer.EasyLocalComputerController;
 import parade.controller.local.computer.HardLocalComputerController;
@@ -26,7 +25,7 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class LocalGameEngine extends AbstractGameEngine {
+public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> {
     private final AbstractLogger logger;
     private final IClientRenderer clientRenderer;
     private final Scanner scanner;
@@ -39,20 +38,20 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     @Override
-    public void addPlayerController(IPlayerController player) {
+    public void addPlayerController(ILocalPlayerController player) {
         super.addPlayerController(player);
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
     @Override
-    public boolean removePlayer(IPlayerController player) {
+    public boolean removePlayer(ILocalPlayerController player) {
         logger.logf("Player %s removed from the game", player.getPlayer().getName());
         return super.removePlayer(player);
     }
 
     @Override
-    public IPlayerController removePlayer(int index) {
-        IPlayerController removedPlayer = super.removePlayer(index);
+    public ILocalPlayerController removePlayer(int index) {
+        ILocalPlayerController removedPlayer = super.removePlayer(index);
         logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
         return removedPlayer;
     }
@@ -228,7 +227,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         // direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayerController player = getPlayer(i);
+            ILocalPlayerController player = getPlayer(i);
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.getPlayer().addToHand(drawnCard);
@@ -240,7 +239,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            IPlayerController player = getCurrentPlayer();
+            ILocalPlayerController player = getCurrentPlayer();
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
@@ -263,7 +262,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
         for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayerController player = getCurrentPlayer();
+            ILocalPlayerController player = getCurrentPlayer();
             playerPlayCard(
                     player,
                     new ServerPlayerTurnData(
@@ -276,25 +275,25 @@ public class LocalGameEngine extends AbstractGameEngine {
         }
 
         logger.log("Tabulating scores");
-        Map<IPlayerController, Integer> playerScores = tabulateScores();
+        Map<ILocalPlayerController, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
-    private void playerPlayCard(IPlayerController player, ServerPlayerTurnData playerTurnData) {
+    private void playerPlayCard(
+            ILocalPlayerController player, ServerPlayerTurnData playerTurnData) {
         // Playing card
         logger.logf("%s playing a card", player.getPlayer().getName());
         AbstractClientData clientData =
-                ((ILocalPlayerController) player) // we can safely cast here
-                        .send(
-                                new ServerPlayerTurnData(
-                                        getPlayers().toArray(Player[]::new),
-                                        player.getPlayer(),
-                                        getParadeCards().toArray(Card[]::new),
-                                        getDeckSize(),
-                                        player.getPlayer().getHand().size()));
+                player.send(
+                        new ServerPlayerTurnData(
+                                getPlayers().toArray(Player[]::new),
+                                player.getPlayer(),
+                                getParadeCards().toArray(Card[]::new),
+                                getDeckSize(),
+                                player.getPlayer().getHand().size()));
 
         Card playedCard;
         if (clientData instanceof ClientCardPlayData cardPlayData) {
@@ -328,11 +327,11 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<IPlayerController, Integer> playerScores) {
-        IPlayerController winner = null;
+    private void declareWinner(Map<ILocalPlayerController, Integer> playerScores) {
+        ILocalPlayerController winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<IPlayerController, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<ILocalPlayerController, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();

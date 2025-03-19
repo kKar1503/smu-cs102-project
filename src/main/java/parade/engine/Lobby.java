@@ -6,27 +6,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Lobby {
-    private final List<IPlayerController> players = new ArrayList<>();
+public class Lobby<T extends IPlayerController> {
+    private final List<T> playerControllers = new ArrayList<>();
     private int currentPlayerIdx = 0;
 
     public Lobby() {}
 
     /**
-     * Gets the current player.
+     * Gets the current player controller.
      *
-     * @return The current player.
+     * @return The current player controller.
      */
-    public IPlayerController getCurrentPlayer() {
-        return players.get(currentPlayerIdx);
+    public T getCurrentPlayerController() {
+        return playerControllers.get(currentPlayerIdx);
     }
 
-    public List<IPlayerController> getPlayers() {
-        return Collections.unmodifiableList(players);
+    public boolean removePlayerController(T playerController) {
+        return playerControllers.remove(playerController);
+    }
+
+    public T removePlayerController(int index) {
+        return playerControllers.remove(index);
+    }
+
+    public List<T> getPlayerControllers() {
+        return Collections.unmodifiableList(playerControllers);
     }
 
     /** Increments the index of the current player to the next player in the list. */
     public void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % players.size();
+        currentPlayerIdx = (currentPlayerIdx + 1) % playerControllers.size();
     }
 }
