@@ -1,9 +1,6 @@
 package parade.common;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Parade {
     List<Card> cards = new LinkedList<>();
@@ -58,5 +55,10 @@ public class Parade {
      */
     public List<Card> getCards() {
         return Collections.unmodifiableList(cards);
+    }
+
+    @Override
+    public String toString() {
+        return "Parade{" + "cards=" + Arrays.toString(cards.toArray(Card[]::new)) + '}';
     }
 }
