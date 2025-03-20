@@ -12,38 +12,29 @@ public class Lobby implements Serializable {
 
     private final UUID id = UUID.randomUUID();
     private final String name;
+    private final int minPlayers;
     private final int maxPlayers;
     private final transient String password;
     private final List<Player> players = new ArrayList<>();
     private final boolean isPublic;
     private final Player owner;
-    private LobbyStatus status;
 
-    public Lobby(String name, int maxPlayers, Player owner, boolean isPublic) {
+    public Lobby(String name, int minPlayers, int maxPlayers, Player owner) {
         this.name = name;
         this.password = null;
+        this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.owner = owner;
-        this.isPublic = isPublic;
-        this.status = LobbyStatus.WAITING_FOR_PLAYERS;
+        this.isPublic = false;
     }
 
-    public Lobby(String name, int maxPlayers, Player owner, boolean isPublic, LobbyStatus status) {
-        this.name = name;
-        this.password = null;
-        this.maxPlayers = maxPlayers;
-        this.owner = owner;
-        this.isPublic = isPublic;
-        this.status = status;
-    }
-
-    public Lobby(String name, String password, int maxPlayers, Player owner, boolean isPublic) {
+    public Lobby(String name, String password, int minPlayers, int maxPlayers, Player owner) {
         this.name = name;
         this.password = password;
+        this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.owner = owner;
-        this.isPublic = isPublic;
-        this.status = LobbyStatus.WAITING_FOR_PLAYERS;
+        this.isPublic = true;
     }
 
     public String getId() {
@@ -52,6 +43,10 @@ public class Lobby implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
     }
 
     public int getMaxPlayers() {
@@ -75,36 +70,46 @@ public class Lobby implements Serializable {
         return isPublic;
     }
 
-    public LobbyStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(LobbyStatus status) {
-        this.status = status;
-    }
-
-    public void addPlayer(Player player) {
-        if (players.size() < maxPlayers) {
-            players.add(player);
-        } else {
+    public void add(Player player) throws IllegalArgumentException, IllegalStateException {
+        if (players.size() >= maxPlayers) {
             throw new IllegalStateException("Lobby is full");
         }
+        if (players.contains(player)) {
+            throw new IllegalArgumentException("Player is already in the lobby");
+        }
+        players.add(player);
     }
 
-    public void removePlayer(Player player) {
-        players.remove(player);
+    public boolean remove(Player player) {
+        return players.remove(player);
     }
 
-    public List<Player> getPlayers() {
+    public Player remove(int i) {
+        return players.remove(i);
+    }
+
+    public List<Player> get() {
         return Collections.unmodifiableList(players);
     }
 
-    public int getPlayerCount() {
+    public Player get(int index) {
+        return players.get(index);
+    }
+
+    public int size() {
         return players.size();
     }
 
+    public boolean isEmpty() {
+        return players.isEmpty();
+    }
+
     public boolean isFull() {
-        return players.size() >= maxPlayers;
+        return players.size() == maxPlayers;
+    }
+
+    public boolean isReady() {
+        return players.size() >= minPlayers;
     }
 
     @Override

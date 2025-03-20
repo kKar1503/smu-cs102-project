@@ -1,9 +1,9 @@
 package parade.renderer.local.impl;
 
 import parade.common.Card;
+import parade.common.Lobby;
 import parade.common.Player;
 import parade.common.state.server.ServerPlayerTurnData;
-import parade.engine.AbstractGameEngine;
 import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
 
@@ -46,29 +46,17 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayersLobby(List<Player> players) {
+    public void renderPlayersLobby(Lobby lobby) {
         System.out.println("Players in lobby: ");
-        for (int i = 1; i <= players.size(); i++) {
-            System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
+        for (int i = 1; i <= lobby.size(); i++) {
+            System.out.printf("%d. %s\n", i, lobby.get(i - 1).getName());
         }
         System.out.println();
+        System.out.println("1. Add Player" + (lobby.isFull() ? " (Lobby is full)" : ""));
+        System.out.println("2. Add Computer" + (lobby.isFull() ? " (Lobby is full)" : ""));
         System.out.println(
-                "1. Add Player"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
-                                ? " (Lobby is full)"
-                                : ""));
-        System.out.println(
-                "2. Add Computer"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
-                                ? " (Lobby is full)"
-                                : ""));
-        System.out.println(
-                "3. Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""));
-        System.out.println(
-                "4. Start Game"
-                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
-                                ? " (Not enough players)"
-                                : ""));
+                "3. Remove player/computer" + (lobby.isEmpty() ? " (Lobby is empty)" : ""));
+        System.out.println("4. Start Game" + (lobby.isReady() ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
@@ -105,16 +93,16 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 "\n\n"
-                    + "Your board\n"
-                    + "===========================================================================");
+                        + "Your board\n"
+                        + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
                 "\n\n"
-                    + "Your hand\n"
-                    + "==========================================================================");
+                        + "Your hand\n"
+                        + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }

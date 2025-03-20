@@ -1,38 +1,88 @@
 package parade.engine;
 
+import parade.common.Lobby;
+import parade.common.Player;
 import parade.controller.IPlayerController;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class PlayerControllerManager<T extends IPlayerController> {
-    private final List<T> playerControllers = new ArrayList<>();
+public class PlayerControllerManager<T extends IPlayerController> implements Iterator<T> {
+    private final Map<Player, T> playerControllersMap;
+    private final Lobby lobby;
     private int currentPlayerIdx = 0;
 
+    public PlayerControllerManager(Lobby lobby) {
+        if (lobby.size() > 0) {
+            throw new IllegalArgumentException(
+                    "Lobby must be empty to create a PlayerControllerManager");
+        }
+        this.lobby = lobby;
+        this.playerControllersMap = new HashMap<>(lobby.getMaxPlayers());
+    }
+
     /**
-     * Gets the current player controller.
+     * Adds a player controller to the list.
      *
-     * @return The current player controller.
+     * @param playerController The player controller to add.
+     * @throws IllegalStateException if there are already 6 players in the list.
+     * @throws IllegalArgumentException if the player controller already exists in the list.
      */
-    public T getCurrentPlayerController() {
-        return playerControllers.get(currentPlayerIdx);
+    public void add(T playerController) throws IllegalArgumentException, IllegalStateException {
+        if (playerControllersMap.containsValue(playerController)) {
+            throw new IllegalArgumentException(
+                    "PlayerController already exists in the list: " + playerController);
+        }
+        Player p = playerController.getPlayer();
+        playerControllersMap.put(p, playerController);
+        lobby.add(p);
     }
 
-    public boolean removePlayerController(T playerController) {
-        return playerControllers.remove(playerController);
+    /**
+     * Increments the index of the current player to the next player in the list and returns the
+     * next player controller.
+     *
+     * @return The next player controller.
+     */
+    @Override
+    public T next() {
+        return playerControllersMap.get(lobby.get(currentPlayerIdx++ % lobby.size()));
     }
 
-    public T removePlayerController(int index) {
-        return playerControllers.remove(index);
+    @Override
+    public boolean hasNext() {
+        return currentPlayerIdx < lobby.size();
+    }
+
+    public boolean remove(T playerController) {
+        // TODO: fix the remove to realign the index
+        Player p = playerController.getPlayer();
+        boolean exists = playerControllersMap.remove(p, playerController);
+        if (exists) {
+            lobby.remove(p);
+        }
+
+        return exists;
+    }
+
+    public T remove(int index) {
+        // TODO: fix the remove to realign the index
+        Player removedPlayer = lobby.remove(index);
+        if (removedPlayer == null) {
+            return null;
+        }
+
+        return playerControllersMap.remove(removedPlayer);
     }
 
     public List<T> getPlayerControllers() {
-        return Collections.unmodifiableList(playerControllers);
+        return lobby.get().stream().map(playerControllersMap::get).toList();
     }
 
-    /** Increments the index of the current player to the next player in the list. */
-    public void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % playerControllers.size();
+    public List<Player> getPlayers() {
+        return lobby.get();
+    }
+
+    public Lobby getLobby() {
+        return lobby;
     }
 }

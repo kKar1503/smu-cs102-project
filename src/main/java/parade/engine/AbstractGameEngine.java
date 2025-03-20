@@ -1,100 +1,22 @@
 package parade.engine;
 
-import parade.common.Card;
-import parade.common.Colour;
-import parade.common.Deck;
-import parade.common.Parade;
-import parade.common.Player;
+import parade.common.*;
 import parade.controller.IPlayerController;
 
 import java.util.*;
 
 public abstract class AbstractGameEngine<T extends IPlayerController> {
-    public static final int MIN_PLAYERS = 2; // Minimum number of players required to start the game
-    public static final int MAX_PLAYERS = 6; // Maximum number of players allowed
     public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
-    private final Deck deck = new Deck(); // The deck of cards used in the game
-    private final PlayerControllerManager<T> lobby = new PlayerControllerManager<>();
-    private final Parade parade; // The list of cards currently in the parade
+    protected final Deck deck = new Deck(); // The deck of cards used in the game
+    protected final PlayerControllerManager<T> playerControllerManager;
+    protected final Parade parade; // The list of cards currently in the parade
 
-    protected AbstractGameEngine() {
+    protected AbstractGameEngine(Lobby lobby) {
+        playerControllerManager = new PlayerControllerManager<>(lobby);
         List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
-    }
-
-    /**
-     * Adds a player controller to the game.
-     *
-     * @param playerController The player controller to be added.
-     */
-    public void addPlayerController(T playerController) {
-        lobby.getPlayerControllers().add(playerController);
-    }
-
-    /**
-     * Removes a player controller from the game.
-     *
-     * @param player The player controller to be removed.
-     */
-    public boolean removePlayer(T player) {
-        return lobby.getPlayerControllers().remove(player);
-    }
-
-    /**
-     * Removes a player controller from the game.
-     *
-     * @param index The index of the player controller to be removed.
-     */
-    public T removePlayer(int index) {
-        return lobby.getPlayerControllers().remove(index);
-    }
-
-    /**
-     * Gets the list of players in the game.
-     *
-     * @return An unmodifiable copy of the list of players.
-     */
-    protected List<Player> getPlayers() {
-        return lobby.getPlayerControllers().stream().map(T::getPlayer).toList();
-    }
-
-    /**
-     * Gets the player at the specified index.
-     *
-     * @param index The index of the player.
-     * @return The player at the specified index.
-     * @throws IndexOutOfBoundsException if the index is out of bounds.
-     */
-    protected T getPlayer(int index) throws IndexOutOfBoundsException {
-        return lobby.getPlayerControllers().get(index);
-    }
-
-    /**
-     * Gets the current player by delegating to the Lobby.
-     *
-     * @return The current player.
-     */
-    protected T getCurrentPlayer() {
-        return lobby.getPlayerControllers().stream()
-                .filter(p -> p.equals(lobby.getCurrentPlayerController()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    /** Advances to the next player by delegating to the Lobby. */
-    protected void nextPlayer() {
-        lobby.nextPlayer();
-    }
-
-    /**
-     * Get the number of players in the game
-     *
-     * @return The number of players in the game
-     */
-    protected int getPlayersCount() {
-        return lobby.getPlayerControllers().size();
     }
 
     /**
@@ -103,16 +25,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      * @return True if the lobby is full, false otherwise.
      */
     protected boolean isLobbyFull() {
-        return lobby.getPlayerControllers().size() == MAX_PLAYERS;
-    }
-
-    /**
-     * Checks if the lobby is empty.
-     *
-     * @return True if the lobby is empty, false otherwise.
-     */
-    protected boolean isLobbyEmpty() {
-        return lobby.getPlayerControllers().isEmpty();
+        return playerControllerManager.getLobby().isFull();
     }
 
     /**
@@ -121,64 +34,10 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      * @return True if the lobby has enough players, false otherwise.
      */
     protected boolean lobbyHasEnoughPlayers() {
-        return lobby.getPlayerControllers().size() >= MIN_PLAYERS;
+        return playerControllerManager.getLobby().isReady();
     }
 
     public abstract void start();
-
-    /**
-     * Gets the size of the deck.
-     *
-     * @return The size of the deck.
-     */
-    protected int getDeckSize() {
-        return deck.size();
-    }
-
-    /**
-     * Determines if the deck is empty.
-     *
-     * @return True if the deck is empty, false otherwise.
-     */
-    protected boolean isDeckEmpty() {
-        return deck.isEmpty();
-    }
-
-    /**
-     * Draws a card from the deck.
-     *
-     * @return The drawn card.
-     */
-    protected Card drawFromDeck() {
-        return deck.pop();
-    }
-
-    /**
-     * Draws n card from the deck. @Param n The number of cards to draw.
-     *
-     * @return The drawn card.
-     */
-    protected List<Card> drawFromDeck(int n) {
-        return deck.pop(n);
-    }
-
-    /**
-     * Places a card in the parade and returns the card that is received from the parade.
-     *
-     * @return The card that is received from the parade.
-     */
-    protected List<Card> placeCardInParade(Card card) {
-        return parade.placeCard(card);
-    }
-
-    /**
-     * Gets the list of cards in the parade.
-     *
-     * @return An unmodifiable copy of the list of cards in the parade.
-     */
-    protected List<Card> getParadeCards() {
-        return parade.getCards();
-    }
 
     /**
      * Checks if any player has collected all colours or if the deck is empty. When this happens,
@@ -188,11 +47,11 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      * @return True if game should continue, false otherwise.
      */
     protected boolean shouldGameContinue() {
-        if (isDeckEmpty()) {
+        if (deck.isEmpty()) {
             // Game ends when the deck is empty
             return false;
         }
-        for (IPlayerController player : lobby.getPlayerControllers()) {
+        for (IPlayerController player : playerControllerManager.getPlayerControllers()) {
             Set<Colour> uniqueColours = new HashSet<>();
             for (Card card : player.getPlayer().getBoard()) {
                 uniqueColours.add(card.getColour());
@@ -206,19 +65,19 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
 
     protected Map<T, Integer> tabulateScores() {
         Map<T, List<Card>> playerHands = new HashMap<>();
-        for (T player : lobby.getPlayerControllers()) {
+        for (T player : playerControllerManager.getPlayerControllers()) {
             playerHands.put(player, player.getPlayer().getHand());
         }
 
         // Calculate majority colours for each player
         Map<T, List<Colour>> majorityColours = new HashMap<>();
-        for (T player : lobby.getPlayerControllers()) {
+        for (T player : playerControllerManager.getPlayerControllers()) {
             majorityColours.put(player, decideMajority(playerHands, player).get(player));
         }
 
         Map<T, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
-        for (T player : lobby.getPlayerControllers()) {
+        for (T player : playerControllerManager.getPlayerControllers()) {
             int score = calculateScore(player, playerHands, majorityColours);
             playerScores.put(player, score);
         }

@@ -1,9 +1,9 @@
 package parade.renderer.local.impl;
 
 import parade.common.Card;
+import parade.common.Lobby;
 import parade.common.Player;
 import parade.common.state.server.ServerPlayerTurnData;
-import parade.engine.AbstractGameEngine;
 import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
 
@@ -62,22 +62,14 @@ public class AdvancedClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayersLobby(List<Player> players) {
+    public void renderPlayersLobby(Lobby lobby) {
         System.out.println("Players in lobby: ");
-        for (int i = 1; i <= players.size(); i++) {
-            System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
+        for (int i = 1; i <= lobby.size(); i++) {
+            System.out.printf("%d. %s\n", i, lobby.get(i - 1).getName());
         }
         System.out.println();
-        System.out.println(
-                "1. Add Player"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
-                                ? " (Lobby is full)"
-                                : ""));
-        System.out.println(
-                "2. Start Game"
-                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
-                                ? " (Not enough players)"
-                                : ""));
+        System.out.println("1. Add Player" + (lobby.isFull() ? " (Lobby is full)" : ""));
+        System.out.println("2. Start Game" + (lobby.isReady() ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
