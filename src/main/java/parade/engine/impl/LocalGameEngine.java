@@ -143,7 +143,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                 scanner.nextLine();
                 if (input == 1) {
                     logger.log("Adding a new player");
-                    if (isLobbyFull()) {
+                    if (playerControllerManager.getLobby().isFull()) {
                         clientRenderer.renderln("Lobby is full.");
                         continue;
                     }
@@ -152,7 +152,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                     addPlayerController(new LocalHumanController(name));
                 } else if (input == 2) {
                     logger.log("Adding a new computer");
-                    if (isLobbyFull()) {
+                    if (playerControllerManager.getLobby().isFull()) {
                         clientRenderer.renderln("Lobby is full.");
                         continue;
                     }
@@ -165,7 +165,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                     logger.log("Removing a player from lobby");
                     removePlayerDisplay();
                 } else if (input == 4) {
-                    if (!lobbyHasEnoughPlayers()) {
+                    if (!playerControllerManager.getLobby().isReady()) {
                         clientRenderer.renderln("Lobby does not have enough players.");
                         continue;
                     }
@@ -219,7 +219,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
 
         waitForPlayersLobby();
 
-        if (!lobbyHasEnoughPlayers()) {
+        if (!playerControllerManager.getLobby().isReady()) {
             logger.logf(
                     "Insufficient players to start the game, found %d",
                     playerControllerManager.getLobby().size());
