@@ -7,7 +7,6 @@ import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerPlayerTurnData;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
@@ -16,13 +15,9 @@ import java.util.List;
  */
 public class HardLocalComputerController extends AbstractLocalComputerController {
 
-    /**
-     * Constructs a HardComputer instance with an initial hand of cards.
-     *
-     * @param cards The initial set of cards assigned to the AI player's hand.
-     */
-    public HardLocalComputerController(List<Card> cards, String name) {
-        super(cards, name + "[Hard Comp]");
+    /** Constructs a HardComputer instance with an initial hand of cards. */
+    public HardLocalComputerController(String name) {
+        super(name + "[Hard Comp]");
     }
 
     @Override

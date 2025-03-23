@@ -70,11 +70,11 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                 clientRenderer.renderComputerDifficulty();
                 int compInput = scanner.nextInt();
                 if (compInput == 1) {
-                    addPlayerController(new EasyLocalComputerController(parade.getCards(), name));
+                    addPlayerController(new EasyLocalComputerController(name));
                 } else if (compInput == 2) {
-                    addPlayerController(new NormalLocalComputerController(parade.getCards(), name));
+                    addPlayerController(new NormalLocalComputerController(name));
                 } else if (compInput == 3) {
-                    addPlayerController(new HardLocalComputerController(parade.getCards(), name));
+                    addPlayerController(new HardLocalComputerController(name));
                 } else {
                     throw new NoSuchElementException();
                 }

@@ -6,21 +6,15 @@ import parade.common.state.client.ClientCardPlayData;
 import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerPlayerTurnData;
 
-import java.util.List;
-
 /**
  * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
  * its losses by avoiding taking too many cards.
  */
 public class NormalLocalComputerController extends AbstractLocalComputerController {
 
-    /**
-     * Constructs a NormalComputer instance with an initial hand of cards.
-     *
-     * @param cards The initial set of cards assigned to the AI player's hand.
-     */
-    public NormalLocalComputerController(List<Card> cards, String name) {
-        super(cards, name + "[Normal Comp]");
+    /** Constructs a NormalComputer instance with an initial hand of cards. */
+    public NormalLocalComputerController(String name) {
+        super(name + "[Normal Comp]");
     }
 
     @Override

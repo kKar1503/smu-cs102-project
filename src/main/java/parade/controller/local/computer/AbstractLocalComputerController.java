@@ -1,6 +1,5 @@
 package parade.controller.local.computer;
 
-import parade.common.Card;
 import parade.common.Player;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.AbstractServerData;
@@ -8,24 +7,20 @@ import parade.common.state.server.ServerPlayerDrawnCardData;
 import parade.common.state.server.ServerPlayerReceivedParadeCardsData;
 import parade.controller.local.ILocalPlayerController;
 
-import java.util.List;
-
 /**
  * The Computer class is an abstract representation of an AI player in the game. It contains common
  * functionality shared among different AI difficulty levels.
  */
 public abstract class AbstractLocalComputerController implements ILocalPlayerController {
-    private Player player;
+    private final Player player;
 
     /**
      * Constructs a Computer player with a given name and initial hand.
      *
-     * @param cards The initial set of cards assigned to the AI player's hand.
      * @param name The name of the AI player.
      */
-    public AbstractLocalComputerController(List<Card> cards, String name) {
+    public AbstractLocalComputerController(String name) {
         player = new Player(name);
-        player.addToHand(cards.toArray(Card[]::new));
     }
 
     /**

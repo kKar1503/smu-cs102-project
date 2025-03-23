@@ -1,23 +1,17 @@
 package parade.controller.local.computer;
 
-import parade.common.Card;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.client.ClientCardPlayData;
 import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerPlayerTurnData;
 
-import java.util.List;
 import java.util.Random;
 
 /** The EasyComputer class represents a basic AI player that plays randomly. */
 public class EasyLocalComputerController extends AbstractLocalComputerController {
-    /**
-     * Constructs an EasyComputer instance with an initial hand of cards.
-     *
-     * @param cards The initial set of cards assigned to the AI player's hand.
-     */
-    public EasyLocalComputerController(List<Card> cards, String name) {
-        super(cards, name + "[Easy Comp]");
+    /** Constructs an EasyComputer instance with an initial hand of cards. */
+    public EasyLocalComputerController(String name) {
+        super(name + "[Easy Comp]");
     }
 
     @Override
