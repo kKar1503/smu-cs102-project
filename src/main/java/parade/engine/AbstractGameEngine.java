@@ -19,24 +19,6 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
         parade = new Parade(parade_cards);
     }
 
-    /**
-     * Checks if the lobby is full.
-     *
-     * @return True if the lobby is full, false otherwise.
-     */
-    protected boolean isLobbyFull() {
-        return playerControllerManager.getLobby().isFull();
-    }
-
-    /**
-     * Checks if the lobby has enough players to start the game.
-     *
-     * @return True if the lobby has enough players, false otherwise.
-     */
-    protected boolean lobbyHasEnoughPlayers() {
-        return playerControllerManager.getLobby().isReady();
-    }
-
     public abstract void start();
 
     /**
