@@ -1,39 +1,27 @@
-package parade.player.computer;
+package parade.computer;
 
 import parade.common.Card;
+import parade.common.Player;
 
 import java.util.List;
 
 /**
  * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
  * its losses by avoiding taking too many cards.
+ *
+ * <p>NormalComputerEngine selects the best card to play based on a heuristic: - Prefers cards that
+ * minimise the number of cards taken from the parade. - Avoids playing cards that match the colours
+ * in the parade to reduce losses.
  */
-public class NormalComputer extends Computer {
-
-    /**
-     * Constructs a NormalComputer instance with an initial hand of cards.
-     *
-     * @param cards The initial set of cards assigned to the AI player's hand.
-     */
-    public NormalComputer(List<Card> cards, String name) {
-        super(cards, name + "[Normal Comp]");
-    }
-
-    /**
-     * Selects the best card to play based on a heuristic: - Prefers cards that minimise the number
-     * of cards taken from the parade. - Avoids playing cards that match the colours in the parade
-     * to reduce losses.
-     *
-     * @param parade The current parade lineup of cards.
-     * @return The best card determined by the heuristic.
-     */
+public class NormalComputerEngine implements IComputerEngine {
     @Override
-    public Card playCard(List<Card> parade) {
+    public Card process(Player player, Player[] players, Card[] parade, int deckSize) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE;
         int minColourImpact = Integer.MAX_VALUE;
+        List<Card> playerHand = player.getHand();
 
-        for (Card card : hand) {
+        for (Card card : playerHand) {
             int loss = simulateLoss(card, parade);
             int colourImpact = countColourMatches(card, parade);
 
@@ -53,12 +41,12 @@ public class NormalComputer extends Computer {
      * @param parade The current parade lineup.
      * @return The number of cards the AI would take.
      */
-    private int simulateLoss(Card card, List<Card> parade) {
+    private int simulateLoss(Card card, Card[] parade) {
         int loss = 0;
-        int position = parade.size() - card.getNumber();
+        int position = parade.length - card.getNumber();
 
-        for (int i = Math.max(0, position); i < parade.size(); i++) {
-            Card paradeCard = parade.get(i);
+        for (int i = Math.max(0, position); i < parade.length; i++) {
+            Card paradeCard = parade[i];
             if (paradeCard.getNumber() <= card.getNumber()
                     || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
@@ -74,7 +62,7 @@ public class NormalComputer extends Computer {
      * @param parade The current parade lineup.
      * @return The number of matching colours.
      */
-    private int countColourMatches(Card card, List<Card> parade) {
+    private int countColourMatches(Card card, Card[] parade) {
         int colourMatches = 0;
         for (Card paradeCard : parade) {
             if (paradeCard.getColour().equals(card.getColour())) {
@@ -82,5 +70,10 @@ public class NormalComputer extends Computer {
             }
         }
         return colourMatches;
+    }
+
+    @Override
+    public String getName() {
+        return "Normal";
     }
 }

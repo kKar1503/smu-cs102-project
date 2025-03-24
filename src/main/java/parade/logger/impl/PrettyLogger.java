@@ -1,7 +1,6 @@
 package parade.logger.impl;
 
 import parade.logger.AbstractLogger;
-import parade.logger.AbstractLogger.LogInfo;
 import parade.utils.ConsoleColors;
 
 import java.io.PrintWriter;
