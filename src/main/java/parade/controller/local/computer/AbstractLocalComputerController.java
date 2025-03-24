@@ -1,8 +1,10 @@
 package parade.controller.local.computer;
 
+import parade.common.Card;
 import parade.common.Player;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.AbstractServerData;
+import parade.common.state.server.ServerGameStartData;
 import parade.common.state.server.ServerPlayerDrawnCardData;
 import parade.common.state.server.ServerPlayerReceivedParadeCardsData;
 import parade.controller.local.ILocalPlayerController;
@@ -42,10 +44,11 @@ public abstract class AbstractLocalComputerController implements ILocalPlayerCon
     public AbstractClientData send(AbstractServerData serverData)
             throws UnsupportedOperationException {
         return switch (serverData) {
+            case ServerGameStartData gameStartData -> addToPlayerHand(gameStartData.getCards());
             case ServerPlayerDrawnCardData playerDrawnCardData ->
-                    addToPlayerHand(playerDrawnCardData);
+                    addToPlayerHand(playerDrawnCardData.getCard());
             case ServerPlayerReceivedParadeCardsData playerReceivedParadeCardsData ->
-                    addToPlayerBoard(playerReceivedParadeCardsData);
+                    addToPlayerBoard(playerReceivedParadeCardsData.getParadeCards());
             default -> throw new UnsupportedOperationException("Unexpected value: " + serverData);
         };
     }
@@ -53,25 +56,23 @@ public abstract class AbstractLocalComputerController implements ILocalPlayerCon
     /**
      * Adds the drawn card to the player's hand.
      *
-     * @param playerDrawnCardData The drawn card data object sent from the server that contains the
-     *     drawn card.
+     * @param cards The array of cards sent from the server that are drawn to the hand.
      * @return null since this player action does not expect player to do any action
      */
-    protected AbstractClientData addToPlayerHand(ServerPlayerDrawnCardData playerDrawnCardData) {
-        player.addToBoard(playerDrawnCardData.getCard());
+    protected AbstractClientData addToPlayerHand(Card... cards) {
+        player.addToBoard(cards);
         return null;
     }
 
     /**
      * Adds the drawn card to the player's board.
      *
-     * @param playerReceivedParadeCardsData The drawn parade cards data object sent from the server
-     *     that contains the drawn card(s) from the parade upon placing down the card.
+     * @param cards The array of parade cards sent from the server that are drawn from the parade
+     *     upon placing down the card.
      * @return null since this player action does not expect player to do any action
      */
-    private AbstractClientData addToPlayerBoard(
-            ServerPlayerReceivedParadeCardsData playerReceivedParadeCardsData) {
-        player.addToBoard(playerReceivedParadeCardsData.getParadeCards());
+    private AbstractClientData addToPlayerBoard(Card... cards) {
+        player.addToBoard(cards);
         return null;
     }
 
