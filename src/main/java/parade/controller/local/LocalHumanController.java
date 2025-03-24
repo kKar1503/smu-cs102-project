@@ -1,4 +1,4 @@
-package parade.controller.local.human;
+package parade.controller.local;
 
 import parade.common.Card;
 import parade.common.Player;
@@ -8,7 +8,6 @@ import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerPlayerDrawnCardData;
 import parade.common.state.server.ServerPlayerReceivedParadeCardsData;
 import parade.common.state.server.ServerPlayerTurnData;
-import parade.controller.local.ILocalPlayerController;
 import parade.renderer.local.ClientRendererProvider;
 
 import java.util.InputMismatchException;

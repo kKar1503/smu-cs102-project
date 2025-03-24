@@ -1,61 +1,39 @@
-package parade.controller.local.computer;
+package parade.computer;
 
 import parade.common.Card;
-import parade.common.state.client.AbstractClientData;
-import parade.common.state.client.ClientCardPlayData;
-import parade.common.state.server.AbstractServerData;
-import parade.common.state.server.ServerPlayerTurnData;
+import parade.common.Player;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
  * own losses while maximising the difficulty for the opponent. It uses predictive analysis to
  * determine the best card to play.
+ *
+ * <p>HardComputerEngine selects the best card to play by balancing two factors: - Minimising its
+ * own loss (i.e., taking as few parade cards as possible). - Maximising the difficulty for the
+ * opponent (i.e., forcing them into bad moves).
+ *
+ * <p>This engine simulates the loss it would incur for each possible move and also predicts how
+ * much it can force the opponent to lose.
  */
-public class HardLocalComputerController extends AbstractLocalComputerController {
-
-    /** Constructs a HardComputer instance with an initial hand of cards. */
-    public HardLocalComputerController(String name) {
-        super(name + "[Hard Comp]");
-    }
-
+public class HardComputerEngine implements IComputerEngine {
     @Override
-    public AbstractClientData send(AbstractServerData serverData)
-            throws UnsupportedOperationException {
-        return switch (serverData) {
-            case ServerPlayerTurnData playerTurnData -> playCard(playerTurnData);
-            default -> super.send(serverData);
-        };
-    }
-
-    /**
-     * Selects the best card to play by balancing two factors: - Minimising its own loss (i.e.,
-     * taking as few parade cards as possible). - Maximising the difficulty for the opponent (i.e.,
-     * forcing them into bad moves).
-     *
-     * <p>The AI simulates the loss it would incur for each possible move and also predicts how much
-     * it can force the opponent to lose.
-     *
-     * @param playerTurnData data object that contains sufficient information for the player to make
-     *     a decision for their turn.
-     * @return {@link ClientCardPlayData} object containing the card to be played.
-     */
-    public ClientCardPlayData playCard(ServerPlayerTurnData playerTurnData) {
+    public Card process(Player player, Player[] players, Card[] parade, int deckSize) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE; // Tracks the smallest number of cards taken by this AI
         int maxOpponentLoss =
                 Integer.MIN_VALUE; // Tracks the largest number of cards an opponent would take
+        List<Card> playerHand = player.getHand();
 
         // Iterate through each card in hand to determine the best move
-        for (Card card : getPlayer().getHand()) {
-            int selfLoss =
-                    simulateLoss(
-                            card, playerTurnData.getParade()); // How many cards this AI would take
-            int opponentLoss =
-                    simulateOpponentLoss(
-                            card,
-                            playerTurnData.getParade()); // How many cards the opponent might take
+        for (Card card : playerHand) {
+            // How many cards this AI would take
+            int selfLoss = simulateLoss(card, parade);
+
+            // How many cards the opponent might take
+            int opponentLoss = simulateOpponentLoss(card, playerHand, parade);
 
             // Decision-making process: - Select the card that minimises self-loss. - If multiple
             // cards result in the same loss, choose the one that maximises opponent's loss.
@@ -66,7 +44,7 @@ public class HardLocalComputerController extends AbstractLocalComputerController
             }
         }
 
-        return new ClientCardPlayData(getPlayer(), bestCard);
+        return bestCard;
     }
 
     /**
@@ -108,7 +86,7 @@ public class HardLocalComputerController extends AbstractLocalComputerController
      * @param parade The current parade lineup.
      * @return The maximum number of cards an opponent might take based on this move.
      */
-    private int simulateOpponentLoss(Card card, Card[] parade) {
+    private int simulateOpponentLoss(Card card, List<Card> playerHand, Card[] parade) {
         // Create a simulated parade where this card has been played
         Card[] simulatedParade = Arrays.copyOf(parade, parade.length + 1);
         simulatedParade[simulatedParade.length - 1] = card; // Add the card to the simulated parade
@@ -117,7 +95,7 @@ public class HardLocalComputerController extends AbstractLocalComputerController
                 Integer.MIN_VALUE; // Keeps track of the worst-case scenario for the opponent
 
         // Simulate the opponent playing each of their cards
-        for (Card opponentCard : getPlayer().getHand()) {
+        for (Card opponentCard : playerHand) {
             int opponentGain =
                     simulateLoss(opponentCard, simulatedParade); // Compute the opponent's loss
 
@@ -128,5 +106,10 @@ public class HardLocalComputerController extends AbstractLocalComputerController
         }
 
         return maxOpponentGain; // Return the worst loss the AI can force on the opponent
+    }
+
+    @Override
+    public String getName() {
+        return "Hard";
     }
 }

@@ -4,12 +4,13 @@ import parade.common.*;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.client.ClientCardPlayData;
 import parade.common.state.server.ServerPlayerTurnData;
+import parade.computer.EasyComputerEngine;
+import parade.computer.HardComputerEngine;
+import parade.computer.NormalComputerEngine;
 import parade.controller.IPlayerController;
 import parade.controller.local.ILocalPlayerController;
-import parade.controller.local.computer.EasyLocalComputerController;
-import parade.controller.local.computer.HardLocalComputerController;
-import parade.controller.local.computer.NormalLocalComputerController;
-import parade.controller.local.human.LocalHumanController;
+import parade.controller.local.LocalComputerController;
+import parade.controller.local.LocalHumanController;
 import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
@@ -70,11 +71,11 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                 clientRenderer.renderComputerDifficulty();
                 int compInput = scanner.nextInt();
                 if (compInput == 1) {
-                    addPlayerController(new EasyLocalComputerController(name));
+                    addPlayerController(new LocalComputerController(new EasyComputerEngine()));
                 } else if (compInput == 2) {
-                    addPlayerController(new NormalLocalComputerController(name));
+                    addPlayerController(new LocalComputerController(new NormalComputerEngine()));
                 } else if (compInput == 3) {
-                    addPlayerController(new HardLocalComputerController(name));
+                    addPlayerController(new LocalComputerController(new HardComputerEngine()));
                 } else {
                     throw new NoSuchElementException();
                 }
