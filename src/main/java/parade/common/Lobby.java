@@ -14,18 +14,12 @@ public class Lobby implements Serializable {
     private final String name;
     private final int minPlayers;
     private final int maxPlayers;
-    private final transient String password;
+    private final String password;
     private final List<Player> players = new ArrayList<>();
-    private final boolean isPublic;
     private final Player owner;
 
     public Lobby(String name, int minPlayers, int maxPlayers, Player owner) {
-        this.name = name;
-        this.password = null;
-        this.minPlayers = minPlayers;
-        this.maxPlayers = maxPlayers;
-        this.owner = owner;
-        this.isPublic = false;
+        this(name, null, minPlayers, maxPlayers, owner);
     }
 
     public Lobby(String name, String password, int minPlayers, int maxPlayers, Player owner) {
@@ -34,7 +28,6 @@ public class Lobby implements Serializable {
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
         this.owner = owner;
-        this.isPublic = true;
     }
 
     public String getId() {
@@ -67,7 +60,7 @@ public class Lobby implements Serializable {
     }
 
     public boolean isPublic() {
-        return isPublic;
+        return password == null;
     }
 
     public void add(Player player) throws IllegalArgumentException, IllegalStateException {
