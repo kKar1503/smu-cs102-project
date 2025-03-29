@@ -74,4 +74,44 @@ public class ConsoleColors {
     public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
     public static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m"; // CYAN
     public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m"; // WHITE
+
+    // Helper functions for colors
+    public static String black(String text) { return BLACK + text + RESET; }
+    public static String red(String text) { return RED + text + RESET; }
+    public static String green(String text) { return GREEN + text + RESET; }
+    public static String yellow(String text) { return YELLOW + text + RESET; }
+    public static String blue(String text) { return BLUE + text + RESET; }
+    public static String purple(String text) { return PURPLE + text + RESET; }
+    public static String cyan(String text) { return CYAN + text + RESET; }
+    public static String white(String text) { return WHITE + text + RESET; }
+    public static String grey(String text) { return GREY + text + RESET; }
+
+    // Helper functions for bold colors
+    public static String blackBold(String text) { return BLACK_BOLD + text + RESET; }
+    public static String redBold(String text) { return RED_BOLD + text + RESET; }
+    public static String greenBold(String text) { return GREEN_BOLD + text + RESET; }
+    public static String yellowBold(String text) { return YELLOW_BOLD + text + RESET; }
+    public static String blueBold(String text) { return BLUE_BOLD + text + RESET; }
+    public static String purpleBold(String text) { return PURPLE_BOLD + text + RESET; }
+    public static String cyanBold(String text) { return CYAN_BOLD + text + RESET; }
+    public static String whiteBold(String text) { return WHITE_BOLD + text + RESET; }
+
+    // Helper functions for background colors
+    public static String blackBackground(String text) { return BLACK_BACKGROUND + text + RESET; }
+    public static String redBackground(String text) { return RED_BACKGROUND + text + RESET; }
+    public static String greenBackground(String text) { return GREEN_BACKGROUND + text + RESET; }
+    public static String yellowBackground(String text) { return YELLOW_BACKGROUND + text + RESET; }
+    public static String blueBackground(String text) { return BLUE_BACKGROUND + text + RESET; }
+    public static String purpleBackground(String text) { return PURPLE_BACKGROUND + text + RESET; }
+    public static String cyanBackground(String text) { return CYAN_BACKGROUND + text + RESET; }
+    public static String whiteBackground(String text) { return WHITE_BACKGROUND + text + RESET; }
+
+    // Helper functions for high intensity colors
+    public static String redBright(String text) { return RED_BRIGHT + text + RESET; }
+    public static String greenBright(String text) { return GREEN_BRIGHT + text + RESET; }
+    public static String yellowBright(String text) { return YELLOW_BRIGHT + text + RESET; }
+    public static String blueBright(String text) { return BLUE_BRIGHT + text + RESET; }
+    public static String purpleBright(String text) { return PURPLE_BRIGHT + text + RESET; }
+    public static String cyanBright(String text) { return CYAN_BRIGHT + text + RESET; }
+    public static String whiteBright(String text) { return WHITE_BRIGHT + text + RESET; }
 }
