@@ -1,14 +1,14 @@
 package parade.renderer.impl;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
 import parade.common.Card;
 import parade.engine.AbstractGameEngine;
 import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
@@ -130,5 +130,10 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
+    }
+    
+    public String flipCard(Card card, int numCards) {
+        cardColour = card.getColour();
+
     }
 }
