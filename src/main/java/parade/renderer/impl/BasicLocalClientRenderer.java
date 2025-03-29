@@ -6,6 +6,7 @@ import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
 
+import java.util.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -53,16 +54,21 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         System.out.println();
         System.out.println(
                 "1. Add Player"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
         System.out.println(
                 "2. Add Computer"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
         System.out.println(
-                "3. Remove player/computer"
-                        + (players.isEmpty() ? " (Lobby is empty)" : ""));
+                "3. Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""));
         System.out.println(
                 "4. Start Game"
-                        + (players.size() < AbstractGameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
+                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
+                                ? " (Not enough players)"
+                                : ""));
         System.out.print("Please select an option: ");
     }
 
@@ -96,13 +102,17 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
-                "\n\nYour board\n===========================================================================");
+                "\n\n"
+                    + "Your board\n"
+                    + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
-                "\n\nYour hand\n==========================================================================");
+                "\n\n"
+                    + "Your hand\n"
+                    + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
@@ -130,5 +140,64 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
+    }
+
+    public String rendersSingleCard(Card card) {
+        String colorCode;
+
+        switch (card.getColour().toLowerCase()) {
+            case "red":
+                colorCode = ConsoleColors.RED_BACKGROUND_BRIGHT;
+                break;
+            case "blue":
+                colorCode = ConsoleColors.BLUE_BACKGROUND_BRIGHT;
+                break;
+            case "green":
+                colorCode = ConsoleColors.GREEN_BACKGROUND_BRIGHT;
+                break;
+            case "yellow":
+                colorCode = ConsoleColors.YELLOW_BACKGROUND_BRIGHT;
+                break;
+            case "purple":
+                colorCode = ConsoleColors.PURPLE_BACKGROUND_BRIGHT;
+                break;
+            case "orange":
+                colorCode = ConsoleColors.YELLOW_BACKGROUND; // No orange, yellow is closest
+                break;
+            default:
+                colorCode = ConsoleColors.BLACK_BACKGROUND;
+                break;
+        }
+
+        String reset = ConsoleColors.RESET;
+        String numberStr = String.valueOf(card.getNumber());
+        String colorName = card.getColour().toUpperCase();
+        int width = 18;
+
+        String top = "┌" + "─".repeat(width) + "┐";
+        String bottom = "└" + "─".repeat(width) + "┘";
+        String line1 = String.format("│ %-2s%s│", numberStr, " ".repeat(width - 3));
+        String line2 = String.format("│%s│", " ".repeat(width));
+        String line3 =
+                String.format(
+                        "│%"
+                                + ((width + colorName.length()) / 2)
+                                + "s%"
+                                + ((width - colorName.length()) / 2)
+                                + "s│",
+                        colorName,
+                        "");
+        String line4 = line2;
+        String line5 = String.format("│%s%2s │", " ".repeat(width - 3), numberStr);
+
+        return String.join(
+                "\n",
+                top,
+                colorCode + line1 + reset,
+                colorCode + line2 + reset,
+                colorCode + line3 + reset,
+                colorCode + line4 + reset,
+                colorCode + line5 + reset,
+                bottom);
     }
 }
