@@ -369,9 +369,6 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                 switch (clientRendererType) {
                     case "basic_local" -> new BasicLocalClientRenderer();
                     case "advanced_local" -> new AdvancedClientRenderer();
-                    case "basic_network" ->
-                            throw new UnsupportedOperationException(
-                                    "Basic network renderer is not supported for local game");
                     default ->
                             throw new IllegalStateException(
                                     "Unknown client renderer in settings: " + clientRendererType);
