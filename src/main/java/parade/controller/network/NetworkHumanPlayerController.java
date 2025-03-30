@@ -29,9 +29,6 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
     private BlockingQueue<AbstractClientData> lobbyDataQueue = new LinkedBlockingQueue<>();
     private boolean hasReplacedInitialQueue = false;
 
-    // Thread to listen for incoming data from the client
-    private final Thread listenThread;
-
     public NetworkHumanPlayerController(Socket socket)
             throws IOException,
                     NetworkFailureException,
@@ -44,7 +41,7 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
 
         this.player = initialHandShake();
 
-        this.listenThread = Thread.ofVirtual().start(this::listenForClientData);
+        Thread.ofVirtual().start(this::listenForClientData);
 
         logger.log("NetworkHumanPlayerController created for player: " + this.player.getName());
     }
