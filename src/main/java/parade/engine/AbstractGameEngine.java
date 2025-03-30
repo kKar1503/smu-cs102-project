@@ -6,14 +6,14 @@ import parade.controller.IPlayerController;
 import java.util.*;
 
 public abstract class AbstractGameEngine<T extends IPlayerController> {
-    public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
-    public static final int PARADE_SIZE = 6; // Number of cards in the parade
+    static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
+    static final int PARADE_SIZE = 6; // Number of cards in the parade
 
-    protected final Deck deck = new Deck(); // The deck of cards used in the game
-    protected final PlayerControllerManager<T> playerControllerManager;
-    protected final Parade parade; // The list of cards currently in the parade
+    final Deck deck = new Deck(); // The deck of cards used in the game
+    final PlayerControllerManager<T> playerControllerManager;
+    final Parade parade; // The list of cards currently in the parade
 
-    protected AbstractGameEngine(Lobby lobby) {
+    AbstractGameEngine(Lobby lobby) {
         playerControllerManager = new PlayerControllerManager<>(lobby);
         List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
@@ -28,7 +28,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      *
      * @return True if game should continue, false otherwise.
      */
-    protected boolean shouldGameContinue() {
+    boolean shouldGameContinue() {
         if (deck.isEmpty()) {
             // Game ends when the deck is empty
             return false;
@@ -45,7 +45,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
         return true;
     }
 
-    protected Map<T, Integer> tabulateScores() {
+    Map<T, Integer> tabulateScores() {
         Map<T, List<Card>> playerHands = new HashMap<>();
         for (T player : playerControllerManager.getPlayerControllers()) {
             playerHands.put(player, player.getPlayer().getHand());
@@ -76,7 +76,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      *     occurrences.
      * @throws IllegalArgumentException If the card list is null or contains null cards or colours.
      */
-    private Map<Colour, Integer> countColours(List<Card> cards) {
+    Map<Colour, Integer> countColours(List<Card> cards) {
         Map<Colour, Integer> colourCount = new HashMap<>();
 
         if (cards == null) {
@@ -110,8 +110,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or
      *     if the target player is not present in the map.
      */
-    public Map<T, List<Colour>> decideMajority(
-            Map<T, List<Card>> playerCards, T targetPlayerController) {
+    Map<T, List<Colour>> decideMajority(Map<T, List<Card>> playerCards, T targetPlayerController) {
 
         Player targetPlayer = targetPlayerController.getPlayer();
 
@@ -178,7 +177,7 @@ public abstract class AbstractGameEngine<T extends IPlayerController> {
      * @throws IllegalArgumentException If any argument is null, or if the target player does not
      *     have a card list.
      */
-    public int calculateScore(
+    int calculateScore(
             T targetPlayerController,
             Map<T, List<Card>> playerCards,
             Map<T, List<Colour>> majorityColours) {

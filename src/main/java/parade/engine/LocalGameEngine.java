@@ -1,4 +1,4 @@
-package parade.engine.impl;
+package parade.engine;
 
 import parade.common.*;
 import parade.common.state.client.AbstractClientData;
@@ -11,7 +11,6 @@ import parade.controller.IPlayerController;
 import parade.controller.local.ILocalPlayerController;
 import parade.controller.local.LocalComputerController;
 import parade.controller.local.LocalHumanController;
-import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.renderer.local.ClientRendererProvider;
@@ -40,12 +39,12 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         clientRenderer = setupClientRenderer();
     }
 
-    public void addPlayerController(ILocalPlayerController player) {
+    private void addPlayerController(ILocalPlayerController player) {
         playerControllerManager.add(player);
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
-    public boolean removePlayerController(ILocalPlayerController player) {
+    private boolean removePlayerController(ILocalPlayerController player) {
         boolean removed = playerControllerManager.remove(player);
         if (removed) {
             logger.logf("Player %s removed from the game", player.getPlayer().getName());
@@ -55,7 +54,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         return removed;
     }
 
-    public ILocalPlayerController removePlayerController(int index) {
+    private ILocalPlayerController removePlayerController(int index) {
         ILocalPlayerController removedPlayer = playerControllerManager.remove(index);
         if (removedPlayer != null) {
             logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
