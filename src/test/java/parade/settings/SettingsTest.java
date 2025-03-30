@@ -28,8 +28,8 @@ class SettingsTest {
 
     @Test
     void testLoadStringProperty() {
-        String host = settings.get(SettingKey.SERVER_HOST);
-        assertEquals("127.0.0.1", host, "SERVER_HOST should be 127.0.0.1");
+        String host = settings.get(SettingKey.GAMEPLAY_MODE);
+        assertEquals("local", host, "GAMEPLAY_MODE should be local");
     }
 
     @Test
