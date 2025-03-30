@@ -1,7 +1,8 @@
 # Development Guide
 
 This document will guide you through setting up the development environment,
-contributing to the project, and following the best practices to ensure a smooth development process.
+contributing to the project, and following the best practices to ensure a smooth development
+process.
 
 ## Table of Contents
 
@@ -39,7 +40,7 @@ Before you begin, ensure you have the following tools installed:
 
    ```bash
    git clone https://github.com/kKar1503/smu-cs102-project.git # With HTTPS
-   
+
    git clone git@github.com:kKar1503/smu-cs102-project.git # With SSH
    ```
 
@@ -51,10 +52,12 @@ Before you begin, ensure you have the following tools installed:
 
 3. **Import the project into your IDE:**
 
-   If you're using IntelliJ IDEA, you can open the project directly. For other IDEs, you might need to import the Maven
+   If you're using IntelliJ IDEA, you can open the project directly. For other IDEs, you might need
+   to import the Maven
    project.
 
-    - In IntelliJ, go to `File -> Open`, select the project directory, and IntelliJ will automatically recognize the
+    - In IntelliJ, go to `File -> Open`, select the project directory, and IntelliJ will
+      automatically recognize the
       Maven project. (_Look, it's just that good_)
 
 ---
@@ -78,26 +81,74 @@ This command will:
 
 ## Running the Project
 
-To run the project, use the following command:
+### Local Game Mode
+
+To run the project in local game mode, use the following command:
 
 ```bash
-java -jar target/parade-game-1.0.0.jar # Change the version number accordingly
+java -jar target/parade-game-1.0.0-local.jar # Change the version number accordingly
 ```
 
 There are also readily available scripts in [scripts](../scripts) directory.
 
 ```bash
 # Linux & MacOS users
-chmod +x ./scripts/run.sh
-./scripts/run.sh
+chmod +x ./scripts/run-local.sh
+./scripts/run-local.sh
 ```
 
 ```cmd
 # Windows users
-./scripts/run.bat
+./scripts/run-local.bat
 ```
 
-This will start the game. Follow the instructions in the terminal to interact with the game.
+This will start the game in local game mode. Follow the instructions in the terminal to interact
+with the game.
+
+### Network Game Mode
+
+The network game mode has two parts to the project. You will first need to run the server and then
+the client(s) in order to play the game.
+
+1. **Run the server:**
+
+   ```bash
+   java -jar target/parade-game-1.0.0-server.jar # Change the version number accordingly
+   ```
+
+   There are also readily available scripts in [scripts](../scripts) directory.
+
+   ```bash
+   # Linux & MacOS users
+   chmod +x ./scripts/run-server.sh
+   ./scripts/run-server.sh
+   ```
+
+   ```cmd
+   # Windows users
+   ./scripts/run-server.bat
+   ```
+
+2. **Run the client:**
+
+   Open a new terminal window (or on a separate device) and run the following command:
+
+   ```bash
+   java -jar target/parade-game-1.0.0-client.jar # Change the version number accordingly
+   ```
+
+   There are also readily available scripts in [scripts](../scripts) directory.
+
+   ```bash
+   # Linux & MacOS users
+   chmod +x ./scripts/run-client.sh
+   ./scripts/run-client.sh
+   ```
+
+   ```cmd
+   # Windows users
+   ./scripts/run-client.bat
+   ```
 
 ---
 
@@ -119,7 +170,8 @@ For team members, you should be able to contribute directly to the repository wi
 to fork the repository. However, to add the project to your own GitHub, I think it's still
 nice to just add a fork to your GitHub.
 
-1. **Fork the repository** and clone it to your local machine. (_Skip if you're added as contributor._)
+1. **Fork the repository** and clone it to your local machine. (_Skip if you're added as
+   contributor._)
 2. **Create a new branch** for your feature or bug fix:
 
    ```bash
@@ -152,11 +204,14 @@ nice to just add a fork to your GitHub.
 Please follow the coding conventions below to keep the project consistent:
 
 1. **Java Naming Conventions**: Use camelCase for variables and methods, and PascalCase for classes.
-2. **Comments**: Write clear and concise comments. Use Javadoc for class and method-level documentation.
+2. **Comments**: Write clear and concise comments. Use Javadoc for class and method-level
+   documentation.
 3. **Indentation**: Use 4 spaces for indentation (no tabs).
-4. **Test Coverage**: Write unit tests for new functionality and bug fixes. (_If you're familiar with writing tests._)
+4. **Test Coverage**: Write unit tests for new functionality and bug fixes. (_If you're familiar
+   with writing tests._)
 5. **Avoid Large Pull Requests**: Break large changes into smaller, manageable pull requests.
-6. **Styling**: [Google Java Format](https://github.com/google/google-java-format). Both IntelliJ & VSCode has
+6. **Styling**: [Google Java Format](https://github.com/google/google-java-format). Both IntelliJ &
+   VSCode has
    extensions to integrate Google Java Format.
     * [VSCode extension](https://marketplace.visualstudio.com/items?itemName=JoseVSeb.google-java-format-for-vs-code)
     * [IntelliJ plugin](https://plugins.jetbrains.com/plugin/8527-google-java-format)

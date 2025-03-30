@@ -7,4 +7,4 @@ for /f "delims=" %%i in ('mvn help:evaluate -Dexpression^=project.artifactId -q 
 for /f "delims=" %%i in ('mvn help:evaluate -Dexpression^=project.version -q -DforceStdout') do set VERSION=%%i
 
 :: Run the JAR file with the dynamically extracted artifactId and version
-java -jar target\%ARTIFACT_ID%-%VERSION%.jar
+java -jar target\%ARTIFACT_ID%-%VERSION%-local.jar
