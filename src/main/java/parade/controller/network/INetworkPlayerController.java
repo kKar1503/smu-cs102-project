@@ -5,6 +5,8 @@ import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.AbstractServerData;
 import parade.controller.IPlayerController;
 
+import java.util.concurrent.BlockingQueue;
+
 /**
  * The INetworkPlayerController interface defines the contract that a player controller should hold
  * for a network game engine.
@@ -16,7 +18,7 @@ import parade.controller.IPlayerController;
  * the client sends the data back to the server. This data when received, then will be processed by
  * the server using the handle method.
  */
-public interface INetworkPlayerController extends IPlayerController {
+public interface INetworkPlayerController extends IPlayerController, AutoCloseable {
     /**
      * Allows the server to send data to the player. This method is called when the server has
      * information to share with the player, such as the current game state or other players'
@@ -28,11 +30,25 @@ public interface INetworkPlayerController extends IPlayerController {
     void send(AbstractServerData serverData) throws NetworkFailureException;
 
     /**
-     * Handles the incoming data from the client. This method is called when the player controller
-     * receives data from the client, such as the player's action or other relevant information.
+     * Set client data queue of the lobby. This method assigns a queue to the player controller for
+     * transmitting all the data from the client socket to the server. The queue is used to deliver
+     * the data to the server.
      *
-     * @param clientData an {@link AbstractClientData} object which contains sufficient information
-     *     for the server to act.
+     * @param lobbyDataQueue the queue to be set for the client data
      */
-    void handle(AbstractClientData clientData) throws NetworkFailureException;
+    void setLobbyDataQueue(BlockingQueue<AbstractClientData> lobbyDataQueue);
+
+    /**
+     * Closes the player controller. This method is called when the player controller is no longer
+     * needed, such as when the game ends or the player disconnects.
+     *
+     * <p>This method should stop the controller from listening for incoming data and close any
+     * resources associated with the player controller, such as sockets or streams. This method also
+     * tells the controller to stop sending data to the server with the {@link BlockingQueue} set in
+     * the {@link #setLobbyDataQueue(BlockingQueue)} method.
+     *
+     * @throws Exception if an error occurs while closing the player controller
+     */
+    @Override
+    void close() throws Exception;
 }
