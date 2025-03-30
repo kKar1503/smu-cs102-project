@@ -93,13 +93,13 @@ There are also readily available scripts in [scripts](../scripts) directory.
 
 ```bash
 # Linux & MacOS users
-chmod +x ./scripts/run-local.sh
-./scripts/run-local.sh
+chmod +x ./scripts/run.sh
+./scripts/run.sh local
 ```
 
 ```cmd
 # Windows users
-./scripts/run-local.bat
+./scripts/run.bat local
 ```
 
 This will start the game in local game mode. Follow the instructions in the terminal to interact
@@ -120,13 +120,13 @@ the client(s) in order to play the game.
 
    ```bash
    # Linux & MacOS users
-   chmod +x ./scripts/run-server.sh
-   ./scripts/run-server.sh
+   chmod +x ./scripts/run.sh
+   ./scripts/run.sh server
    ```
 
    ```cmd
    # Windows users
-   ./scripts/run-server.bat
+   ./scripts/run.bat server
    ```
 
 2. **Run the client:**
@@ -141,13 +141,13 @@ the client(s) in order to play the game.
 
    ```bash
    # Linux & MacOS users
-   chmod +x ./scripts/run-client.sh
-   ./scripts/run-client.sh
+   chmod +x ./scripts/run.sh
+   ./scripts/run.sh client
    ```
 
    ```cmd
    # Windows users
-   ./scripts/run-client.bat
+   ./scripts/run.bat client
    ```
 
 ---
