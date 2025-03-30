@@ -23,4 +23,9 @@ public abstract class AbstractClientData implements Serializable {
     public ClientAction getClientAction() {
         return clientAction;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractClientData{caller=" + caller + ", clientAction=" + clientAction + '}';
+    }
 }
