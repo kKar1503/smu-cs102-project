@@ -5,85 +5,87 @@ import parade.common.exceptions.NetworkFailureException;
 import parade.common.exceptions.PlayerControllerInitialisationException;
 import parade.common.state.client.*;
 import parade.common.state.server.*;
+import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-public class NetworkHumanPlayerController implements INetworkPlayerController, Closeable {
+public class NetworkHumanPlayerController implements INetworkPlayerController {
+    private static final AbstractLogger logger = LoggerProvider.getInstance();
+
     private final Player player;
+    private volatile boolean running = true;
+
+    // Socket and streams for communication with the client
     private final Socket socket;
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
-    private volatile boolean running = true;
-    private final BlockingQueue<AbstractClientData> clientDataQueue = new LinkedBlockingQueue<>();
+
+    // Queue to hold incoming data from the client
+    private BlockingQueue<AbstractClientData> lobbyDataQueue = new LinkedBlockingQueue<>();
+    private boolean hasReplacedInitialQueue = false;
+
+    // Thread to listen for incoming data from the client
+    private final Thread listenThread;
 
     public NetworkHumanPlayerController(Socket socket)
-            throws IOException, NetworkFailureException, PlayerControllerInitialisationException {
+            throws IOException,
+                    NetworkFailureException,
+                    PlayerControllerInitialisationException,
+                    InterruptedException {
         this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.out.flush();
+        this.out.flush(); // Flush the stream to ensure the TCP header is sent first
         this.in = new ObjectInputStream(socket.getInputStream());
 
         this.player = initialHandShake();
 
-        Thread.ofVirtual().start(this::listenForClientData);
-        Thread.ofVirtual().start(this::processData);
+        this.listenThread = Thread.ofVirtual().start(this::listenForClientData);
 
-        LoggerProvider.getInstance()
-                .log("NetworkHumanPlayerController created for player: " + this.player.getName());
+        logger.log("NetworkHumanPlayerController created for player: " + this.player.getName());
     }
 
     private Player initialHandShake()
-            throws IOException, NetworkFailureException, PlayerControllerInitialisationException {
-        try {
-            readSingleInput(); // this sets a listener to listen for single input
-        } catch (NetworkFailureException | IOException e) {
-            // Failed to receive the data we need
-            LoggerProvider.getInstance().log("Failed to read connect data from input stream", e);
-            close();
-        }
+            throws IOException,
+                    NetworkFailureException,
+                    PlayerControllerInitialisationException,
+                    InterruptedException {
         AbstractClientData data;
         try {
-            data = clientDataQueue.poll(10_000L, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            // Thread was interrupted while waiting for data
-            LoggerProvider.getInstance().log("Thread interrupted while waiting for data", e);
+            data = readSingleInput(10_000);
+        } catch (NetworkFailureException | IOException e) {
+            // Failed to receive handshake data
+            logger.log("Failed to receive connect data", e);
             close();
-            throw new PlayerControllerInitialisationException(
-                    "clientDataQueue thread interrupted while waiting for data", e);
+            throw new PlayerControllerInitialisationException("Failed to receive connect data", e);
         }
         if (data == null) {
-            LoggerProvider.getInstance()
-                    .log("Failed to receive connect data from client, closing connection.");
-            send(new ServerConnectAckData(false, "Timeout waiting for connect data"));
-            this.socket.close();
-            throw new PlayerControllerInitialisationException(
-                    "Failed to receive connect data from client");
+            logger.log("Timed out waiting for connect data");
+            send(new ServerConnectAckData(false, "Timed out waited 10,000ms"));
+            close();
+            throw new PlayerControllerInitialisationException("Timed out receiving connect data");
         }
         if (!(data instanceof ClientConnectData connectData)) {
-            LoggerProvider.getInstance()
-                    .log("Invalid connect data, data type mismatch. Closing connection.");
+            logger.log("Invalid connect data, data type mismatch. Closing connection.");
             send(new ServerConnectAckData(false, "Invalid connect data"));
-            this.socket.close();
+            close();
             throw new PlayerControllerInitialisationException(
                     "Incoming data is not of type ClientConnectData");
         }
 
         Player caller = connectData.getCaller();
         if (caller == null || caller.getName() == null || caller.getName().isEmpty()) {
-            LoggerProvider.getInstance()
-                    .log("Invalid connect data, player name is invalid. Closing connection.");
+            logger.log("Invalid connect data, player name is invalid. Closing connection.");
             send(new ServerConnectAckData(false, "Invalid connect data"));
-            this.socket.close();
+            close();
             throw new PlayerControllerInitialisationException("Invalid player name");
         }
 
-        LoggerProvider.getInstance()
-                .logf("Initial handshake successful, player name: %s", caller.getName());
+        logger.logf("Initial handshake successful, player name: %s", caller.getName());
         send(new ServerConnectAckData(true, "Connected to the server! " + caller.getName()));
         return caller;
     }
@@ -99,31 +101,39 @@ public class NetworkHumanPlayerController implements INetworkPlayerController, C
     }
 
     @Override
-    public void handle(AbstractClientData clientData) throws NetworkFailureException {
-        switch (clientData) {
-            case ClientCardPlayData cardPlayData -> {}
-            case ClientPoisonPill poisonPill -> {
-                // This is to ensure that when the client is closed, the other thread is
-                // notified and can stop waiting for data
-                LoggerProvider.getInstance().log("Received poison pill, ignoring...");
-            }
-            default -> {
-                LoggerProvider.getInstance()
-                        .log("Unsupported client data type: " + clientData.getClientAction());
-                //                    throw new NetworkFailureException(
-                //                            "Unknown client data type: " +
-                // clientData.getClass().getSimpleName());
+    public void setLobbyDataQueue(BlockingQueue<AbstractClientData> lobbyDataQueue) {
+        if (!hasReplacedInitialQueue) {
+            logger.log("Replacing initial client data queue with new one");
+            hasReplacedInitialQueue = true;
+            // Move all the items from the old queue to the new one
+            while (!this.lobbyDataQueue.isEmpty()) {
+                lobbyDataQueue.offer(this.lobbyDataQueue.poll());
             }
         }
+        this.lobbyDataQueue = lobbyDataQueue;
     }
 
-    private void readSingleInput() throws NetworkFailureException, IOException {
+    private AbstractClientData readSingleInput(int timeInMs)
+            throws IOException, NetworkFailureException {
+        AbstractClientData clientData = null;
+        try {
+            socket.setSoTimeout(timeInMs);
+            clientData = readSingleInput();
+        } catch (SocketTimeoutException e) {
+            logger.log("Socket timeout while waiting for client data, returning null");
+        } finally {
+            socket.setSoTimeout(0);
+        }
+        return clientData;
+    }
+
+    private AbstractClientData readSingleInput() throws IOException, NetworkFailureException {
+        AbstractClientData clientData;
         try {
             Object inputObject = in.readObject();
-            if (inputObject instanceof AbstractClientData clientData) {
-                clientDataQueue.offer(clientData);
-                LoggerProvider.getInstance()
-                        .log("Received client data type: " + clientData.getClientAction());
+            if (inputObject instanceof AbstractClientData receivedClientData) {
+                clientData = receivedClientData;
+                logger.log("Received client data type: " + clientData);
             } else {
                 throw new NetworkFailureException(
                         "Server received data is not of type AbstractClientData");
@@ -131,55 +141,49 @@ public class NetworkHumanPlayerController implements INetworkPlayerController, C
         } catch (ClassNotFoundException e) {
             throw new NetworkFailureException("Invalid class for object input", e);
         }
+        return clientData;
     }
 
     public void listenForClientData() {
-        LoggerProvider.getInstance()
-                .logf("NetworkHumanPlayerController (%s) listening for data", player.getName());
+        logger.logf("NetworkHumanPlayerController (%s) listening for data", player.getName());
         try {
             while (running) {
+                logger.logf("NetworkHumanPlayerController (%s) waiting for data", player.getName());
                 try {
-                    readSingleInput();
+                    AbstractClientData clientData = readSingleInput();
+                    if (clientData == null) {
+                        logger.log("Received null client data, ignoring...");
+                    } else {
+                        // controller should not internally decide to act upon the data, it
+                        // should instead send the data over to the lobbyDataQueue and let the game
+                        // engine decides how it should handle the player state, because there is a
+                        // possibility that there are double sends of data etc, and the game engine
+                        // should be the one to decide how to handle that. Other situation like when
+                        // it's not the player's turn to act, but like something went wrong and some
+                        // of the player action data got sent over...
+                        logger.log("Forwarding client data to lobby data queue...");
+                        lobbyDataQueue.offer(clientData);
+                    }
                 } catch (NetworkFailureException e) {
-                    LoggerProvider.getInstance().log("Failed to read data from input stream", e);
+                    logger.log("Failed to read data from input stream", e);
                 }
             }
         } catch (EOFException e) {
-            LoggerProvider.getInstance().log("Connection closed by client");
+            logger.log("Connection closed by client");
         } catch (IOException e) {
-            LoggerProvider.getInstance().log("I/O error occurred", e);
+            logger.log("I/O error occurred", e);
         } catch (Exception e) {
-            LoggerProvider.getInstance().log("Unexpected error occurred", e);
+            logger.log("Unexpected error occurred", e);
         } finally {
             try {
                 close();
             } catch (IOException e) {
-                LoggerProvider.getInstance().log("Error closing connection", e);
+                logger.log("Error closing connection", e);
+            } catch (InterruptedException e) {
+                logger.log("Thread interrupted while closing connection", e);
             }
         }
-    }
-
-    public void processData() {
-        LoggerProvider.getInstance()
-                .logf("NetworkHumanPlayerController (%s) ready to process data", player.getName());
-        try {
-            while (running) {
-                AbstractClientData clientData = clientDataQueue.take();
-                LoggerProvider.getInstance()
-                        .log("Processing client data type: " + clientData.getClientAction());
-                handle(clientData);
-            }
-        } catch (NetworkFailureException | InterruptedException e) {
-            LoggerProvider.getInstance().log("Error processing client data", e);
-        } catch (Exception e) {
-            LoggerProvider.getInstance().log("Unexpected error occurred", e);
-        } finally {
-            try {
-                close();
-            } catch (IOException e) {
-                LoggerProvider.getInstance().log("Error closing connection", e);
-            }
-        }
+        logger.logf("NetworkHumanPlayerController (%s) listenThread closed", player.getName());
     }
 
     @Override
@@ -188,13 +192,15 @@ public class NetworkHumanPlayerController implements INetworkPlayerController, C
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException, InterruptedException {
         if (!running) {
             return;
         }
 
         running = false;
         socket.close();
-        clientDataQueue.offer(new ClientPoisonPill());
+        in.close();
+
+        logger.logf("NetworkHumanPlayerController (%s) closed", player.getName());
     }
 }
