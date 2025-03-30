@@ -30,8 +30,8 @@ public class PrettyLogger extends AbstractLogger {
                         .filter(loggerFrameFilter)
                         .map(StackTraceElement::toString)
                         .toList();
-        sb.append(ConsoleColors.RED).append(e);
-        stackTrace.forEach(x -> sb.append("    ").append(x));
+        sb.append(ConsoleColors.RED).append(e).append(System.lineSeparator());
+        stackTrace.forEach(x -> sb.append("    ").append(x).append(System.lineSeparator()));
         sb.append(ConsoleColors.RESET);
         writelnFlush(sb.toString());
     }
