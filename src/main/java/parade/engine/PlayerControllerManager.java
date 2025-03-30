@@ -6,12 +6,12 @@ import parade.controller.IPlayerController;
 
 import java.util.*;
 
-public class PlayerControllerManager<T extends IPlayerController> implements Iterator<T> {
+class PlayerControllerManager<T extends IPlayerController> implements Iterator<T> {
     private final Map<Player, T> playerControllersMap;
     private final Lobby lobby;
     private int currentPlayerIdx = 0;
 
-    public PlayerControllerManager(Lobby lobby) {
+    PlayerControllerManager(Lobby lobby) {
         if (lobby.size() > 0) {
             throw new IllegalArgumentException(
                     "Lobby must be empty to create a PlayerControllerManager");
@@ -27,7 +27,7 @@ public class PlayerControllerManager<T extends IPlayerController> implements Ite
      * @throws IllegalStateException if there are already 6 players in the list.
      * @throws IllegalArgumentException if the player controller already exists in the list.
      */
-    public void add(T playerController) throws IllegalArgumentException, IllegalStateException {
+    void add(T playerController) throws IllegalArgumentException, IllegalStateException {
         if (playerControllersMap.containsValue(playerController)) {
             throw new IllegalArgumentException(
                     "PlayerController already exists in the list: " + playerController);
@@ -53,7 +53,7 @@ public class PlayerControllerManager<T extends IPlayerController> implements Ite
         return currentPlayerIdx < lobby.size();
     }
 
-    public boolean remove(T playerController) {
+    boolean remove(T playerController) {
         // TODO: fix the remove to realign the index
         Player p = playerController.getPlayer();
         boolean exists = playerControllersMap.remove(p, playerController);
@@ -64,7 +64,7 @@ public class PlayerControllerManager<T extends IPlayerController> implements Ite
         return exists;
     }
 
-    public T remove(int index) {
+    T remove(int index) {
         // TODO: fix the remove to realign the index
         Player removedPlayer = lobby.remove(index);
         if (removedPlayer == null) {
@@ -74,15 +74,15 @@ public class PlayerControllerManager<T extends IPlayerController> implements Ite
         return playerControllersMap.remove(removedPlayer);
     }
 
-    public List<T> getPlayerControllers() {
+    List<T> getPlayerControllers() {
         return lobby.get().stream().map(playerControllersMap::get).toList();
     }
 
-    public List<Player> getPlayers() {
+    List<Player> getPlayers() {
         return lobby.get();
     }
 
-    public Lobby getLobby() {
+    Lobby getLobby() {
         return lobby;
     }
 }
