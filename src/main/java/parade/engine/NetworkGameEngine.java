@@ -13,6 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerController> {
     private static final AbstractLogger logger = LoggerProvider.getInstance();
+
     private final BlockingQueue<AbstractClientData> clientDataQueue = new LinkedBlockingQueue<>();
 
     public NetworkGameEngine(Lobby lobby, INetworkPlayerController owner) {
@@ -57,6 +58,24 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         return removedPlayer;
     }
 
+    public INetworkPlayerController removePlayerController(Player player) {
+        INetworkPlayerController removedPlayer = playerControllerManager.remove(player);
+        if (removedPlayer != null) {
+            logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
+        } else {
+            logger.logf("There is no controller for %s", player);
+        }
+        return removedPlayer;
+    }
+
+    public Lobby getLobby() {
+        return playerControllerManager.getLobby();
+    }
+
+    public List<INetworkPlayerController> getControllers() {
+        return playerControllerManager.getPlayerControllers();
+    }
+
     /**
      * Starts the game loop and manages game progression.
      *
@@ -64,7 +83,11 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
      */
     @Override
     public void start() throws IllegalStateException {
-        logger.log("Prompting user to start game in menu");
+        logger.log("Setting player controllers' data queue to that of the network game engine");
+        for (INetworkPlayerController playerController :
+                playerControllerManager.getPlayerControllers()) {
+            playerController.setLobbyDataQueue(clientDataQueue);
+        }
 
         if (!playerControllerManager.getLobby().isReady()) {
             logger.logf(
