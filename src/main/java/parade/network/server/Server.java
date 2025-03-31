@@ -1,4 +1,4 @@
-package parade.server;
+package parade.network.server;
 
 import parade.common.Lobby;
 import parade.common.Player;
@@ -122,9 +122,7 @@ public class Server implements AutoCloseable {
                 case ClientLobbyStartData lobbyStartData -> {}
                 case ClientLobbyCloseData lobbyCloseData -> lobbyClose(lobbyCloseData);
                 case ClientLobbyLeaveData lobbyLeaveData -> lobbyLeave(lobbyLeaveData);
-                default -> {
-                    logger.log("Received unsupported data type: " + data);
-                }
+                default -> logger.log("Received unsupported data type: " + data);
             }
         } catch (NetworkFailureException e) {
             logger.log("Network failure while sending server data to client", e);

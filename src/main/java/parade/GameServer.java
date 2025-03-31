@@ -2,7 +2,7 @@ package parade;
 
 import parade.controller.network.NetworkHumanPlayerController;
 import parade.logger.LoggerProvider;
-import parade.server.Server;
+import parade.network.server.Server;
 import parade.settings.Settings;
 
 import java.io.IOException;
