@@ -5,7 +5,7 @@ import parade.controller.IPlayerController;
 
 import java.util.*;
 
-public abstract class AbstractGameEngine<T extends IPlayerController> {
+abstract class AbstractGameEngine<T extends IPlayerController> {
     static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     static final int PARADE_SIZE = 6; // Number of cards in the parade
 
