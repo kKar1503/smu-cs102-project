@@ -74,6 +74,15 @@ class PlayerControllerManager<T extends IPlayerController> implements Iterator<T
         return playerControllersMap.remove(removedPlayer);
     }
 
+    T remove(Player player) {
+        boolean removed = lobby.remove(player);
+        if (!removed) {
+            return null;
+        }
+
+        return playerControllersMap.remove(player);
+    }
+
     List<T> getPlayerControllers() {
         return lobby.get().stream().map(playerControllersMap::get).toList();
     }
