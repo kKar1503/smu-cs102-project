@@ -200,4 +200,9 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
 
         logger.logf("NetworkHumanPlayerController (%s) closed", player.getName());
     }
+
+    @Override
+    public String toString() {
+        return "NetworkHumanPlayerController{player=" + player + ", running=" + running + '}';
+    }
 }
