@@ -106,4 +106,23 @@ public class Lobby implements Serializable {
     public boolean equals(Object obj) {
         return obj instanceof Lobby l && id.equals(l.id);
     }
+
+    @Override
+    public String toString() {
+        return "Lobby{id="
+                + id
+                + ", name='"
+                + name
+                + "', minPlayers="
+                + minPlayers
+                + ", maxPlayers="
+                + maxPlayers
+                + ", password='"
+                + password
+                + "', players="
+                + players
+                + ", owner="
+                + owner
+                + '}';
+    }
 }
