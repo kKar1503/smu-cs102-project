@@ -117,7 +117,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- Build Client.java -->
+                    <!-- Build GameClient.java -->
                     <execution>
                         <id>client</id>
                         <phase>package</phase>
@@ -129,7 +129,7 @@
                             <transformers>
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>parade.Client</mainClass>
+                                    <mainClass>parade.GameClient</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
