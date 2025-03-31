@@ -7,14 +7,14 @@ import java.io.Serial;
 public class ClientLobbyLeaveData extends AbstractClientData {
     @Serial private static final long serialVersionUID = 1076051152364398499L;
 
-    private final String lobbyName;
+    private final String lobbyId;
 
-    public ClientLobbyLeaveData(Player caller, String lobbyName) {
+    public ClientLobbyLeaveData(Player caller, String lobbyId) {
         super(caller, ClientAction.LOBBY_LEAVE);
-        this.lobbyName = lobbyName;
+        this.lobbyId = lobbyId;
     }
 
-    public String getLobbyName() {
-        return lobbyName;
+    public String getLobbyId() {
+        return lobbyId;
     }
 }

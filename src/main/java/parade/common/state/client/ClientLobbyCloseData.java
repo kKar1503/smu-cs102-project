@@ -7,20 +7,19 @@ import java.io.Serial;
 public class ClientLobbyCloseData extends AbstractClientData {
     @Serial private static final long serialVersionUID = -3424088172272211310L;
 
-    private final String lobbyName;
-    private final String lobbyPassword;
+    private final String lobbyId;
 
-    public ClientLobbyCloseData(Player caller, String lobbyName, String lobbyPassword) {
+    public ClientLobbyCloseData(Player caller, String lobbyId) {
         super(caller, ClientAction.LOBBY_CLOSE);
-        this.lobbyName = lobbyName;
-        this.lobbyPassword = lobbyPassword;
+        this.lobbyId = lobbyId;
     }
 
-    public String getLobbyName() {
-        return lobbyName;
+    public String getLobbyId() {
+        return lobbyId;
     }
 
-    public String getLobbyPassword() {
-        return lobbyPassword;
+    @Override
+    public String toString() {
+        return "ClientLobbyCloseData{lobbyId='" + lobbyId + "', super=" + super.toString() + '}';
     }
 }
