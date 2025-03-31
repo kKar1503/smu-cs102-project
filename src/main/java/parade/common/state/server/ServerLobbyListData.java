@@ -18,4 +18,14 @@ public class ServerLobbyListData extends AbstractServerData {
     public Lobby[] getLobbies() {
         return lobbies;
     }
+
+    @Override
+    public String toString() {
+        return "ServerLobbyListData{"
+                + "lobbies="
+                + Arrays.toString(lobbies)
+                + ", super="
+                + super.toString()
+                + '}';
+    }
 }
