@@ -68,6 +68,17 @@ public class Player implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Player player)) return false;
+        return Objects.equals(id, player.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
     public String toString() {
         return "Player{"
                 + "id='"
