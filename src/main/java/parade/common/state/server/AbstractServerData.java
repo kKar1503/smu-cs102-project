@@ -15,4 +15,9 @@ public abstract class AbstractServerData implements Serializable {
     public ServerAction getServerAction() {
         return serverAction;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractServerData{serverAction=" + serverAction + '}';
+    }
 }

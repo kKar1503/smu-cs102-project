@@ -21,4 +21,15 @@ public class ServerLobbyClosedData extends AbstractServerData {
     public String getReason() {
         return reason;
     }
+
+    @Override
+    public String toString() {
+        return "ServerLobbyClosedData{lobbyId='"
+                + lobbyId
+                + "', reason='"
+                + reason
+                + "', super="
+                + super.toString()
+                + '}';
+    }
 }
