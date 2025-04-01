@@ -7,11 +7,16 @@ import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.swing.*;
 
 public class AdvancedClientRenderer implements IClientRenderer {
     public AdvancedClientRenderer() {}
@@ -147,7 +152,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
     }
 
-    public static String rendersSingleCard(Card card) {
+    public String rendersSingleCard(Card card) {
         String colorCode;
 
         switch (card.getColour() + "") {
@@ -211,5 +216,125 @@ public class AdvancedClientRenderer implements IClientRenderer {
                 colorCode + line4 + reset,
                 colorCode + line5 + reset,
                 colorCode + bottom + reset);
+    }
+
+    public void renderRoll() {
+        String[] block = {
+            "╔══════════╗",
+            "║          ║",
+            "║ ROLLING  ║",
+            "║ DICE :)  ║",
+            "║          ║",
+            "╚══════════╝"
+        };
+
+        System.out.println("Shaking block...\n");
+
+        for (int i = 0; i < 15; i++) {
+            int offset = (int) (Math.random() * 6); // random indent 0–5
+            printBlockWithOffset(block, offset);
+
+            try {
+                Thread.sleep(100); // short delay for shaking effect
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            clearConsole();
+        }
+    }
+
+    private void printBlockWithOffset(String[] block, int offset) {
+        String space = " ".repeat(offset);
+        for (String line : block) {
+            System.out.println(space + line);
+        }
+    }
+
+    // This just prints many new lines to "clear" the screen for shaking effect
+    private void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    private String returnDice(int num) {
+        String[] toPrint = {};
+
+        String whiteBg = "\u001B[47m";
+        String blackText = "\u001B[30m";
+        String reset = "\u001B[0m";
+        
+        String[] dice1 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "║    o    ║" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+        
+
+        String[] dice2 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o       ║" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "║       o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+        
+        String[] dice3 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o       ║" + reset,
+            whiteBg + blackText + "║    o    ║" + reset,
+            whiteBg + blackText + "║       o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+        
+        String[] dice4 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+        
+        String[] dice5 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║    o    ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+        
+        String[] dice6 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+        
+        switch(num){
+            case 1:
+                toPrint = dice1;
+                break;
+            case 2:
+                toPrint = dice2;
+                break;
+            case 3:
+                toPrint = dice3;
+                break;
+            case 4:
+                toPrint = dice4;
+                break;
+            case 5:
+                toPrint = dice5;
+                break;
+            case 6:
+                toPrint = dice6;
+                break;
+        }
+
+        return String.join("\n", Arrays.stream(toPrint)
+                .toArray(String[]::new));
     }
 }
