@@ -53,16 +53,21 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         System.out.println();
         System.out.println(
                 "1. Add Player"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
         System.out.println(
                 "2. Add Computer"
-                        + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
         System.out.println(
-                "3. Remove player/computer"
-                        + (players.isEmpty() ? " (Lobby is empty)" : ""));
+                "3. Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""));
         System.out.println(
                 "4. Start Game"
-                        + (players.size() < AbstractGameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
+                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
+                                ? " (Not enough players)"
+                                : ""));
         System.out.print("Please select an option: ");
     }
 
@@ -96,13 +101,17 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
-                "\n\nYour board\n===========================================================================");
+                "\n\n"
+                    + "Your board\n"
+                    + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
-                "\n\nYour hand\n==========================================================================");
+                "\n\n"
+                    + "Your hand\n"
+                    + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
