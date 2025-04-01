@@ -158,6 +158,7 @@ public class Server implements AutoCloseable {
                         lobbyCreateData.getMaxPlayers(),
                         callerController.getPlayer());
         NetworkGameEngine gameEngine = new NetworkGameEngine(lobby, callerController);
+        holdingCell.remove(callerController.getPlayer());
         lobbyMap.put(lobby.getId(), gameEngine);
         callerController.send(
                 new ServerLobbyCreateAckData(
