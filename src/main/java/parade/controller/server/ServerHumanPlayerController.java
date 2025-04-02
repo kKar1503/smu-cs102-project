@@ -1,4 +1,4 @@
-package parade.controller.network;
+package parade.controller.server;
 
 import parade.common.Player;
 import parade.common.exceptions.NetworkFailureException;
@@ -14,7 +14,7 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class NetworkHumanPlayerController implements INetworkPlayerController {
+public class ServerHumanPlayerController implements IServerPlayerController {
     private static final AbstractLogger logger = LoggerProvider.getInstance();
 
     private final Player player;
@@ -29,7 +29,7 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
     private BlockingQueue<AbstractClientData> lobbyDataQueue = new LinkedBlockingQueue<>();
     private boolean hasReplacedInitialQueue = false;
 
-    public NetworkHumanPlayerController(Socket socket)
+    public ServerHumanPlayerController(Socket socket)
             throws IOException,
                     NetworkFailureException,
                     PlayerControllerInitialisationException,
@@ -43,7 +43,7 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
 
         Thread.ofVirtual().start(this::listenForClientData);
 
-        logger.log("NetworkHumanPlayerController created for player: " + this.player.getName());
+        logger.log("ServerHumanPlayerController created for player: " + this.player.getName());
     }
 
     private Player initialHandShake()
@@ -142,10 +142,10 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
     }
 
     public void listenForClientData() {
-        logger.logf("NetworkHumanPlayerController (%s) listening for data", player.getName());
+        logger.logf("ServerHumanPlayerController (%s) listening for data", player.getName());
         try {
             while (running) {
-                logger.logf("NetworkHumanPlayerController (%s) waiting for data", player.getName());
+                logger.logf("ServerHumanPlayerController (%s) waiting for data", player.getName());
                 try {
                     AbstractClientData clientData = readSingleInput();
                     if (clientData == null) {
@@ -180,7 +180,7 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
                 logger.log("Thread interrupted while closing connection", e);
             }
         }
-        logger.logf("NetworkHumanPlayerController (%s) listenThread closed", player.getName());
+        logger.logf("ServerHumanPlayerController (%s) listenThread closed", player.getName());
     }
 
     @Override
@@ -198,11 +198,11 @@ public class NetworkHumanPlayerController implements INetworkPlayerController {
         socket.close();
         in.close();
 
-        logger.logf("NetworkHumanPlayerController (%s) closed", player.getName());
+        logger.logf("ServerHumanPlayerController (%s) closed", player.getName());
     }
 
     @Override
     public String toString() {
-        return "NetworkHumanPlayerController{player=" + player + ", running=" + running + '}';
+        return "ServerHumanPlayerController{player=" + player + ", running=" + running + '}';
     }
 }

@@ -1,4 +1,4 @@
-package parade.controller.network;
+package parade.controller.server;
 
 import parade.common.exceptions.NetworkFailureException;
 import parade.common.state.client.AbstractClientData;
@@ -8,17 +8,17 @@ import parade.controller.IPlayerController;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * The INetworkPlayerController interface defines the contract that a player controller should hold
+ * The IServerPlayerController interface defines the contract that a player controller should hold
  * for a network game engine.
  *
- * <p>The INetworkPlayerController interface is less focused on being "network" but rather an
+ * <p>The IServerPlayerController interface is less focused on being "network" but rather an
  * asynchronous player controller interface. The difference from the ILocalPlayerController is that
  * the return of the send method is not expected to be immediate. The player controller can send
  * data to the client and without expecting any response. The response will later come in whenever
  * the client sends the data back to the server. This data when received, then will be processed by
  * the server using the handle method.
  */
-public interface INetworkPlayerController extends IPlayerController, AutoCloseable {
+public interface IServerPlayerController extends IPlayerController, AutoCloseable {
     /**
      * Allows the server to send data to the player. This method is called when the server has
      * information to share with the player, such as the current game state or other players'

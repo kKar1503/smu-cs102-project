@@ -6,8 +6,8 @@ import parade.common.exceptions.NetworkFailureException;
 import parade.common.exceptions.PlayerControllerInitialisationException;
 import parade.common.state.client.*;
 import parade.common.state.server.*;
-import parade.controller.network.INetworkPlayerController;
-import parade.controller.network.NetworkHumanPlayerController;
+import parade.controller.server.IServerPlayerController;
+import parade.controller.server.ServerHumanPlayerController;
 import parade.engine.NetworkGameEngine;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
@@ -28,11 +28,11 @@ public class Server implements AutoCloseable {
     private volatile boolean running = false;
 
     /**
-     * The holdingCell is a map of Player & NetworkHumanPlayerController objects that are waiting to
+     * The holdingCell is a map of Player & ServerHumanPlayerController objects that are waiting to
      * be assigned to a game. They are usually the ones waiting in a lobby doing nothing, pending to
      * either join a lobby, create a lobby, or do whatever funny thing they wanna do.
      */
-    private final Map<Player, NetworkHumanPlayerController> holdingCell = new HashMap<>();
+    private final Map<Player, ServerHumanPlayerController> holdingCell = new HashMap<>();
 
     /**
      * The lobbyMap is a map of lobby IDs and NetworkGameEngine objects that are currently active.
@@ -79,7 +79,7 @@ public class Server implements AutoCloseable {
                 socket.setKeepAlive(true); // Enable TCP keep-alive
 
                 // Accept incoming connections
-                NetworkHumanPlayerController controller = new NetworkHumanPlayerController(socket);
+                ServerHumanPlayerController controller = new ServerHumanPlayerController(socket);
                 controller.setLobbyDataQueue(clientDataQueue);
                 holdingCell.put(controller.getPlayer(), controller);
                 logger.log("Added new player to holding cell: " + controller.getPlayer());
@@ -131,7 +131,7 @@ public class Server implements AutoCloseable {
 
     private void lobbyList(ClientLobbyRequestListData lobbyRequestListData)
             throws NetworkFailureException {
-        NetworkHumanPlayerController callerController = getPrisoner(lobbyRequestListData);
+        ServerHumanPlayerController callerController = getPrisoner(lobbyRequestListData);
         if (callerController == null) {
             logger.log(
                     "Unknown caller: " + lobbyRequestListData.getCaller() + " - ignoring request");
@@ -144,7 +144,7 @@ public class Server implements AutoCloseable {
     }
 
     private void lobbyCreate(ClientLobbyCreateData lobbyCreateData) throws NetworkFailureException {
-        NetworkHumanPlayerController callerController = getPrisoner(lobbyCreateData);
+        ServerHumanPlayerController callerController = getPrisoner(lobbyCreateData);
         if (callerController == null) {
             logger.log("Unknown caller: " + lobbyCreateData.getCaller() + " - ignoring request");
             return;
@@ -185,8 +185,8 @@ public class Server implements AutoCloseable {
                             lobbyCloseData.getLobbyId(),
                             "Lobby closed by owner: " + owner.getName());
 
-            for (INetworkPlayerController controller : gameEngine.getControllers()) {
-                if (controller instanceof NetworkHumanPlayerController humanController) {
+            for (IServerPlayerController controller : gameEngine.getControllers()) {
+                if (controller instanceof ServerHumanPlayerController humanController) {
                     humanController.send(lobbyClosedData);
                     logger.logf("Informed player %s on lobby closure", humanController);
                     holdingCell.put(humanController.getPlayer(), humanController);
@@ -205,8 +205,8 @@ public class Server implements AutoCloseable {
             return;
         }
 
-        NetworkHumanPlayerController controller =
-                (NetworkHumanPlayerController)
+        ServerHumanPlayerController controller =
+                (ServerHumanPlayerController)
                         gameEngine.removePlayerController(lobbyLeaveData.getCaller());
         if (controller == null) {
             logger.log("Player not found in lobby: " + lobbyLeaveData.getCaller());
@@ -217,8 +217,8 @@ public class Server implements AutoCloseable {
 
         ServerLobbyPlayerLeftData lobbyPlayerLeftData =
                 new ServerLobbyPlayerLeftData(lobbyLeaveData.getCaller());
-        for (INetworkPlayerController player : gameEngine.getControllers()) {
-            if (player instanceof NetworkHumanPlayerController humanController) {
+        for (IServerPlayerController player : gameEngine.getControllers()) {
+            if (player instanceof ServerHumanPlayerController humanController) {
                 humanController.send(lobbyPlayerLeftData);
                 logger.logf("Informed player %s on lobby player left", humanController);
             }
@@ -232,7 +232,7 @@ public class Server implements AutoCloseable {
     }
 
     private void lobbyJoin(ClientLobbyJoinData lobbyJoinData) throws NetworkFailureException {
-        NetworkHumanPlayerController callerController = getPrisoner(lobbyJoinData);
+        ServerHumanPlayerController callerController = getPrisoner(lobbyJoinData);
         if (callerController == null) {
             logger.log("Unknown caller: " + lobbyJoinData.getCaller() + " - ignoring request");
             return;
@@ -258,8 +258,8 @@ public class Server implements AutoCloseable {
             return;
         }
 
-        for (INetworkPlayerController player : gameEngine.getControllers()) {
-            if (player instanceof NetworkHumanPlayerController humanController) {
+        for (IServerPlayerController player : gameEngine.getControllers()) {
+            if (player instanceof ServerHumanPlayerController humanController) {
                 humanController.send(new ServerLobbyPlayerJoinedData(callerController.getPlayer()));
                 logger.logf(
                         "Informed player %s on lobby player %s joined",
@@ -274,8 +274,8 @@ public class Server implements AutoCloseable {
         callerController.send(lobbyJoinAckData);
     }
 
-    private NetworkHumanPlayerController getPrisoner(AbstractClientData data) {
-        NetworkHumanPlayerController controller = holdingCell.get(data.getCaller());
+    private ServerHumanPlayerController getPrisoner(AbstractClientData data) {
+        ServerHumanPlayerController controller = holdingCell.get(data.getCaller());
         if (controller == null) {
             logger.log("Player not found in holding cell: " + data.getCaller());
             return null;
@@ -294,7 +294,7 @@ public class Server implements AutoCloseable {
         serverSocket.close();
         logger.log("Server closed");
 
-        for (NetworkHumanPlayerController controller : holdingCell.values()) {
+        for (ServerHumanPlayerController controller : holdingCell.values()) {
             try {
                 controller.close();
             } catch (Exception e) {

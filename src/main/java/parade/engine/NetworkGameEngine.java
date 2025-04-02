@@ -3,7 +3,7 @@ package parade.engine;
 import parade.common.*;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.ServerPlayerTurnData;
-import parade.controller.network.INetworkPlayerController;
+import parade.controller.server.IServerPlayerController;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 
@@ -11,34 +11,31 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerController> {
+public class NetworkGameEngine extends AbstractGameEngine<IServerPlayerController> {
     private static final AbstractLogger logger = LoggerProvider.getInstance();
 
     private final BlockingQueue<AbstractClientData> clientDataQueue = new LinkedBlockingQueue<>();
 
-    public NetworkGameEngine(Lobby lobby, INetworkPlayerController owner) {
+    public NetworkGameEngine(Lobby lobby, IServerPlayerController owner) {
         super(lobby);
         addPlayerController(owner);
     }
 
-    public NetworkGameEngine(String lobbyName, int maxPlayers, INetworkPlayerController owner) {
+    public NetworkGameEngine(String lobbyName, int maxPlayers, IServerPlayerController owner) {
         this(new Lobby(lobbyName, 2, maxPlayers, owner.getPlayer()), owner);
     }
 
     public NetworkGameEngine(
-            String lobbyName,
-            String lobbyPassword,
-            int maxPlayers,
-            INetworkPlayerController owner) {
+            String lobbyName, String lobbyPassword, int maxPlayers, IServerPlayerController owner) {
         this(new Lobby(lobbyName, lobbyPassword, 2, maxPlayers, owner.getPlayer()), owner);
     }
 
-    public void addPlayerController(INetworkPlayerController player) {
+    public void addPlayerController(IServerPlayerController player) {
         playerControllerManager.add(player);
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
-    public boolean removePlayerController(INetworkPlayerController player) {
+    public boolean removePlayerController(IServerPlayerController player) {
         boolean removed = playerControllerManager.remove(player);
         if (removed) {
             logger.logf("Player %s removed from the game", player.getPlayer().getName());
@@ -48,8 +45,8 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         return removed;
     }
 
-    public INetworkPlayerController removePlayerController(int index) {
-        INetworkPlayerController removedPlayer = playerControllerManager.remove(index);
+    public IServerPlayerController removePlayerController(int index) {
+        IServerPlayerController removedPlayer = playerControllerManager.remove(index);
         if (removedPlayer != null) {
             logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
         } else {
@@ -58,8 +55,8 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         return removedPlayer;
     }
 
-    public INetworkPlayerController removePlayerController(Player player) {
-        INetworkPlayerController removedPlayer = playerControllerManager.remove(player);
+    public IServerPlayerController removePlayerController(Player player) {
+        IServerPlayerController removedPlayer = playerControllerManager.remove(player);
         if (removedPlayer != null) {
             logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
         } else {
@@ -72,7 +69,7 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         return playerControllerManager.getLobby();
     }
 
-    public List<INetworkPlayerController> getControllers() {
+    public List<IServerPlayerController> getControllers() {
         return playerControllerManager.getPlayerControllers();
     }
 
@@ -84,7 +81,7 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
     @Override
     public void start() throws IllegalStateException {
         logger.log("Setting player controllers' data queue to that of the network game engine");
-        for (INetworkPlayerController playerController :
+        for (IServerPlayerController playerController :
                 playerControllerManager.getPlayerControllers()) {
             playerController.setLobbyDataQueue(clientDataQueue);
         }
@@ -108,11 +105,11 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
         // card but alternating between players
-        List<INetworkPlayerController> playerControllers =
+        List<IServerPlayerController> playerControllers =
                 playerControllerManager.getPlayerControllers();
         for (int i = 0; i < playerControllers.size(); i++) {
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
-                INetworkPlayerController playerController = playerControllers.get(i);
+                IServerPlayerController playerController = playerControllers.get(i);
                 Card drawnCard = drawnCards.get(i + playerControllers.size() * j);
                 playerController.getPlayer().addToHand(drawnCard);
                 logger.logf("%s drew: %s", playerController.getPlayer().getName(), drawnCard);
@@ -123,7 +120,7 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            INetworkPlayerController player = playerControllerManager.next();
+            IServerPlayerController player = playerControllerManager.next();
 
             // Draw a card from the deck for the player
             Card drawnCard = deck.pop();
@@ -144,7 +141,7 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         // After the game loop finishes, the extra round is played.
         logger.log("Game loop finished, running final round");
         for (int i = 0; i < playerControllers.size(); i++) {
-            INetworkPlayerController player = playerControllerManager.next();
+            IServerPlayerController player = playerControllerManager.next();
             playerPlayCard(
                     player,
                     new ServerPlayerTurnData(
@@ -156,21 +153,21 @@ public class NetworkGameEngine extends AbstractGameEngine<INetworkPlayerControll
         }
 
         logger.log("Tabulating scores");
-        Map<INetworkPlayerController, Integer> playerScores = tabulateScores();
+        Map<IServerPlayerController, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         declareWinner(playerScores);
     }
 
     private void playerPlayCard(
-            INetworkPlayerController player, ServerPlayerTurnData playerTurnData) {}
+            IServerPlayerController player, ServerPlayerTurnData playerTurnData) {}
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<INetworkPlayerController, Integer> playerScores) {
-        INetworkPlayerController winner = null;
+    private void declareWinner(Map<IServerPlayerController, Integer> playerScores) {
+        IServerPlayerController winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<INetworkPlayerController, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<IServerPlayerController, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();

@@ -8,7 +8,7 @@ import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerLobbyClosedData;
 import parade.common.state.server.ServerLobbyCreateAckData;
 import parade.common.state.server.ServerLobbyListData;
-import parade.controller.network.NetworkHumanPlayerController;
+import parade.controller.server.ServerHumanPlayerController;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.logger.impl.JsonLogger;
@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class GameClient {
-    private static NetworkHumanPlayerController player;
+    private static ServerHumanPlayerController player;
     private static final Scanner sc = new Scanner(System.in);
     private static final BlockingQueue<AbstractServerData> serverDataQueue =
             new LinkedBlockingQueue<>();
@@ -119,7 +119,7 @@ public class GameClient {
     //        renderer.renderWelcome();
     //        renderer.renderPlayerNamePrompt();
     //        String name = sc.nextLine();
-    //        player = new NetworkHumanPlayerController(name);
+    //        player = new ServerHumanPlayerController(name);
     //
     //        renderer.renderMessage("Connecting to game server... (press 'x' to cancel)");
     //        ServerConnectAckData connectAckData;
