@@ -3,7 +3,7 @@ package parade.engine;
 import parade.common.*;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.ServerPlayerTurnData;
-import parade.controller.server.IServerPlayerController;
+import parade.controller.network.server.IServerPlayerController;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 

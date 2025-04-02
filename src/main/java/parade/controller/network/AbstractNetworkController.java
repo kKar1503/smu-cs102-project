@@ -27,7 +27,7 @@ public class AbstractNetworkController<Send extends Serializable, Recv extends S
 
     protected final Class<Recv> recvType;
 
-    protected AbstractNetworkController(Socket socket, Class<Recv> recvType) throws Exception {
+    protected AbstractNetworkController(Socket socket, Class<Recv> recvType) throws IOException {
         this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.out.flush(); // Flush the stream to ensure the TCP header is sent first
@@ -180,8 +180,8 @@ public class AbstractNetworkController<Send extends Serializable, Recv extends S
     }
 
     @Override
-    public void close() throws Exception {
-        if (!running) {
+    public void close() throws IOException {
+        if (!running && socket.isClosed()) {
             LOGGER.log("Controller is already closed");
             return;
         }
