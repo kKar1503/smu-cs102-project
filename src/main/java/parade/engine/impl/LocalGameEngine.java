@@ -223,16 +223,28 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Dealing %d cards to %d players", numCardsToDraw, getPlayersCount());
         List<Card> drawnCards = drawFromDeck(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+
+        // "Roll" a dice to decide who starts first
+        // Generate a number from 0 to 6
+        Random dice = new Random();
+        int diceRoll = dice.nextInt(6) + 1;
+        // Sets the current player based on the dice roll
+        setCurrentPlayer(diceRoll);
+        logger.logf("Dice roll = %d, Starting player: %s", diceRoll, getCurrentPlayer().getName());
+        clientRenderer.renderf("Dice roll: %d, %s will be starting first!\n", diceRoll, getCurrentPlayer().getName());
+        
+
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayer player = getPlayer(i);
+            IPlayer player = getCurrentPlayer();
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.draw(drawnCard);
                 logger.logf("%s drew: %s", player.getName(), drawnCard);
             }
+            nextPlayer();
         }
 
         // Game loop continues until the deck is empty or an end condition is met
@@ -274,6 +286,26 @@ public class LocalGameEngine extends AbstractGameEngine {
             }
             nextPlayer();
         }
+
+        // Add remaining cards in players' hand to their board for score calculation
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            player.addToBoard(player.getHand());
+            nextPlayer();
+        }
+
+        //Debugger
+        System.out.println("===============BOARD DEBUGGER===========================");
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            System.out.printf("                   %s Board\n", player.getName());
+            for (Card card : player.getBoard()) {
+                System.out.print(card);
+            }
+            System.out.println();
+            nextPlayer();
+        }
+        System.out.println("=======================END OF BOARD DEBUGGER======================");
 
         logger.log("Tabulating scores");
         Map<IPlayer, Integer> playerScores = tabulateScores();

@@ -21,6 +21,15 @@ public class Lobby {
         return players.get(currentPlayerIdx);
     }
 
+    /**
+     * Sets the current player to be a specific index
+     * 
+     * @param idx The index of the player
+     */
+    public void setCurrentPlayer(int idx) {
+        currentPlayerIdx = (idx - 1) % players.size();
+    }
+
     public List<IPlayer> getPlayers() {
         return this.players;
     }

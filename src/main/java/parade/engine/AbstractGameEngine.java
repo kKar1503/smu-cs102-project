@@ -81,6 +81,15 @@ public abstract class AbstractGameEngine {
         return lobby.getCurrentPlayer();
     }
 
+    /**
+     * Sets the current player to be a specific index
+     * 
+     * @param idx The index of the player
+     */
+    protected void setCurrentPlayer(int idx) {
+        lobby.setCurrentPlayer(idx);
+    }
+
     /** Advances to the next player by delegating to the Lobby. */
     protected void nextPlayer() {
         lobby.nextPlayer();
@@ -142,7 +151,7 @@ public abstract class AbstractGameEngine {
         //Debugging
         System.out.println("=============DEBUGGING=================");
         System.out.println("           " + deck.size() + "           ");
-        System.out.println("========================================");
+        System.out.println("========================================\n");
         return deck.pop();
     }
 
@@ -198,21 +207,28 @@ public abstract class AbstractGameEngine {
     }
 
     protected Map<IPlayer, Integer> tabulateScores() {
-        Map<IPlayer, List<Card>> playerHands = new HashMap<>();
+        Map<IPlayer, List<Card>> playerBoards = new HashMap<>();
         for (IPlayer player : players) {
-            playerHands.put(player, player.getHand());
+            playerBoards.put(player, player.getBoard());
         }
 
         // Calculate majority colours for each player
         Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
         for (IPlayer player : players) {
-            majorityColours.put(player, decideMajority(playerHands, player).get(player));
+            majorityColours.put(player, decideMajority(playerBoards, player).get(player));
+            //DEBUGGER
+            System.out.println("======================DEBUGGER====================");
+            System.out.println("             PLAYER: " + player.getName());
+            for (Colour colourDebug : majorityColours.get(player)) {
+                System.out.println("    MAJORITY COLOURS:       " + colourDebug + "               ");
+            }
+            System.out.println("============END OF DEBUGGER ==========================\n");
         }
 
         Map<IPlayer, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
         for (IPlayer player : players) {
-            int score = calculateScore(player, playerHands, majorityColours);
+            int score = calculateScore(player, playerBoards, majorityColours);
             playerScores.put(player, score);
         }
 
@@ -329,31 +345,36 @@ public abstract class AbstractGameEngine {
      */
     public int calculateScore(
             IPlayer targetPlayer,
-            Map<IPlayer, List<Card>> playerCards,
+            Map<IPlayer, List<Card>> playerBoards,
             Map<IPlayer, List<Colour>> majorityColours) {
         int score = 0;
-        if (targetPlayer == null || playerCards == null || majorityColours == null) {
+        if (targetPlayer == null || playerBoards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");
         }
-        List<Card> playerCardList = playerCards.get(targetPlayer);
-        if (playerCardList == null) {
+        List<Card> playerBoardList = playerBoards.get(targetPlayer);
+        if (playerBoardList == null) {
             throw new IllegalArgumentException("Target player has no card list.");
         }
 
         List<Colour> playerMajorityColours =
-                majorityColours.getOrDefault(targetPlayer, new ArrayList<>());
+                majorityColours.get(targetPlayer);
 
-        for (Card card : playerCardList) {
+        for (Card card : playerBoardList) {
             if (card == null || card.getColour() == null) {
                 throw new IllegalArgumentException("Card or card colour cannot be null.");
             }
-
+            System.out.println("==============DEBUGGER==========================");
+            System.out.println("               CALCULATION OF SCORE FOR PLAYER: " + targetPlayer.getName());
             // Only add the value of the card if it's NOT in the player's majority colours
-            if (!playerMajorityColours.contains(card.getColour())) {
-                score += card.getNumber();
-            } else {
+            if (playerMajorityColours.contains(card.getColour())) {
                 score += 1;
+                System.out.println("      1 point added. COLOUR:" + card.getColour());
+            } else {
+                score += card.getNumber();
+                System.out.printf("        %d points added. COLOUR: %s", card.getNumber(), card.getColour());
             }
+
+            System.out.println("==============END OF DEBUGGER==========================\n\n");
         }
 
         return score;
