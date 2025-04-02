@@ -18,6 +18,8 @@ import parade.settings.Settings;
 
 import java.util.*;
 
+import javax.swing.Renderer;
+
 /**
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
@@ -238,22 +240,38 @@ public class LocalGameEngine extends AbstractGameEngine {
         while (shouldGameContinue()) {
             // Each player plays a card
             IPlayer player = getCurrentPlayer();
+            playerPlayCard(player); // Play a card from their hand
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
             player.draw(drawnCard);
             logger.logf("%s drew: %s", player.getName(), drawnCard);
 
-            playerPlayCard(player); // Play a card from their hand
+
             nextPlayer();
         }
+
         logger.logf("Game loop finished");
 
         // After the game loop finishes, the extra round is played.
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
+        // Each player plays their last card
         for (int i = 0; i < getPlayersCount(); i++) {
             playerPlayCard(getCurrentPlayer());
+            nextPlayer();
+        }
+
+        // Each player chooses 2 cards to discard
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            logger.logf("%s choosing 2 cards to discard.", player.getName());
+
+            for (int j = 0; j < 2; j++) {
+                Card discardedCard = player.discardCard(getParadeCards());
+                logger.logf("%s discarded: %s", player.getName(), discardedCard);
+                clientRenderer.renderln(player.getName() + " discarded: " + discardedCard);
+            }
             nextPlayer();
         }
 

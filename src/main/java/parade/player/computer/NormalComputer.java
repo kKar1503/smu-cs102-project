@@ -3,6 +3,7 @@ package parade.player.computer;
 import parade.common.Card;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
@@ -44,6 +45,12 @@ public class NormalComputer extends Computer {
             }
         }
         return bestCard;
+    }
+
+    @Override
+    public Card discardCard(List<Card> parade) {
+        Random rand = new Random();
+        return hand.get(rand.nextInt(hand.size())); // Randomly picks any card to discard.
     }
 
     /**

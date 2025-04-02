@@ -11,7 +11,7 @@ import java.util.*;
 public abstract class AbstractGameEngine {
     public static final int MIN_PLAYERS = 2; // Minimum number of players required to start the game
     public static final int MAX_PLAYERS = 6; // Maximum number of players allowed
-    public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
+    public static final int INITIAL_CARDS_PER_PLAYER = 5; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
     private final List<IPlayer> players = new ArrayList<>(); // List of players in the game
@@ -139,6 +139,10 @@ public abstract class AbstractGameEngine {
      * @return The drawn card.
      */
     protected Card drawFromDeck() {
+        //Debugging
+        System.out.println("=============DEBUGGING=================");
+        System.out.println("           " + deck.size() + "           ");
+        System.out.println("========================================");
         return deck.pop();
     }
 

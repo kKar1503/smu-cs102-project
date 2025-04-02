@@ -4,6 +4,7 @@ import parade.common.Card;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
@@ -57,6 +58,12 @@ public class HardComputer extends Computer {
         }
 
         return bestCard;
+    }
+
+    @Override
+    public Card discardCard(List<Card> parade) {
+        Random rand = new Random();
+        return hand.get(rand.nextInt(hand.size())); // Randomly picks any card to discard.
     }
 
     /**

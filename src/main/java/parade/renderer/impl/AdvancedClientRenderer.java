@@ -80,7 +80,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
     public void renderComputerDifficulty() {};
 
     @Override
-    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
+    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade, boolean toDiscard) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
@@ -111,7 +111,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
-        System.out.print("\n\nSelect a card to play:");
+        System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
 
     @Override
