@@ -4,6 +4,7 @@ import parade.common.state.client.AbstractClientData;
 import parade.common.state.server.AbstractServerData;
 import parade.controller.IPlayerController;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.BlockingQueue;
  * the client sends the data back to the server. This data when received, then will be processed by
  * the server's game engine.
  */
-public interface IServerPlayerController extends IPlayerController, AutoCloseable {
+public interface IServerPlayerController extends IPlayerController, Closeable {
     /**
      * Allows the server to send data to the player. This method is called when the server has
      * information to share with the player, such as the current game state or other players'
@@ -30,25 +31,11 @@ public interface IServerPlayerController extends IPlayerController, AutoCloseabl
     void send(AbstractServerData serverData) throws IOException;
 
     /**
-     * Set client data queue of the lobby. This method assigns a queue to the player controller for
-     * transmitting all the data from the client socket to the server. The queue is used to deliver
-     * the data to the server.
+     * Allows the game engine to receive data from the player. This method is called when the game
+     * engine takes over the PlayerController from the server.
      *
-     * @param recvDataQueue the queue to be set for the client data
+     * @param recvDataQueue a {@link BlockingQueue} of {@link AbstractClientData} objects which
+     *     contains information from the player to be processed by the game engine.
      */
     void setRecvDataQueue(BlockingQueue<AbstractClientData> recvDataQueue);
-
-    /**
-     * Closes the player controller. This method is called when the player controller is no longer
-     * needed, such as when the game ends or the player disconnects.
-     *
-     * <p>This method should stop the controller from listening for incoming data and close any
-     * resources associated with the player controller, such as sockets or streams. This method also
-     * tells the controller to stop sending data to the server with the {@link BlockingQueue} set in
-     * the {@link #setRecvDataQueue(BlockingQueue)} method.
-     *
-     * @throws Exception if an error occurs while closing the player controller
-     */
-    @Override
-    void close() throws Exception;
 }

@@ -12,17 +12,19 @@ import parade.logger.LoggerProvider;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
 public class ClientHumanPlayerController
         extends AbstractNetworkController<AbstractClientData, AbstractServerData>
-        implements IClientPlayerController, AutoCloseable {
+        implements IClientPlayerController {
     private static final AbstractLogger LOGGER = LoggerProvider.getInstance();
 
     private final Player player;
 
-    public ClientHumanPlayerController(Socket socket, Player player)
+    public ClientHumanPlayerController(
+            Socket socket, Player player, BlockingQueue<AbstractServerData> serverQueue)
             throws IOException, NetworkFailureException {
-        super(socket, AbstractServerData.class);
+        super(socket, serverQueue, AbstractServerData.class);
         this.player = player;
 
         initiateHandshake();

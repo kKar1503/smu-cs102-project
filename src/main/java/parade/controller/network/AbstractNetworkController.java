@@ -8,10 +8,9 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class AbstractNetworkController<Send extends Serializable, Recv extends Serializable>
-        implements AutoCloseable {
+        implements Closeable {
     private static final AbstractLogger LOGGER = LoggerProvider.getInstance();
 
     protected volatile boolean running = false;
@@ -20,18 +19,31 @@ public class AbstractNetworkController<Send extends Serializable, Recv extends S
     protected final ObjectInputStream in;
     protected final ObjectOutputStream out;
 
-    protected BlockingQueue<Recv> recvDataQueue = new LinkedBlockingQueue<>();
-    protected boolean hasReplacedInitialQueue = false;
+    protected BlockingQueue<Recv> recvDataQueue;
 
     protected Thread listenThread = Thread.ofVirtual().unstarted(this::listenForData);
 
     protected final Class<Recv> recvType;
 
-    protected AbstractNetworkController(Socket socket, Class<Recv> recvType) throws IOException {
+    protected AbstractNetworkController(
+            Socket socket, BlockingQueue<Recv> recvDataQueue, Class<Recv> recvType)
+            throws IOException {
+        if (socket == null) {
+            throw new IllegalArgumentException("Socket cannot be null");
+        }
         this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.out.flush(); // Flush the stream to ensure the TCP header is sent first
         this.in = new ObjectInputStream(socket.getInputStream());
+
+        if (recvDataQueue == null) {
+            throw new IllegalArgumentException("recvDataQueue cannot be null");
+        }
+        this.recvDataQueue = recvDataQueue;
+
+        if (recvType == null) {
+            throw new IllegalArgumentException("recvType cannot be null");
+        }
         this.recvType = recvType;
     }
 
@@ -51,31 +63,12 @@ public class AbstractNetworkController<Send extends Serializable, Recv extends S
     }
 
     /**
-     * setRecvDataQueue is a stateful method that sets the receiver data queue for the player
-     * controller.
+     * Sets the recvDataQueue to the specified BlockingQueue. This method is used to change where
+     * the received data is sent.
      *
-     * <p>The AbstractNetworkController initially stores a queue to contain the data from the socket
-     * InputStream from the other end of the socket. When this method is called, it transfers all
-     * the data over to the recvDataQueue.
-     *
-     * <p>Subsequent calls to this method will not transfer the data again, but will replace the
-     * recvDataQueue with the new one.
-     *
-     * @param recvDataQueue the queue to be set for the receiver data
+     * @param recvDataQueue the BlockingQueue to set
      */
     public void setRecvDataQueue(BlockingQueue<Recv> recvDataQueue) {
-        if (recvDataQueue == null) {
-            throw new IllegalArgumentException("recvDataQueue cannot be null");
-        }
-
-        if (!hasReplacedInitialQueue) {
-            LOGGER.log("Replacing initial receiver data queue with new one");
-            hasReplacedInitialQueue = true;
-            // Move all the items from the old queue to the new one
-            while (!this.recvDataQueue.isEmpty()) {
-                recvDataQueue.offer(this.recvDataQueue.poll());
-            }
-        }
         this.recvDataQueue = recvDataQueue;
     }
 
@@ -163,16 +156,24 @@ public class AbstractNetworkController<Send extends Serializable, Recv extends S
                 }
             }
         } catch (EOFException e) {
-            LOGGER.log("Connection closed by client", e);
+            if (running) {
+                LOGGER.log("Connection closed by the other end");
+            }
         } catch (IOException e) {
-            LOGGER.log("I/O error occurred", e);
+            if (running) {
+                LOGGER.log("I/O error occurred", e);
+            }
         } catch (Exception e) {
-            LOGGER.log("Unexpected error occurred", e);
+            if (running) {
+                LOGGER.log("Unexpected error occurred", e);
+            }
         } finally {
-            try {
-                close();
-            } catch (Exception e) {
-                LOGGER.log("Failed to close controller", e);
+            if (running) {
+                try {
+                    close();
+                } catch (Exception e) {
+                    LOGGER.log("Failed to close controller", e);
+                }
             }
         }
 
@@ -187,6 +188,9 @@ public class AbstractNetworkController<Send extends Serializable, Recv extends S
         }
 
         running = false;
+        out.flush(); // Flush all data before closing
+        out.close(); // Close the output stream first to ensure all data is sent
+        in.close(); // Close the input stream first to avoid blocking on read
         socket.close();
         LOGGER.log("Controller closed");
     }

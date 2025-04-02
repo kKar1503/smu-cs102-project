@@ -18,6 +18,7 @@ import parade.settings.SettingKey;
 import parade.settings.Settings;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
@@ -30,7 +31,7 @@ public class GameClient {
     private static final BlockingQueue<AbstractServerData> serverDataQueue =
             new LinkedBlockingQueue<>();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         new Settings.Builder()
                 .shouldValidateProperties(true)
                 .fromClasspath("config.properties")
@@ -41,61 +42,62 @@ public class GameClient {
         String name = sc.nextLine();
         System.out.println("Player name: " + name);
         Player player = new Player(name);
-        try (ClientHumanPlayerController client =
-                new ClientHumanPlayerController("localhost", 6969, player)) {
-            AbstractServerData data;
-            client.start(serverDataQueue);
+        try (Socket socket = new Socket("localhost", 6969)) {
+            try (ClientHumanPlayerController client =
+                    new ClientHumanPlayerController(socket, player, serverDataQueue)) {
+                AbstractServerData data;
 
-            if (name.equals("list")) {
-                System.out.println("Listing all players...");
-                client.send(new ClientLobbyRequestListData(player));
+                if (name.equals("list")) {
+                    System.out.println("Listing all players...");
+                    client.send(new ClientLobbyRequestListData(player));
 
-                data = serverDataQueue.take();
-                if (!(data instanceof ServerLobbyListData lobbyListData)) {
-                    System.out.println("Invalid initial data. Closing connection.");
+                    data = serverDataQueue.take();
+                    if (!(data instanceof ServerLobbyListData lobbyListData)) {
+                        System.out.println("Invalid initial data. Closing connection.");
+                        return;
+                    }
+                    System.out.println(lobbyListData);
                     return;
                 }
-                System.out.println(lobbyListData);
-                return;
+
+                System.out.println("Sending lobby creation data...");
+                client.send(new ClientLobbyCreateData(player, "Lobby", "password", 6));
+                System.out.println("Sent lobby creation data to server: " + player.getName());
+
+                data = serverDataQueue.take();
+                if (!(data instanceof ServerLobbyCreateAckData lobbyCreateAckData)) {
+                    System.out.println("Invalid lobby creation ack data. Closing connection.");
+                    return;
+                }
+                if (!lobbyCreateAckData.isSuccessful()) {
+                    System.out.println("Connection rejected: " + lobbyCreateAckData.getMessage());
+                    return;
+                } else {
+                    System.out.println("Lobby created: " + lobbyCreateAckData.getLobbyId());
+                }
+
+                Thread.sleep(5_000);
+
+                System.out.println("Closing lobby...");
+                client.send(new ClientLobbyCloseData(player, lobbyCreateAckData.getLobbyId()));
+
+                System.out.println("Waiting for lobby close acknowledgement");
+                data = serverDataQueue.take();
+                if (!(data instanceof ServerLobbyClosedData lobbyClosedData)) {
+                    System.out.println("Invalid lobby close ack data. Closing connection.");
+                    return;
+                }
+
+                System.out.println(lobbyClosedData);
+
+                System.out.println("Disconnecting from the server...");
+            } catch (IOException e) {
+                System.err.println("Failed to connect to server: " + e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                sc.close();
             }
-
-            System.out.println("Sending lobby creation data...");
-            client.send(new ClientLobbyCreateData(player, "Lobby", "password", 6));
-            System.out.println("Sent lobby creation data to server: " + player.getName());
-
-            data = serverDataQueue.take();
-            if (!(data instanceof ServerLobbyCreateAckData lobbyCreateAckData)) {
-                System.out.println("Invalid lobby creation ack data. Closing connection.");
-                return;
-            }
-            if (!lobbyCreateAckData.isSuccessful()) {
-                System.out.println("Connection rejected: " + lobbyCreateAckData.getMessage());
-                return;
-            } else {
-                System.out.println("Lobby created: " + lobbyCreateAckData.getLobbyId());
-            }
-
-            Thread.sleep(5_000);
-
-            System.out.println("Closing lobby...");
-            client.send(new ClientLobbyCloseData(player, lobbyCreateAckData.getLobbyId()));
-
-            System.out.println("Waiting for lobby close acknowledgement");
-            data = serverDataQueue.take();
-            if (!(data instanceof ServerLobbyClosedData lobbyClosedData)) {
-                System.out.println("Invalid lobby close ack data. Closing connection.");
-                return;
-            }
-
-            System.out.println(lobbyClosedData);
-
-            System.out.println("Disconnecting from the server...");
-        } catch (IOException e) {
-            System.err.println("Failed to connect to server: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            sc.close();
         }
     }
 

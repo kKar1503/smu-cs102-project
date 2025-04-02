@@ -79,8 +79,8 @@ public class Server implements AutoCloseable {
                 socket.setKeepAlive(true); // Enable TCP keep-alive
 
                 // Accept incoming connections
-                ServerHumanPlayerController controller = new ServerHumanPlayerController(socket);
-                controller.setLobbyDataQueue(clientDataQueue);
+                ServerHumanPlayerController controller =
+                        new ServerHumanPlayerController(socket, clientDataQueue);
                 holdingCell.put(controller.getPlayer(), controller);
                 logger.log("Added new player to holding cell: " + controller.getPlayer());
             } catch (IOException e) {
@@ -124,13 +124,13 @@ public class Server implements AutoCloseable {
                 case ClientLobbyLeaveData lobbyLeaveData -> lobbyLeave(lobbyLeaveData);
                 default -> logger.log("Received unsupported data type: " + data);
             }
-        } catch (NetworkFailureException e) {
+        } catch (NetworkFailureException | IOException e) {
             logger.log("Network failure while sending server data to client", e);
         }
     }
 
     private void lobbyList(ClientLobbyRequestListData lobbyRequestListData)
-            throws NetworkFailureException {
+            throws NetworkFailureException, IOException {
         ServerHumanPlayerController callerController = getPrisoner(lobbyRequestListData);
         if (callerController == null) {
             logger.log(
@@ -143,7 +143,8 @@ public class Server implements AutoCloseable {
         callerController.send(new ServerLobbyListData(lobbies));
     }
 
-    private void lobbyCreate(ClientLobbyCreateData lobbyCreateData) throws NetworkFailureException {
+    private void lobbyCreate(ClientLobbyCreateData lobbyCreateData)
+            throws NetworkFailureException, IOException {
         ServerHumanPlayerController callerController = getPrisoner(lobbyCreateData);
         if (callerController == null) {
             logger.log("Unknown caller: " + lobbyCreateData.getCaller() + " - ignoring request");
@@ -165,7 +166,8 @@ public class Server implements AutoCloseable {
                         lobby.getId(), true, "Lobby created: " + lobby.getId()));
     }
 
-    private void lobbyClose(ClientLobbyCloseData lobbyCloseData) throws NetworkFailureException {
+    private void lobbyClose(ClientLobbyCloseData lobbyCloseData)
+            throws NetworkFailureException, IOException {
         NetworkGameEngine gameEngine = lobbyMap.get(lobbyCloseData.getLobbyId());
         if (gameEngine == null) {
             logger.log("Lobby not found: " + lobbyCloseData.getLobbyId());
@@ -198,7 +200,8 @@ public class Server implements AutoCloseable {
         }
     }
 
-    private void lobbyLeave(ClientLobbyLeaveData lobbyLeaveData) throws NetworkFailureException {
+    private void lobbyLeave(ClientLobbyLeaveData lobbyLeaveData)
+            throws NetworkFailureException, IOException {
         NetworkGameEngine gameEngine = lobbyMap.get(lobbyLeaveData.getLobbyId());
         if (gameEngine == null) {
             logger.log("Lobby not found: " + lobbyLeaveData.getLobbyId());
@@ -231,7 +234,8 @@ public class Server implements AutoCloseable {
         logger.log("Placed player back in holding cell: " + controller);
     }
 
-    private void lobbyJoin(ClientLobbyJoinData lobbyJoinData) throws NetworkFailureException {
+    private void lobbyJoin(ClientLobbyJoinData lobbyJoinData)
+            throws NetworkFailureException, IOException {
         ServerHumanPlayerController callerController = getPrisoner(lobbyJoinData);
         if (callerController == null) {
             logger.log("Unknown caller: " + lobbyJoinData.getCaller() + " - ignoring request");

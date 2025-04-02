@@ -11,6 +11,7 @@ import parade.logger.LoggerProvider;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
 public class ServerHumanPlayerController
         extends AbstractNetworkController<AbstractServerData, AbstractClientData>
@@ -19,9 +20,9 @@ public class ServerHumanPlayerController
 
     private final Player player;
 
-    public ServerHumanPlayerController(Socket socket)
+    public ServerHumanPlayerController(Socket socket, BlockingQueue<AbstractClientData> lobbyQueue)
             throws IOException, NetworkFailureException, PlayerControllerInitialisationException {
-        super(socket, AbstractClientData.class);
+        super(socket, lobbyQueue, AbstractClientData.class);
 
         this.player = initialHandShake();
         super.start();

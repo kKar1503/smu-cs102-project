@@ -83,7 +83,7 @@ public class NetworkGameEngine extends AbstractGameEngine<IServerPlayerControlle
         logger.log("Setting player controllers' data queue to that of the network game engine");
         for (IServerPlayerController playerController :
                 playerControllerManager.getPlayerControllers()) {
-            playerController.setLobbyDataQueue(clientDataQueue);
+            playerController.setRecvDataQueue(clientDataQueue);
         }
 
         if (!playerControllerManager.getLobby().isReady()) {
