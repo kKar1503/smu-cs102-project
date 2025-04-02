@@ -294,19 +294,6 @@ public class LocalGameEngine extends AbstractGameEngine {
             nextPlayer();
         }
 
-        //Debugger
-        System.out.println("===============BOARD DEBUGGER===========================");
-        for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayer player = getCurrentPlayer();
-            System.out.printf("                   %s Board\n", player.getName());
-            for (Card card : player.getBoard()) {
-                System.out.print(card);
-            }
-            System.out.println();
-            nextPlayer();
-        }
-        System.out.println("=======================END OF BOARD DEBUGGER======================");
-
         logger.log("Tabulating scores");
         Map<IPlayer, Integer> playerScores = tabulateScores();
 

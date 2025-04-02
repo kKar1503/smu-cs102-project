@@ -148,10 +148,6 @@ public abstract class AbstractGameEngine {
      * @return The drawn card.
      */
     protected Card drawFromDeck() {
-        //Debugging
-        System.out.println("=============DEBUGGING=================");
-        System.out.println("           " + deck.size() + "           ");
-        System.out.println("========================================\n");
         return deck.pop();
     }
 
@@ -216,13 +212,6 @@ public abstract class AbstractGameEngine {
         Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
         for (IPlayer player : players) {
             majorityColours.put(player, decideMajority(playerBoards, player).get(player));
-            //DEBUGGER
-            System.out.println("======================DEBUGGER====================");
-            System.out.println("             PLAYER: " + player.getName());
-            for (Colour colourDebug : majorityColours.get(player)) {
-                System.out.println("    MAJORITY COLOURS:       " + colourDebug + "               ");
-            }
-            System.out.println("============END OF DEBUGGER ==========================\n");
         }
 
         Map<IPlayer, Integer> playerScores = new HashMap<>();
@@ -363,18 +352,12 @@ public abstract class AbstractGameEngine {
             if (card == null || card.getColour() == null) {
                 throw new IllegalArgumentException("Card or card colour cannot be null.");
             }
-            System.out.println("==============DEBUGGER==========================");
-            System.out.println("               CALCULATION OF SCORE FOR PLAYER: " + targetPlayer.getName());
             // Only add the value of the card if it's NOT in the player's majority colours
             if (playerMajorityColours.contains(card.getColour())) {
                 score += 1;
-                System.out.println("      1 point added. COLOUR:" + card.getColour());
             } else {
                 score += card.getNumber();
-                System.out.printf("        %d points added. COLOUR: %s", card.getNumber(), card.getColour());
             }
-
-            System.out.println("==============END OF DEBUGGER==========================\n\n");
         }
 
         return score;
