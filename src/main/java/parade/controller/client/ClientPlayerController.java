@@ -6,6 +6,7 @@ import parade.common.state.client.AbstractClientData;
 import parade.common.state.client.ClientConnectData;
 import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerConnectAckData;
+import parade.controller.IPlayerController;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 
@@ -17,7 +18,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 
-public class ClientPlayerController implements AutoCloseable {
+public class ClientPlayerController implements IPlayerController, AutoCloseable {
     private static final AbstractLogger logger = LoggerProvider.getInstance();
 
     private final Player player;
@@ -162,6 +163,11 @@ public class ClientPlayerController implements AutoCloseable {
 
         out.writeObject(message);
         out.flush();
+    }
+
+    @Override
+    public Player getPlayer() {
+        return player;
     }
 
     @Override
