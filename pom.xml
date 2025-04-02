@@ -16,9 +16,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.googlecode.lanterna</groupId>
-            <artifactId>lanterna</artifactId>
-            <version>3.1.2</version>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>3.29.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
