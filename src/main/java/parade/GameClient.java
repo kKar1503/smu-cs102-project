@@ -8,12 +8,12 @@ import parade.common.state.server.AbstractServerData;
 import parade.common.state.server.ServerLobbyClosedData;
 import parade.common.state.server.ServerLobbyCreateAckData;
 import parade.common.state.server.ServerLobbyListData;
+import parade.controller.client.ClientPlayerController;
 import parade.controller.server.ServerHumanPlayerController;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.logger.impl.JsonLogger;
 import parade.logger.impl.PrettyLogger;
-import parade.network.client.Client;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
@@ -41,7 +41,8 @@ public class GameClient {
         String name = sc.nextLine();
         System.out.println("Player name: " + name);
         Player player = new Player(name);
-        try (Client client = new Client("localhost", 6969, player)) {
+        try (ClientPlayerController client =
+                new ClientPlayerController("localhost", 6969, player)) {
             AbstractServerData data;
             client.start(serverDataQueue);
 

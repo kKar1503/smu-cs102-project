@@ -1,4 +1,4 @@
-package parade.network.client;
+package parade.controller.client;
 
 import parade.common.Player;
 import parade.common.exceptions.NetworkFailureException;
@@ -17,7 +17,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 
-public class Client implements AutoCloseable {
+public class ClientPlayerController implements AutoCloseable {
     private static final AbstractLogger logger = LoggerProvider.getInstance();
 
     private final Player player;
@@ -33,7 +33,7 @@ public class Client implements AutoCloseable {
 
     private BlockingQueue<AbstractServerData> serverDataQueue = null;
 
-    public Client(String host, int port, Player player) {
+    public ClientPlayerController(String host, int port, Player player) {
         this.port = port;
         this.host = host;
         this.player = player;
