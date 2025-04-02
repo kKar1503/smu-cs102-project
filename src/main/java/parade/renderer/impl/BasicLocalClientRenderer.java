@@ -142,6 +142,11 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
     }
+    
+    public String flipCard(Card card, int numCards) {
+        cardColour = card.getColour();
+
+    }
 
     public String rendersSingleCard(Card card) {
         String colorCode;
