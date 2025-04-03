@@ -1,129 +1,178 @@
 package parade.player.computer;
 
-import parade.common.Card;
-
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+
+import parade.common.Card;
+import parade.common.Colour;
 
 /**
- * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
- * own losses while maximising the difficulty for the opponent. It uses predictive analysis to
- * determine the best card to play.
+ * The HardComputer class represents an advanced AI player that uses a multi-factor strategy.
+ * It balances:
+ * - Minimizing its own loss (cards collected from the parade),
+ * - Avoiding high-risk colour matches,
+ * - Maximizing the number of cards the next player might be forced to take.
+ *
+ * This AI simulates possible moves and assigns scores based on weighted heuristics.
  */
 public class HardComputer extends Computer {
 
     /**
-     * Constructs a HardComputer instance with an initial hand of cards.
+     * Constructs a HardComputer instance with an initial hand of cards and a name.
      *
-     * @param cards The initial set of cards assigned to the AI player's hand.
+     * @param cards The initial hand of the AI player.
+     * @param name The base name of the AI (difficulty label will be appended).
      */
     public HardComputer(List<Card> cards, String name) {
         super(cards, name + "[Hard Comp]");
     }
 
     /**
-     * Selects the best card to play by balancing two factors: - Minimising its own loss (i.e.,
-     * taking as few parade cards as possible). - Maximising the difficulty for the opponent (i.e.,
-     * forcing them into bad moves).
+     * Selects the optimal card to play by evaluating:
+     * - How many cards it will collect (self-loss),
+     * - How much the played card's colour matches the parade (colour penalty),
+     * - How many cards it can potentially force the next player to collect (opponent impact).
      *
-     * <p>The AI simulates the loss it would incur for each possible move and also predicts how much
-     * it can force the opponent to lose.
+     * The evaluation uses a weighted scoring function to choose the best overall move.
+     * The selected card is removed from the hand before returning.
      *
-     * @param parade The current lineup of cards in the parade.
-     * @return The best card determined based on predictive analysis.
+     * @param parade The current list of cards in the parade.
+     * @return The best card to play based on heuristic scoring.
      */
     @Override
     public Card playCard(List<Card> parade) {
         Card bestCard = null;
-        int minLoss = Integer.MAX_VALUE; // Tracks the smallest number of cards taken by this AI
-        int maxOpponentLoss =
-                Integer.MIN_VALUE; // Tracks the largest number of cards an opponent would take
+        int bestScore = Integer.MAX_VALUE; // Lower is better
 
-        // Iterate through each card in hand to determine the best move
         for (Card card : hand) {
-            int selfLoss = simulateLoss(card, parade); // How many cards this AI would take
-            int opponentLoss =
-                    simulateOpponentLoss(card, parade); // How many cards the opponent might take
+            int selfLoss = simulateLoss(card, parade);                    // Cards AI will take
+            int colorPenalty = countColourMatches(card, parade);         // Colour match risk
+            int simulatedImpact = simulateWorstOpponentLoss(card, parade); // How many cards next player might take
 
-            /**
-             * Decision-making process: - Select the card that minimises self-loss. - If multiple
-             * cards result in the same loss, choose the one that maximises opponent's loss.
-             */
-            if (selfLoss < minLoss || (selfLoss == minLoss && opponentLoss > maxOpponentLoss)) {
-                minLoss = selfLoss;
-                maxOpponentLoss = opponentLoss;
+            // Heuristic weight scoring:
+            // - Self loss is weighted most heavily
+            // - Colour penalty moderately
+            // - Opponent impact is desirable (so subtracted)
+            int score = (selfLoss * 4) + (colorPenalty * 2) - (simulatedImpact * 3);
+
+            if (score < bestScore) {
+                bestScore = score;
                 bestCard = card;
             }
         }
 
+        hand.remove(bestCard); // Remove chosen card from hand
         return bestCard;
     }
 
+    /**
+     * Discards a card based on a "risk score" that combines:
+     * - High value (number) of the card,
+     * - Frequency of the card's colour already present on the board.
+     *
+     * This aims to remove cards that are likely to contribute negatively to scoring.
+     *
+     * @param parade The current parade lineup (not used in this heuristic).
+     * @return The discarded card.
+     */
     @Override
     public Card discardCard(List<Card> parade) {
-        Random rand = new Random();
-        return hand.get(rand.nextInt(hand.size())); // Randomly picks any card to discard.
+        Map<Colour, Integer> boardColourCount = countColourOnBoard();
+
+        return hand.stream()
+            .max((a, b) -> {
+                // Score = card number + 5×frequency of card's colour on board
+                int scoreA = a.getNumber() + boardColourCount.getOrDefault(a.getColour(), 0) * 5;
+                int scoreB = b.getNumber() + boardColourCount.getOrDefault(b.getColour(), 0) * 5;
+                return Integer.compare(scoreA, scoreB);
+            })
+            .map(card -> {
+                hand.remove(card);
+                return card;
+            })
+            .orElse(hand.removeFirst()); // Fallback if no card chosen
     }
 
     /**
-     * Simulates how many cards the AI would take if it plays the given card. - The card's number
-     * determines how many cards remain safe in the parade. - Any card in the parade with a smaller
-     * number or a matching colour will be taken.
+     * Calculates how many cards of each colour are currently on the AI's board.
+     * Used for determining potential majority colour threats.
      *
-     * @param card The card being played.
-     * @param parade The current parade lineup.
-     * @return The number of cards this AI would take from the parade.
+     * @return A map of Colour to frequency on the board.
+     */
+    private Map<Colour, Integer> countColourOnBoard() {
+        Map<Colour, Integer> map = new HashMap<>();
+        for (Card card : board) {
+            map.put(card.getColour(), map.getOrDefault(card.getColour(), 0) + 1);
+        }
+        return map;
+    }
+
+    /**
+     * Simulates the number of parade cards the AI would be forced to take
+     * if it played the given card. This is based on Parade rules:
+     * - Cards are taken if they match in colour,
+     * - Or if their number is less than or equal to the played card's number.
+     *
+     * @param card The card being considered for play.
+     * @param parade The current state of the parade.
+     * @return The estimated number of cards that would be collected.
      */
     private int simulateLoss(Card card, List<Card> parade) {
         int loss = 0;
-        int position =
-                parade.size() - card.getNumber(); // The point in the parade where checking begins
+        int position = parade.size() - card.getNumber();
 
-        // Iterate through the parade from the calculated position
         for (int i = Math.max(0, position); i < parade.size(); i++) {
             Card paradeCard = parade.get(i);
-
-            // AI will take this card if:
-            // - Its number is less than or equal to the played card's number.
-            // - Its colour matches the played card's colour.
             if (paradeCard.getNumber() <= card.getNumber()
                     || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
             }
         }
-
-        return loss; // Total number of parade cards that would be taken
+        return loss;
     }
 
     /**
-     * Simulates how many cards the opponent might take if the AI plays the given card. - This
-     * method assumes that the opponent will try to minimise their own loss. - The AI attempts to
-     * force the opponent into an unfavourable position.
+     * Counts how many cards in the parade have the same colour as the given card.
+     * This helps evaluate risk of collecting more of that colour (toward majority).
      *
-     * @param card The card the AI is considering playing.
+     * @param card The card being evaluated.
      * @param parade The current parade lineup.
-     * @return The maximum number of cards an opponent might take based on this move.
+     * @return Number of matching colour cards in the parade.
      */
-    private int simulateOpponentLoss(Card card, List<Card> parade) {
-        // Create a simulated parade where this card has been played
-        List<Card> simulatedParade = new LinkedList<>(parade);
-        simulatedParade.add(card); // Add the card to the simulated parade
-
-        int maxOpponentGain =
-                Integer.MIN_VALUE; // Keeps track of the worst-case scenario for the opponent
-
-        // Simulate the opponent playing each of their cards
-        for (Card opponentCard : hand) {
-            int opponentGain =
-                    simulateLoss(opponentCard, simulatedParade); // Compute the opponent's loss
-
-            // Store the highest possible loss the opponent might suffer
-            if (opponentGain > maxOpponentGain) {
-                maxOpponentGain = opponentGain;
+    private int countColourMatches(Card card, List<Card> parade) {
+        int matches = 0;
+        for (Card paradeCard : parade) {
+            if (paradeCard.getColour().equals(card.getColour())) {
+                matches++;
             }
         }
+        return matches;
+    }
 
-        return maxOpponentGain; // Return the worst loss the AI can force on the opponent
+    /**
+     * Simulates the worst-case scenario for the next player after this AI plays a card.
+     * It assumes the next player could play any of this AI's current cards.
+     *
+     * This method estimates how many cards the next player might be forced to take,
+     * to influence card choice for offensive value.
+     *
+     * @param playedCard The card the AI is considering playing.
+     * @param parade The current parade lineup.
+     * @return The worst-case number of cards the next player may collect.
+     */
+    private int simulateWorstOpponentLoss(Card playedCard, List<Card> parade) {
+        List<Card> simulatedParade = new ArrayList<>(parade);
+        simulatedParade.add(playedCard); // Simulate the played card being added
+
+        int maxLoss = 0;
+        for (Card opponentCard : hand) { // Simulate the next player using each card in our hand
+            int loss = simulateLoss(opponentCard, simulatedParade);
+            if (loss > maxLoss) {
+                maxLoss = loss;
+            }
+        }
+        return maxLoss;
     }
 }
