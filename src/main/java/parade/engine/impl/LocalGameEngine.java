@@ -18,6 +18,8 @@ import parade.settings.Settings;
 
 import java.util.*;
 
+import javax.swing.Renderer;
+
 /**
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
@@ -221,16 +223,28 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Dealing %d cards to %d players", numCardsToDraw, getPlayersCount());
         List<Card> drawnCards = drawFromDeck(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+
+        // "Roll" a dice to decide who starts first
+        // Generate a number from 0 to 6
+        Random dice = new Random();
+        int diceRoll = dice.nextInt(6) + 1;
+        // Sets the current player based on the dice roll
+        setCurrentPlayer(diceRoll);
+        logger.logf("Dice roll = %d, Starting player: %s", diceRoll, getCurrentPlayer().getName());
+        clientRenderer.renderf("Dice roll: %d, %s will be starting first!\n", diceRoll, getCurrentPlayer().getName());
+        
+
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayer player = getPlayer(i);
+            IPlayer player = getCurrentPlayer();
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.draw(drawnCard);
                 logger.logf("%s drew: %s", player.getName(), drawnCard);
             }
+            nextPlayer();
         }
 
         // Game loop continues until the deck is empty or an end condition is met
@@ -238,22 +252,45 @@ public class LocalGameEngine extends AbstractGameEngine {
         while (shouldGameContinue()) {
             // Each player plays a card
             IPlayer player = getCurrentPlayer();
+            playerPlayCard(player); // Play a card from their hand
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
             player.draw(drawnCard);
             logger.logf("%s drew: %s", player.getName(), drawnCard);
 
-            playerPlayCard(player); // Play a card from their hand
+
             nextPlayer();
         }
+
         logger.logf("Game loop finished");
 
         // After the game loop finishes, the extra round is played.
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
+        // Each player plays their last card
         for (int i = 0; i < getPlayersCount(); i++) {
             playerPlayCard(getCurrentPlayer());
+            nextPlayer();
+        }
+
+        // Each player chooses 2 cards to discard
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            logger.logf("%s choosing 2 cards to discard.", player.getName());
+
+            for (int j = 0; j < 2; j++) {
+                Card discardedCard = player.discardCard(getParadeCards());
+                logger.logf("%s discarded: %s", player.getName(), discardedCard);
+                clientRenderer.renderln(player.getName() + " discarded: " + discardedCard);
+            }
+            nextPlayer();
+        }
+
+        // Add remaining cards in players' hand to their board for score calculation
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            player.addToBoard(player.getHand());
             nextPlayer();
         }
 
