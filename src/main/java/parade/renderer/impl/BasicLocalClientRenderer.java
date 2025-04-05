@@ -10,6 +10,8 @@ import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
 
+
+
 public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
 
