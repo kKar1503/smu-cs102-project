@@ -1,9 +1,5 @@
 package parade.player.computer;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 
 import parade.common.Card;
@@ -25,85 +21,104 @@ public class HardComputer extends Computer {
     }
 
     /**
-     * Selects a card to play randomly from the computer player's hand.
+     * Selects a card to play based on minimizing risk.
      *
      * @param parade The current parade lineup of cards.
-     * @return A randomly chosen card to be played.
+     * @return The chosen card to be played.
      */
     @Override
     public Card playCard(List<Card> parade) {
         return bestCard(hand, parade);
     }
 
+    /**
+     * Chooses the highest-numbered card to discard.
+     *
+     * @param parade The current parade lineup of cards.
+     * @return The card to discard.
+     */
     @Override
     public Card discardCard(List<Card> parade) {
-        return getSmallestCard(hand);
+        return getHighestCard(hand);
     }
 
-    // takes in all the cards on hand and all the cards on logic 
-    // hand and parade computer
+    // Chooses the best card based on the parade state and hand
     private Card bestCard(List<Card> hand, List<Card> parade) {
-        // intialise null so we can assign the final card value
-        // this code is returning the best card that the computer can play
         Card best = null;
-        // highest int --> smallest value possible with iterations
-        // parade length
         int min = Integer.MAX_VALUE;
         int paradeLength = parade.size();
 
-        // iterating all through cards in hand
-        // for each card if this card value > parade length
-        // subsequently if card value > parade length and < previous min
-
         for (Card card : hand) {
-            // see if any number of card that allows us to skip entire parade
             int cardValue = card.getNumber();
             if (cardValue > paradeLength && cardValue < min) {
                 min = cardValue;
                 best = card;
             }
         }
-        if (min == Integer.MAX_VALUE) {
-            Colour bestColour = getMajorityColour();
-            for (Card card : hand) {
-                if (card.getColour() == bestColour) {
-                    best = card;
-                    break;
-                }
-            }
-        }
-        return best;
+
+        // if (best == null) {
+        //     System.out.println("FUCKKKING LOGIC 2");
+        //     Colour bestColour = getMajorityColour();
+        //     for (Card card : hand) {
+        //         if (card.getColour() == bestColour) {
+        //             best = card;
+        //             break;
+        //         }
+        //     }
+        // }
+
+        // if (best != null) {
+        //     return best;
+        // }
+
+        Random rand = new Random();
+        return hand.get(rand.nextInt(hand.size()));
     }
 
-    private Colour getMajorityColour() {
-        List<Card> boardCards = this.getBoard();
-        Map<Colour, Integer> result = new HashMap<>();
-        for (Card card : boardCards) {
-            int counter = 0;
-            for (Card nestedCard : boardCards) {
-                if (nestedCard.getColour() == card.getColour()) {
-                    counter += 1;
-                }
-            }
-            if (!result.containsKey(card.getColour())) {
-                result.put(card.getColour(), counter);
-            }
-        }
-        Set<Colour> resultKeys = result.keySet();
-        int max = Integer.MIN_VALUE;
-        Colour best = null;
-        for (Colour key : resultKeys) {
-            if (result.get(key) > max) {
-                max = result.get(key);
-                best = key;
-            }
-        }
-        return best;
-    };
+    // // Finds the colour that appears the most on the board
+    // private Colour getMajorityColour() {
+    //     List<Card> boardCards = this.getBoard();
+    //     Map<Colour, Integer> result = new HashMap<>();
 
-    private Card getSmallestCard(List<Card> hand) {
-        return hand.stream()
-                .min(Comparator.comparingInt(Card::getNumber))
-                .orElse(null);
+    //     for (Card card : boardCards) {
+    //         int counter = 0;
+    //         for (Card nestedCard : boardCards) {
+    //             if (nestedCard.getColour() == card.getColour()) {
+    //                 counter += 1;
+    //             }
+    //         }
+
+    //         if (!result.containsKey(card.getColour())) {
+    //             result.put(card.getColour(), counter);
+    //         }
+    //     }
+
+    //     Set<Colour> resultKeys = result.keySet();
+    //     int max = Integer.MIN_VALUE;
+    //     Colour best = null;
+
+    //     for (Colour key : resultKeys) {
+    //         if (result.get(key) > max) {
+    //             max = result.get(key);
+    //             best = key;
+    //         }
+    //     }
+
+    //     return best;
+    // }
+
+    // Returns the card with the highest number from hand
+    private Card getHighestCard(List<Card> hand) {
+        int highest = Integer.MIN_VALUE;
+        Card highestCard = null;
+
+        for (Card card : hand) {
+            if (card.getNumber() > highest) {
+                highest = card.getNumber();
+                highestCard = card;
+            }
+        }
+
+        return highestCard;
     }
 }
