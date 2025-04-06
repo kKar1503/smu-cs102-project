@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import parade.common.Card;
-import parade.common.Colour;
 import parade.engine.AbstractGameEngine;
 import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
@@ -38,11 +37,11 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                         + " =============================="
                         + ConsoleColors.RESET);
 
-        List<Card> testParade = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
-            testParade.add(new Card(i % 6, Colour.values()[i % Colour.values().length]));
-        }
-        renderParade(testParade);
+        // List<Card> testParade = new ArrayList<>();
+        // for (int i = 0; i < 12; i++) {
+        //     testParade.add(new Card(i % 6, Colour.values()[i % Colour.values().length]));
+        // }
+        // renderCardList(" Parade (read left to right, top to bottom!) ", testParade);
     }
 
     @Override
@@ -100,26 +99,32 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                             + "]");
         }
         // print cards in parade
-        renderParade(parade);
+        renderCardList(" Parade (read left to right, top to bottom!) ", parade);
 
         // sort board and print
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        System.out.println(
-                "\n\n"
-                    + "Your board\n"
-                    + "===========================================================================");
-        for (Card card : board) {
-            System.out.print(printCards(card) + " ");
-        }
+        // System.out.println(
+        //         "\n\n"
+        //             + "Your board\n"
+        //             +
+        // "===========================================================================");
+        // for (Card card : board) {
+        //     System.out.print(printCards(card) + " ");
+        // }
+        renderCardList(" Your scoring board ", board);
         // print player's hand
-        System.out.println(
-                "\n\n"
-                    + "Your hand\n"
-                    + "==========================================================================");
-        for (Card card : player.getHand()) {
-            System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
-        }
+        // System.out.println(
+        //         "\n\n"
+        //             + "Your hand\n"
+        //             +
+        // "==========================================================================");
+        // for (Card card : player.getHand()) {
+        //     System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "
+        // ");
+        // }
+        renderCardList(" Cards in your hand ", player.getHand());
+
         System.out.print("\n\nSelect a card to play:");
     }
 
@@ -146,7 +151,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
     }
 
-    public void renderParade(List<Card> parade) {
+    public void renderCardList(String rawLabel, List<Card> parade) {
         int cardWidth = 20;
         int spacing = 1;
         int maxTerminalWidth = 100;
@@ -165,7 +170,6 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         int contentWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * spacing;
 
         // Step 2: Create the single top border
-        String rawLabel = " Parade (read left to right, top to bottom!) ";
         String coloredLabel = ConsoleColors.purple(rawLabel);
         String topBorder =
                 "╔"
@@ -175,7 +179,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
 
         // Step 3: Print the top border once
-        System.out.println(topBorder);
+        System.out.println("\n" + topBorder);
 
         // Step 4: Print all card rows line by line
         for (int start = 0; start < totalCards; start += cardsPerRow) {
