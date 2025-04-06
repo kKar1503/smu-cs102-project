@@ -34,31 +34,15 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     public void renderWelcome() throws IllegalStateException {
         System.out.println(
                 ConsoleColors.PURPLE_BOLD
-                        + "============================= Welcome to Parade!"
+                        + "============================= ✨ Welcome to Parade! ✨"
                         + " =============================="
                         + ConsoleColors.RESET);
-
-        // List<Card> carList = new ArrayList<>();
-        // carList.add(new Card(0, Colour.RED));
-        // carList.add(new Card(2, Colour.RED));
-        // carList.add(new Card(1, Colour.RED));
-        // carList.add(new Card(4, Colour.RED));
-        // renderParade(carList);
 
         List<Card> testParade = new ArrayList<>();
         for (int i = 0; i < 12; i++) {
             testParade.add(new Card(i % 6, Colour.values()[i % Colour.values().length]));
         }
         renderParade(testParade);
-
-        System.out.println(rendersSingleCard(new Card(0, Colour.RED)));
-
-        System.out.println(rendersSingleCard(new Card(0, Colour.PURPLE)));
-        System.out.println(rendersSingleCard(new Card(0, Colour.YELLOW)));
-        System.out.println(rendersSingleCard(new Card(0, Colour.BLUE)));
-        System.out.println(rendersSingleCard(new Card(0, Colour.BLACK)));
-
-        System.out.println(rendersSingleCard(new Card(0, Colour.GREEN)));
     }
 
     @Override
@@ -116,11 +100,8 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                             + "]");
         }
         // print cards in parade
-        System.out.println(
-                "\nParade\n======================================================================");
-        for (Card card : parade) {
-            System.out.print((parade.indexOf(card) + 1) + "." + printCards(card) + "  ");
-        }
+        renderParade(parade);
+
         // sort board and print
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
@@ -169,40 +150,44 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         int cardWidth = 20;
         int spacing = 1;
         int maxTerminalWidth = 100;
-    
+
         int cardsPerRow = Math.max(1, (maxTerminalWidth + spacing) / (cardWidth + spacing));
         int totalCards = parade.size();
-    
+
         // Step 1: Render cards to line arrays
         List<String[]> renderedCards = new ArrayList<>();
         for (Card card : parade) {
             renderedCards.add(rendersSingleCard(card).split("\n"));
         }
-    
+
         int numLinesPerCard = renderedCards.get(0).length;
         int cardsInFirstRow = Math.min(cardsPerRow, totalCards);
         int contentWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * spacing;
-    
+
         // Step 2: Create the single top border
-        String rawLabel = " Parade ";
+        String rawLabel = " Parade (read left to right, top to bottom!) ";
         String coloredLabel = ConsoleColors.purple(rawLabel);
-        String topBorder = "╔" + coloredLabel + "═".repeat(contentWidth - rawLabel.length()) + "╗";
+        String topBorder =
+                "╔"
+                        + coloredLabel
+                        + "═".repeat(contentWidth - rawLabel.trim().length())
+                        + "╗"; //  + 3
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
-    
+
         // Step 3: Print the top border once
         System.out.println(topBorder);
-    
+
         // Step 4: Print all card rows line by line
         for (int start = 0; start < totalCards; start += cardsPerRow) {
             int end = Math.min(start + cardsPerRow, totalCards);
-    
+
             for (int line = 0; line < numLinesPerCard; line++) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
                     System.out.print(renderedCards.get(j)[line]);
                     if (j < end - 1) System.out.print(" ");
                 }
-    
+
                 // pad right if this row is shorter than cardsPerRow
                 int actualCards = end - start;
                 if (actualCards < cardsPerRow) {
@@ -210,16 +195,14 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                     int pad = missing * (cardWidth + spacing);
                     System.out.print(" ".repeat(pad));
                 }
-    
+
                 System.out.println(" ║");
             }
         }
-    
+
         // Step 5: Print bottom border once
         System.out.println(bottomBorder);
     }
-    
-
 
     public String colorPrinter(String colour, String text) {
         String colorCode = null;
@@ -250,30 +233,33 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
     public String rendersSingleCard(Card card) {
         String colorCode = card.getColour().name(); // Use enum name() for consistency
-    
+
         String numberStr = String.valueOf(card.getNumber());
         String colorName = card.getColour().name();
         int width = 18;
-    
+
         // Center the color name properly
         int padding = (width - colorName.length()) / 2;
-        String centeredColorName = " ".repeat(padding) + colorName + " ".repeat(width - colorName.length() - padding);
-    
+        String centeredColorName =
+                " ".repeat(padding) + colorName + " ".repeat(width - colorName.length() - padding);
+
         String top = "┌" + "─".repeat(width) + "┐";
         String bottom = "└" + "─".repeat(width) + "┘";
-        String line1 = String.format("│ %-2s%s│", numberStr, " ".repeat(width - 3));  // top-left number
-        String line2 = String.format("│%s│", " ".repeat(width));                     // empty line
-        String line3 = String.format("│%s│", centeredColorName);                    // centered color name
+        String line1 =
+                String.format("│ %-2s%s│", numberStr, " ".repeat(width - 3)); // top-left number
+        String line2 = String.format("│%s│", " ".repeat(width)); // empty line
+        String line3 = String.format("│%s│", centeredColorName); // centered color name
         String line4 = line2;
-        String line5 = String.format("│%s%2s │", " ".repeat(width - 3), numberStr); // bottom-right number
-    
+        String line5 =
+                String.format("│%s%2s │", " ".repeat(width - 3), numberStr); // bottom-right number
+
         // Pikachu ASCII art
         String pikachu1 = String.format("│%-" + width + "s│", "      /\\__/\\");
         String pikachu2 = String.format("│%-" + width + "s│", "     | @ . @|");
         String pikachu3 = String.format("│%-" + width + "s│", "      \\  -  /");
         String pikachu4 = String.format("│%-" + width + "s│", "  ////|     |\\\\\\\\");
         String pikachu5 = String.format("│%-" + width + "s│", "   ==\\|__|__|/==");
-    
+
         // Return card string with color applied line-by-line
         return String.join(
                 "\n",
@@ -288,7 +274,6 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                 colorPrinter(colorCode, pikachu5),
                 colorPrinter(colorCode, line4),
                 colorPrinter(colorCode, line5),
-                colorPrinter(colorCode, bottom)
-        );
-    }    
+                colorPrinter(colorCode, bottom));
+    }
 }
