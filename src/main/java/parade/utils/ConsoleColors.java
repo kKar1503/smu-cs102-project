@@ -27,6 +27,9 @@ public class ConsoleColors {
     public static final String GREEN_BACKGROUND_BRIGHT = "\033[0;102m"; // GREEN
     public static final String YELLOW_BACKGROUND_BRIGHT = "\033[0;103m"; // YELLOW
     public static final String BLUE_BACKGROUND_BRIGHT = "\033[0;104m"; // BLUE
+    // public static final String RED_BACKGROUND_BRIGHT = "\033[0;101m"; // Bright Red
+    // public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // Bright Purple
+
 
     // Helper functions for colors
     public static String black(String text) {
