@@ -1,16 +1,16 @@
 package parade.renderer.impl;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import parade.common.Card;
+import parade.common.Colour;
 import parade.engine.AbstractGameEngine;
 import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
-
-
 
 public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
@@ -37,6 +37,21 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                         + "============================= Welcome to Parade!"
                         + " =============================="
                         + ConsoleColors.RESET);
+
+        List<Card> carList = new ArrayList<>();
+        carList.add(new Card(0, Colour.RED));
+        carList.add(new Card(2, Colour.RED));
+        carList.add(new Card(1, Colour.RED));
+        carList.add(new Card(4, Colour.RED));
+        renderParade(carList);
+        // System.out.println(rendersSingleCard(new Card(0, Colour.RED)));
+
+        // System.out.println(rendersSingleCard(new Card(0, Colour.PURPLE)));
+        // System.out.println(rendersSingleCard(new Card(0, Colour.YELLOW)));
+        // System.out.println(rendersSingleCard(new Card(0, Colour.BLUE)));
+        // System.out.println(rendersSingleCard(new Card(0, Colour.BLACK)));
+
+        // System.out.println(rendersSingleCard(new Card(0, Colour.GREEN)));
     }
 
     @Override
@@ -142,42 +157,59 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
     }
-    
-    public String flipCard(Card card, int numCards) {
-        cardColour = card.getColour();
 
+    public void renderParade(List<Card> parade) {
+        int padding = 6;
+        int width = parade.size() * 18 + padding; // 6 for padding
+
+        // Create the border
+        String top_border = "╔" + ConsoleColors.purple(" Parade ") + "══".repeat(width) + "╗";
+
+        String bottom_border = "╚" + "══".repeat(width + 4) + "╝";
+
+        System.out.println(top_border);
+
+        System.out.print("║ ");
+
+        for (Card card : parade) {
+            System.out.print((parade.indexOf(card) + 1) + "." + rendersSingleCard(card) + " ");
+        }
+        System.out.println(" ║");
+        System.out.println(bottom_border);
     }
 
-    public String rendersSingleCard(Card card) {
-        String colorCode;
+    public String colorPrinter(String colour, String text) {
+        String colorCode = null;
 
-        switch (card.getColour().toLowerCase()) {
-            case "red":
-                colorCode = ConsoleColors.RED_BACKGROUND_BRIGHT;
+        switch (colour) {
+            case "RED":
+                colorCode = ConsoleColors.redBackground(text);
                 break;
-            case "blue":
-                colorCode = ConsoleColors.BLUE_BACKGROUND_BRIGHT;
+            case "BLUE":
+                colorCode = ConsoleColors.brightBlueBackground(text);
                 break;
-            case "green":
-                colorCode = ConsoleColors.GREEN_BACKGROUND_BRIGHT;
+            case "GREEN":
+                colorCode = ConsoleColors.brightGreenBackground(text);
                 break;
-            case "yellow":
-                colorCode = ConsoleColors.YELLOW_BACKGROUND_BRIGHT;
+            case "YELLOW":
+                colorCode = ConsoleColors.brightYellowBackground(text);
                 break;
-            case "purple":
-                colorCode = ConsoleColors.PURPLE_BACKGROUND_BRIGHT;
-                break;
-            case "orange":
-                colorCode = ConsoleColors.YELLOW_BACKGROUND; // No orange, yellow is closest
+            case "PURPLE":
+                colorCode = ConsoleColors.purpleBackground(text);
                 break;
             default:
-                colorCode = ConsoleColors.BLACK_BACKGROUND;
+                colorCode = ConsoleColors.blackBackground(text);
                 break;
         }
 
-        String reset = ConsoleColors.RESET;
+        return colorCode;
+    }
+
+    public String rendersSingleCard(Card card) {
+        String colorCode = String.valueOf(card.getColour());
+
         String numberStr = String.valueOf(card.getNumber());
-        String colorName = card.getColour().toUpperCase();
+        String colorName = "" + card.getColour();
         int width = 18;
 
         String top = "┌" + "─".repeat(width) + "┐";
@@ -190,20 +222,30 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                                 + ((width + colorName.length()) / 2)
                                 + "s%"
                                 + ((width - colorName.length()) / 2)
-                                + "s│",
+                                + "s │",
                         colorName,
                         "");
         String line4 = line2;
         String line5 = String.format("│%s%2s │", " ".repeat(width - 3), numberStr);
+        String pikachu1 = String.format("│%-18s│", "      /\\__/\\");
+        String pikachu2 = String.format("│%-18s│", "     | @ . @|");
+        String pikachu3 = String.format("│%-18s│", "      \\  -  /");
+        String pikachu4 = String.format("│%-18s│", "  ////|     |\\\\\\\\");
+        String pikachu5 = String.format("│%-18s│", "   ==\\|__|__|/==");
 
         return String.join(
                 "\n",
-                top,
-                colorCode + line1 + reset,
-                colorCode + line2 + reset,
-                colorCode + line3 + reset,
-                colorCode + line4 + reset,
-                colorCode + line5 + reset,
-                bottom);
+                colorPrinter(colorCode, top),
+                colorPrinter(colorCode, line1),
+                colorPrinter(colorCode, line2),
+                colorPrinter(colorCode, line3),
+                colorPrinter(colorCode, pikachu1),
+                colorPrinter(colorCode, pikachu2),
+                colorPrinter(colorCode, pikachu3),
+                colorPrinter(colorCode, pikachu4),
+                colorPrinter(colorCode, pikachu5),
+                colorPrinter(colorCode, line4),
+                colorPrinter(colorCode, line5),
+                colorPrinter(colorCode, bottom));
     }
 }
