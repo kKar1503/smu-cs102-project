@@ -1,13 +1,12 @@
 package parade.player.computer;
 
+import parade.common.Card;
+
 import java.util.*;
 
-import parade.common.Card;
-import parade.common.Colour;
-
 /**
- * The HardComputer class uses a smarter algorithm that picks cards
- * to minimize the number of cards it might need to pick up.
+ * The HardComputer class uses a smarter algorithm that picks cards to minimize the number of cards
+ * it might need to pick up.
  */
 public class HardComputer extends Computer {
 
@@ -42,7 +41,6 @@ public class HardComputer extends Computer {
         return getHighestCard(hand);
     }
 
-    // Chooses the best card based on the parade state and hand
     private Card bestCard(List<Card> hand, List<Card> parade) {
         Card best = null;
         int min = Integer.MAX_VALUE;
@@ -56,58 +54,10 @@ public class HardComputer extends Computer {
             }
         }
 
-        // if (best == null) {
-        //     System.out.println("FUCKKKING LOGIC 2");
-        //     Colour bestColour = getMajorityColour();
-        //     for (Card card : hand) {
-        //         if (card.getColour() == bestColour) {
-        //             best = card;
-        //             break;
-        //         }
-        //     }
-        // }
-
-        // if (best != null) {
-        //     return best;
-        // }
-
         Random rand = new Random();
         return hand.get(rand.nextInt(hand.size()));
     }
 
-    // // Finds the colour that appears the most on the board
-    // private Colour getMajorityColour() {
-    //     List<Card> boardCards = this.getBoard();
-    //     Map<Colour, Integer> result = new HashMap<>();
-
-    //     for (Card card : boardCards) {
-    //         int counter = 0;
-    //         for (Card nestedCard : boardCards) {
-    //             if (nestedCard.getColour() == card.getColour()) {
-    //                 counter += 1;
-    //             }
-    //         }
-
-    //         if (!result.containsKey(card.getColour())) {
-    //             result.put(card.getColour(), counter);
-    //         }
-    //     }
-
-    //     Set<Colour> resultKeys = result.keySet();
-    //     int max = Integer.MIN_VALUE;
-    //     Colour best = null;
-
-    //     for (Colour key : resultKeys) {
-    //         if (result.get(key) > max) {
-    //             max = result.get(key);
-    //             best = key;
-    //         }
-    //     }
-
-    //     return best;
-    // }
-
-    // Returns the card with the highest number from hand
     private Card getHighestCard(List<Card> hand) {
         int highest = Integer.MIN_VALUE;
         Card highestCard = null;
