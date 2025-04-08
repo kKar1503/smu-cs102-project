@@ -15,10 +15,16 @@ import parade.renderer.impl.AdvancedClientRenderer;
 import parade.renderer.impl.BasicLocalClientRenderer;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
+import parade.result.AbstractResult;
+import parade.result.WinnerResult;
+import parade.result.TieAndNoWinnerResult;
+import parade.result.TieAndWinnerResult;
 
 import java.util.*;
 
 import javax.swing.Renderer;
+
+import parade.result.DeclareWinner;
 
 /**
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
@@ -227,11 +233,14 @@ public class LocalGameEngine extends AbstractGameEngine {
         // "Roll" a dice to decide who starts first
         // Generate a number from 0 to 6
         Random dice = new Random();
-        int diceRoll = dice.nextInt(6) + 1;
+        int diceRoll1 = dice.nextInt(7);
+        int diceRoll2 = dice.nextInt(7);
         // Sets the current player based on the dice roll
-        setCurrentPlayer(diceRoll);
-        logger.logf("Dice roll = %d, Starting player: %s", diceRoll, getCurrentPlayer().getName());
-        clientRenderer.renderf("Dice roll: %d, %s will be starting first!\n", diceRoll, getCurrentPlayer().getName());
+        setCurrentPlayer(diceRoll1 + diceRoll2);
+        logger.logf("Dice roll = %d, Starting player: %s", diceRoll1 + diceRoll2,
+                         getCurrentPlayer().getName());
+        clientRenderer.renderf("Dice roll: %d, %s will be starting first!\n", 
+                    diceRoll1 + diceRoll2, getCurrentPlayer().getName());
         
 
         // Dish out the cards one by one, like real life you know? Like not getting the
@@ -299,7 +308,32 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
-        declareWinner(playerScores);
+        DeclareWinner declareWinner = new DeclareWinner();
+        AbstractResult result = declareWinner.evaluateScores(playerScores);
+
+        switch(result) {
+            case WinnerResult win ->
+                clientRenderer.renderf("%s wins with %d points!\n", 
+                    win.getPlayer().getName(), playerScores.get(win.getPlayer()));
+            
+            case TieAndWinnerResult tie ->
+                clientRenderer.renderf("Tie in score of %d points but %s wins with lesser number of cards\n",
+                    playerScores.get(tie.getPlayer()), tie.getPlayer().getName());
+            
+            case TieAndNoWinnerResult overallTie -> {
+                clientRenderer.renderln("Overall tie with no winners");
+                int numPlayers = overallTie.getPlayers().size();
+                int score = playerScores.get(overallTie.getPlayers().get(0));
+                for (int i = 0; i < numPlayers - 1; i++) {
+                    clientRenderer.render(overallTie.getPlayers().get(i).getName() + ", ");
+                }
+                clientRenderer.renderf("%s have the same score of %d points and same number of cards.\n",
+                    overallTie.getPlayers().get(numPlayers - 1).getName(), score);
+            }
+
+            default ->
+                clientRenderer.renderln("Error retrieving result\n");
+        }
     }
 
     private void playerPlayCard(IPlayer player) {
@@ -321,27 +355,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 "%s received %s from parade.%n",
                 player.getName(), Arrays.toString(cardsFromParade.toArray()));
     }
-
-    /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<IPlayer, Integer> playerScores) {
-        IPlayer winner = null;
-        int lowestScore = Integer.MAX_VALUE;
-
-        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
-            if (entry.getValue() < lowestScore) {
-                lowestScore = entry.getValue();
-                winner = entry.getKey();
-            }
-        }
-
-        if (winner != null) {
-            clientRenderer.render(
-                    "Winner: " + winner.getName() + " with " + lowestScore + " points!");
-        } else {
-            clientRenderer.render("The game ended in a tie!");
-        }
-    }
-
+    
     /**
      * Sets up the client renderer.
      *
