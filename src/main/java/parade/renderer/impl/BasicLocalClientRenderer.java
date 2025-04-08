@@ -152,6 +152,13 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     public void renderCardList(String rawLabel, List<Card> parade) {
+        if (parade == null || parade.isEmpty()) {
+            System.out.println("\n╔" + ConsoleColors.purple(rawLabel) + "═".repeat(40) + "╗");
+            System.out.println("║ No cards to display. ║");
+            System.out.println("╚" + "═".repeat(60) + "╝");
+            return;
+        }
+        
         int cardWidth = 20;
         int spacing = 1;
         int maxTerminalWidth = 100;
