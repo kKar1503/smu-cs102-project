@@ -14,6 +14,14 @@ public interface IPlayer {
     Card playCard(List<Card> parade);
 
     /**
+     * Choose card(s) to discard from player's hand
+     *
+     * @param parade The list of cards currently in the parade.
+     * @return The card selected to be discarded.
+     */
+    Card discardCard(List<Card> parade);
+
+    /**
      * Adds multiple cards to the player's board (collected cards).
      * This allows adding more than one card at a time.
      *
@@ -27,6 +35,8 @@ public interface IPlayer {
      * @param card The card drawn from the deck.
      */
     void draw(Card card);
+
+
 
     /**
      * Retrieves the player's current hand.
