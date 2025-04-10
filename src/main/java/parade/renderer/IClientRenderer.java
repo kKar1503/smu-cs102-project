@@ -84,15 +84,6 @@ public interface IClientRenderer {
      */
     void renderEndGame(Map<IPlayer, Integer> playerScores);
 
-    /**
-     * Render the end game message for a single player, this is probably only used when this is a
-     * single player game. Or network implementation
-     *
-     * @param player the player to render the end game screen for
-     * @param score the player's score
-     */
-    void renderSinglePlayerEndGame(IPlayer player, int score);
-
     /** Bye bye buddy. */
     void renderBye();
 }
