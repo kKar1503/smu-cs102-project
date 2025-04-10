@@ -1,8 +1,9 @@
 package parade.computer;
 
-import parade.common.Card;
-import parade.common.Player;
+import parade.card.Card;
+import parade.player.Player;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Random;
  */
 public class EasyComputerEngine implements IComputerEngine {
     @Override
-    public Card process(Player player, Player[] players, Card[] parade, int deckSize) {
+    public Card process(Player player, List<Player> players, List<Card> parade, int deckSize) {
         // Randomly picks any card from the hand.
         int randIdx = new Random().nextInt(player.getHand().size());
         return player.getHand().get(randIdx);

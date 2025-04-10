@@ -1,7 +1,7 @@
 package parade.computer;
 
-import parade.common.Card;
-import parade.common.Player;
+import parade.card.Card;
+import parade.player.Player;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class NormalComputerEngine implements IComputerEngine {
     @Override
-    public Card process(Player player, Player[] players, Card[] parade, int deckSize) {
+    public Card process(Player player, List<Player> players, List<Card> parade, int deckSize) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE;
         int minColourImpact = Integer.MAX_VALUE;
@@ -41,12 +41,12 @@ public class NormalComputerEngine implements IComputerEngine {
      * @param parade The current parade lineup.
      * @return The number of cards the AI would take.
      */
-    private int simulateLoss(Card card, Card[] parade) {
+    private int simulateLoss(Card card, List<Card> parade) {
         int loss = 0;
-        int position = parade.length - card.getNumber();
+        int position = parade.size() - card.getNumber();
 
-        for (int i = Math.max(0, position); i < parade.length; i++) {
-            Card paradeCard = parade[i];
+        for (int i = Math.max(0, position); i < parade.size(); i++) {
+            Card paradeCard = parade.get(i);
             if (paradeCard.getNumber() <= card.getNumber()
                     || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
@@ -62,7 +62,7 @@ public class NormalComputerEngine implements IComputerEngine {
      * @param parade The current parade lineup.
      * @return The number of matching colours.
      */
-    private int countColourMatches(Card card, Card[] parade) {
+    private int countColourMatches(Card card, List<Card> parade) {
         int colourMatches = 0;
         for (Card paradeCard : parade) {
             if (paradeCard.getColour().equals(card.getColour())) {

@@ -1,7 +1,9 @@
 package parade.computer;
 
-import parade.common.Card;
-import parade.common.Player;
+import parade.card.Card;
+import parade.player.Player;
+
+import java.util.List;
 
 /**
  * The IComputerEngine interface is an interface for all computer engines built to interact with the
@@ -30,7 +32,7 @@ public interface IComputerEngine {
      * @param deckSize The number of cards left in the deck.
      * @return The ideal card to play.
      */
-    Card process(Player player, Player[] players, Card[] parade, int deckSize);
+    Card process(Player player, List<Player> players, List<Card> parade, int deckSize);
 
     /**
      * Get the name of the engine.

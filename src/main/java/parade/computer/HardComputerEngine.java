@@ -1,9 +1,9 @@
 package parade.computer;
 
-import parade.common.Card;
-import parade.common.Player;
+import parade.card.Card;
+import parade.player.Player;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class HardComputerEngine implements IComputerEngine {
     @Override
-    public Card process(Player player, Player[] players, Card[] parade, int deckSize) {
+    public Card process(Player player, List<Player> players, List<Card> parade, int deckSize) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE; // Tracks the smallest number of cards taken by this AI
         int maxOpponentLoss =
@@ -56,14 +56,14 @@ public class HardComputerEngine implements IComputerEngine {
      * @param parade The current parade lineup.
      * @return The number of cards this AI would take from the parade.
      */
-    private int simulateLoss(Card card, Card[] parade) {
+    private int simulateLoss(Card card, List<Card> parade) {
         int loss = 0;
         int position =
-                parade.length - card.getNumber(); // The point in the parade where checking begins
+                parade.size() - card.getNumber(); // The point in the parade where checking begins
 
         // Iterate through the parade from the calculated position
-        for (int i = Math.max(0, position); i < parade.length; i++) {
-            Card paradeCard = parade[i];
+        for (int i = Math.max(0, position); i < parade.size(); i++) {
+            Card paradeCard = parade.get(i);
 
             // AI will take this card if:
             // - Its number is less than or equal to the played card's number.
@@ -86,10 +86,10 @@ public class HardComputerEngine implements IComputerEngine {
      * @param parade The current parade lineup.
      * @return The maximum number of cards an opponent might take based on this move.
      */
-    private int simulateOpponentLoss(Card card, List<Card> playerHand, Card[] parade) {
+    private int simulateOpponentLoss(Card card, List<Card> playerHand, List<Card> parade) {
         // Create a simulated parade where this card has been played
-        Card[] simulatedParade = Arrays.copyOf(parade, parade.length + 1);
-        simulatedParade[simulatedParade.length - 1] = card; // Add the card to the simulated parade
+        List<Card> simulatedParade = new ArrayList<>(parade);
+        simulatedParade.add(card); // Add the card to the simulated parade
 
         int maxOpponentGain =
                 Integer.MIN_VALUE; // Keeps track of the worst-case scenario for the opponent
