@@ -8,6 +8,7 @@ import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +39,6 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                         + "============================= ✨ Welcome to Parade! ✨"
                         + " =============================="
                         + ConsoleColors.RESET);
-
-        // List<Card> testParade = new ArrayList<>();
-        // for (int i = 0; i < 12; i++) {
-        //     testParade.add(new Card(i % 6, Colour.values()[i % Colour.values().length]));
-        // }
-        // renderCardList(" Parade (read left to right, top to bottom!) ", testParade);
     }
 
     @Override
@@ -51,7 +46,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         // the stream holding the file content
         InputStream inFromFile = getClass().getClassLoader().getResourceAsStream("RenderMenu.txt");
         if (inFromFile == null) {
-            throw new IllegalStateException("parade_ascii_art.txt not found");
+            throw new IllegalStateException("RenderMenu.txt not found");
         }
         Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
         String paradeWelcome = s.hasNext() ? s.next() : "";
@@ -114,25 +109,8 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         // sort board and print
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        // System.out.println(
-        //         "\n\n"
-        //             + "Your board\n"
-        //             +
-        // "===========================================================================");
-        // for (Card card : board) {
-        //     System.out.print(printCards(card) + " ");
-        // }
+
         renderCardList(" Your scoring board ", board);
-        // print player's hand
-        // System.out.println(
-        //         "\n\n"
-        //             + "Your hand\n"
-        //             +
-        // "==========================================================================");
-        // for (Card card : player.getHand()) {
-        //     System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "
-        // ");
-        // }
         renderCardList(" Cards in your hand ", player.getHand());
 
         System.out.print("\n\nSelect a card to play:");
@@ -346,6 +324,124 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void renderRoll() {
+        String[] block = {
+            "╔══════════╗",
+            "║          ║",
+            "║ ROLLING  ║",
+            "║ DICE :)  ║",
+            "║          ║",
+            "╚══════════╝"
+        };
+
+        System.out.println("Shaking block...\n");
+
+        for (int i = 0; i < 15; i++) {
+            int offset = (int) (Math.random() * 6); // random indent 0–5
+            printBlockWithOffset(block, offset);
+
+            try {
+                Thread.sleep(100); // short delay for shaking effect
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            clearConsole();
+        }
+    }
+
+    private void printBlockWithOffset(String[] block, int offset) {
+        String space = " ".repeat(offset);
+        for (String line : block) {
+            System.out.println(space + line);
+        }
+    }
+
+    // This just prints many new lines to "clear" the screen for shaking effect
+    private void clearConsole() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    private String returnDice(int num) {
+        String[] toPrint = {};
+
+        String whiteBg = "\u001B[47m";
+        String blackText = "\u001B[30m";
+        String reset = "\u001B[0m";
+
+        String[] dice1 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "║    o    ║" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+
+        String[] dice2 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o       ║" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "║       o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+
+        String[] dice3 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o       ║" + reset,
+            whiteBg + blackText + "║    o    ║" + reset,
+            whiteBg + blackText + "║       o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+
+        String[] dice4 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║         ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+
+        String[] dice5 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║    o    ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+
+        String[] dice6 = {
+            whiteBg + blackText + "╔═════════╗" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "║ o     o ║" + reset,
+            whiteBg + blackText + "╚═════════╝" + reset
+        };
+
+        switch (num) {
+            case 1:
+                toPrint = dice1;
+                break;
+            case 2:
+                toPrint = dice2;
+                break;
+            case 3:
+                toPrint = dice3;
+                break;
+            case 4:
+                toPrint = dice4;
+                break;
+            case 5:
+                toPrint = dice5;
+                break;
+            case 6:
+                toPrint = dice6;
+                break;
+        }
+
+        return String.join("\n", Arrays.stream(toPrint).toArray(String[]::new));
     }
 
     @Override

@@ -54,6 +54,8 @@ public class AdvancedClientRenderer implements IClientRenderer {
             System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
             System.out.println(
                     "===================================================================================");
+
+            System.out.println(renderSingleCard(new Card(1, Colour.BLACK), 4));
         }
     }
 
@@ -128,7 +130,8 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     @Override
     public void renderBye() {
-        System.out.println("Bye bye buddy.");
+        // Goodbye Message
+        System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");
     }
 
     /**
