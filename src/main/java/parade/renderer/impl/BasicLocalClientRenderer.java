@@ -3,12 +3,14 @@ package parade.renderer.impl;
 import parade.common.Card;
 import parade.engine.AbstractGameEngine;
 import parade.player.IPlayer;
+import parade.player.human.LocalHuman;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -280,7 +282,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderEndGame(Map<IPlayer, Integer> playerScores) { // renderEndGame
+    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
         try {
             for (int i = 0; i < 30; i++) {
                 System.out.print("\033[H\033[2J");
@@ -337,7 +339,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             // Display Player Scores in Table Format
             for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
                 System.out.printf(
-                        "       │ %-16s │ %7d   │\n", entry.getKey().getName(), entry.getValue());
+                        "        │ %-16s │ %7d   │\n", entry.getKey().getName(), entry.getValue());
             }
 
             // Table Footer
