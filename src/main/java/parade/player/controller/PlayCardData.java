@@ -1,16 +1,15 @@
 package parade.player.controller;
 
-import parade.card.Card;
+import parade.card.Parade;
 
 import java.util.List;
 
 public class PlayCardData {
     private final List<AbstractPlayerController> otherPlayers;
-    private final List<Card> parade;
+    private final Parade parade;
     private final int deckSize;
 
-    public PlayCardData(
-            List<AbstractPlayerController> otherPlayers, List<Card> parade, int deckSize) {
+    public PlayCardData(List<AbstractPlayerController> otherPlayers, Parade parade, int deckSize) {
         this.otherPlayers = otherPlayers;
         this.parade = parade;
         this.deckSize = deckSize;
@@ -20,7 +19,7 @@ public class PlayCardData {
         return otherPlayers;
     }
 
-    public List<Card> getParade() {
+    public Parade getParade() {
         return parade;
     }
 
