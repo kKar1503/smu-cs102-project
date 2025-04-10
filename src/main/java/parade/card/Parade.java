@@ -1,4 +1,4 @@
-package parade.common;
+package parade.card;
 
 import java.util.*;
 

@@ -1,6 +1,7 @@
 package parade.computer;
 
 import parade.card.Card;
+import parade.card.Parade;
 import parade.player.Player;
 
 import java.util.List;
@@ -15,15 +16,15 @@ import java.util.List;
  */
 public class NormalComputerEngine implements IComputerEngine {
     @Override
-    public Card process(Player player, List<Player> players, List<Card> parade, int deckSize) {
+    public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE;
         int minColourImpact = Integer.MAX_VALUE;
         List<Card> playerHand = player.getHand();
 
         for (Card card : playerHand) {
-            int loss = simulateLoss(card, parade);
-            int colourImpact = countColourMatches(card, parade);
+            int loss = simulateLoss(card, parade.getCards());
+            int colourImpact = countColourMatches(card, parade.getCards());
 
             if (loss < minLoss || (loss == minLoss && colourImpact < minColourImpact)) {
                 minLoss = loss;

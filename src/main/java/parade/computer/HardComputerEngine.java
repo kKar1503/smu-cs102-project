@@ -1,6 +1,7 @@
 package parade.computer;
 
 import parade.card.Card;
+import parade.card.Parade;
 import parade.player.Player;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class HardComputerEngine implements IComputerEngine {
     @Override
-    public Card process(Player player, List<Player> players, List<Card> parade, int deckSize) {
+    public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE; // Tracks the smallest number of cards taken by this AI
         int maxOpponentLoss =
@@ -30,10 +31,10 @@ public class HardComputerEngine implements IComputerEngine {
         // Iterate through each card in hand to determine the best move
         for (Card card : playerHand) {
             // How many cards this AI would take
-            int selfLoss = simulateLoss(card, parade);
+            int selfLoss = simulateLoss(card, parade.getCards());
 
             // How many cards the opponent might take
-            int opponentLoss = simulateOpponentLoss(card, playerHand, parade);
+            int opponentLoss = simulateOpponentLoss(card, playerHand, parade.getCards());
 
             // Decision-making process: - Select the card that minimises self-loss. - If multiple
             // cards result in the same loss, choose the one that maximises opponent's loss.
