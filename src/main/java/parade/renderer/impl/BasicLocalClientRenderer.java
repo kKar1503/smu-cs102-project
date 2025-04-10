@@ -172,7 +172,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         String topBorder =
                 "╔"
                         + coloredLabel
-                        + "═".repeat(contentWidth - rawLabel.trim().length())
+                        + "═".repeat(Math.max(0, contentWidth - rawLabel.trim().length()))
                         + "╗"; //  + 3
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
 
@@ -280,13 +280,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderSinglePlayerEndGame(IPlayer player, int score) {
-        System.out.println("Game Over, " + player.getName() + "!");
-        System.out.println("Your score: " + score);
-    }
-
-    @Override
-    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
+    public void renderEndGame(Map<IPlayer, Integer> playerScores) { // renderEndGame
         try {
             for (int i = 0; i < 30; i++) {
                 System.out.print("\033[H\033[2J");

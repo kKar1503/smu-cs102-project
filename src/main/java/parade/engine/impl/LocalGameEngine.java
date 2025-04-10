@@ -1,12 +1,5 @@
 package parade.engine.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-
 import parade.common.Card;
 import parade.engine.AbstractGameEngine;
 import parade.logger.AbstractLogger;
@@ -22,6 +15,13 @@ import parade.renderer.impl.AdvancedClientRenderer;
 import parade.renderer.impl.BasicLocalClientRenderer;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
@@ -64,10 +64,10 @@ public class LocalGameEngine extends AbstractGameEngine {
                 clientRenderer.renderComputerDifficulty();
                 int compInput = scanner.nextInt();
                 IPlayer player;
-    
+
                 // Generate a unique base name like 23, 23(1), etc.
                 String uniqueBase = generateUniqueName(baseName, getPlayers());
-    
+
                 // Create the appropriate computer player – no need to add [Difficulty] here
                 switch (compInput) {
                     case 1:
@@ -82,10 +82,10 @@ public class LocalGameEngine extends AbstractGameEngine {
                     default:
                         throw new NoSuchElementException();
                 }
-    
+
                 addPlayer(player);
                 return;
-    
+
             } catch (NoSuchElementException e) {
                 logger.log("User entered invalid input", e);
                 clientRenderer.renderln("Input not found, please try again.");
@@ -93,59 +93,55 @@ public class LocalGameEngine extends AbstractGameEngine {
             }
         }
     }
-    
-    
 
     private void addComputerDisplay() {
         while (true) {
             clientRenderer.render("Enter computer's name: ");
             try {
                 String baseName = scanner.nextLine().trim();
-    
+
                 if (baseName.isEmpty()) {
                     clientRenderer.renderln("Name cannot be empty. Please try again.");
                     continue;
                 }
-    
-                chooseComputerDifficulty(baseName);  // <-- now passing clean base name only
+
+                chooseComputerDifficulty(baseName); // <-- now passing clean base name only
                 return;
-    
+
             } catch (NoSuchElementException e) {
                 logger.log("User entered invalid input", e);
                 clientRenderer.renderln("Invalid input, please try again.");
             }
         }
     }
-    
 
     private void removePlayerDisplay() {
         while (true) {
-        int count = 1;
-        clientRenderer.renderln("Select a player to remove.");
-        for (IPlayer player : getPlayers()) {
-            clientRenderer.renderln(count + ". " + player.getName());
-            count++;
-        }
-        clientRenderer.renderln(count + ". Return back to main menu");
-        int input;
-        try {
-            input = scanner.nextInt();
-            if (input < 1 || input > getPlayersCount() + 1) {
-                throw new NoSuchElementException();
+            int count = 1;
+            clientRenderer.renderln("Select a player to remove.");
+            for (IPlayer player : getPlayers()) {
+                clientRenderer.renderln(count + ". " + player.getName());
+                count++;
             }
-            if (input == count) {
+            clientRenderer.renderln(count + ". Return back to main menu");
+            int input;
+            try {
+                input = scanner.nextInt();
+                if (input < 1 || input > getPlayersCount() + 1) {
+                    throw new NoSuchElementException();
+                }
+                if (input == count) {
+                    return;
+                }
+                removePlayer(input - 1);
                 return;
+            } catch (NoSuchElementException e) {
+                logger.log("User entered invalid input", e);
+                clientRenderer.renderln("Invalid input, please try again");
+            } finally {
+                scanner.nextLine();
             }
-            removePlayer(input - 1);
-            return;
-        } catch (NoSuchElementException e) {
-            logger.log("User entered invalid input", e);
-            clientRenderer.renderln("Invalid input, please try again");
-        } finally {
-            scanner.nextLine();
         }
-    }
-        
     }
 
     private void waitForPlayersLobby() {
@@ -167,9 +163,10 @@ public class LocalGameEngine extends AbstractGameEngine {
                     String name;
                     while (true) {
                         name = scanner.nextLine().trim();
-                        
+
                         if (name.isEmpty()) {
-                            clientRenderer.renderln("Name cannot be empty. Please enter a valid name.");
+                            clientRenderer.renderln(
+                                    "Name cannot be empty. Please enter a valid name.");
                             clientRenderer.render("Enter player name: ");
                             continue;
                         }
@@ -339,6 +336,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         if (winner != null) {
             clientRenderer.render(
                     "Winner: " + winner.getName() + " with " + lowestScore + " points!");
+            clientRenderer.renderEndGame(playerScores);
         } else {
             clientRenderer.render("The game ended in a tie!");
         }
@@ -378,23 +376,29 @@ public class LocalGameEngine extends AbstractGameEngine {
         for (IPlayer player : players) {
             existingNames.add(player.getName());
         }
-    
-        if (existingNames.stream().noneMatch(name -> name.equals(baseName) || name.startsWith(baseName + "("))) {
+
+        if (existingNames.stream()
+                .noneMatch(name -> name.equals(baseName) || name.startsWith(baseName + "("))) {
             return baseName;
         }
-    
+
         int count = 1;
         String newName;
         while (true) {
             newName = baseName + "(" + count + ")";
             String finalNewName = newName;
-            boolean exists = existingNames.stream().anyMatch(name -> name.equals(finalNewName) || name.startsWith(finalNewName + "["));
+            boolean exists =
+                    existingNames.stream()
+                            .anyMatch(
+                                    name ->
+                                            name.equals(finalNewName)
+                                                    || name.startsWith(finalNewName + "["));
             if (!exists) {
                 break;
             }
             count++;
         }
-    
+
         return newName;
     }
 }
