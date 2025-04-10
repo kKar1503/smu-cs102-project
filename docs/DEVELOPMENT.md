@@ -86,7 +86,7 @@ This command will:
 To run the project in local game mode, use the following command:
 
 ```bash
-java -jar target/parade-game-1.0.0-local.jar # Change the version number accordingly
+java -jar target/parade-game-1.0.0.jar # Change the version number accordingly
 ```
 
 There are also readily available scripts in [scripts](../scripts) directory.
@@ -94,12 +94,12 @@ There are also readily available scripts in [scripts](../scripts) directory.
 ```bash
 # Linux & MacOS users
 chmod +x ./scripts/run.sh
-./scripts/run.sh local
+./scripts/run.sh
 ```
 
 ```cmd
 # Windows users
-./scripts/run.bat local
+./scripts/run.bat
 ```
 
 This will start the game in local game mode. Follow the instructions in the terminal to interact
@@ -107,48 +107,7 @@ with the game.
 
 ### Network Game Mode
 
-The network game mode has two parts to the project. You will first need to run the server and then
-the client(s) in order to play the game.
-
-1. **Run the server:**
-
-   ```bash
-   java -jar target/parade-game-1.0.0-server.jar # Change the version number accordingly
-   ```
-
-   There are also readily available scripts in [scripts](../scripts) directory.
-
-   ```bash
-   # Linux & MacOS users
-   chmod +x ./scripts/run.sh
-   ./scripts/run.sh server
-   ```
-
-   ```cmd
-   # Windows users
-   ./scripts/run.bat server
-   ```
-
-2. **Run the client:**
-
-   Open a new terminal window (or on a separate device) and run the following command:
-
-   ```bash
-   java -jar target/parade-game-1.0.0-client.jar # Change the version number accordingly
-   ```
-
-   There are also readily available scripts in [scripts](../scripts) directory.
-
-   ```bash
-   # Linux & MacOS users
-   chmod +x ./scripts/run.sh
-   ./scripts/run.sh client
-   ```
-
-   ```cmd
-   # Windows users
-   ./scripts/run.bat client
-   ```
+The project temporarily does not support network game mode.
 
 ---
 
