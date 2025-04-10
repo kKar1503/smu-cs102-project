@@ -1,11 +1,9 @@
-package parade.common;
+package parade.card;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-public class Card implements Serializable {
-    @Serial private static final long serialVersionUID = -2719634888825237988L;
-
+public class Card {
     private final int number;
     private final Colour colour;
 

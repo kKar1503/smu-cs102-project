@@ -1,18 +1,14 @@
-package parade.common;
+package parade.card;
 
-import parade.common.exceptions.EmptyDeckException;
-import parade.common.exceptions.InsufficientCardException;
+import parade.exceptions.EmptyDeckException;
+import parade.exceptions.InsufficientCardException;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class Deck extends Stack<Card> implements Serializable {
-    @Serial private static final long serialVersionUID = -4386350060875707474L;
-
+public class Deck extends Stack<Card> {
     public Deck() {
         this.ensureCapacity(66); // We know it'll always be 6 (color) * 11 (0-10) cards
         for (Colour colour : Colour.values()) {
