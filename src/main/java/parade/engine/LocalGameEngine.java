@@ -3,6 +3,7 @@ package parade.engine;
 import parade.common.*;
 import parade.common.state.client.AbstractClientData;
 import parade.common.state.client.ClientCardPlayData;
+import parade.common.state.server.ServerPlayerDrawnCardData;
 import parade.common.state.server.ServerPlayerTurnData;
 import parade.computer.EasyComputerEngine;
 import parade.computer.HardComputerEngine;
@@ -257,7 +258,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
 
             // Draw a card from the deck for the player
             Card drawnCard = deck.pop();
-            player.getPlayer().addToHand(drawnCard);
+            player.send(new ServerPlayerDrawnCardData(drawnCard, deck.size()));
             logger.logf("%s drew: %s", player.getPlayer().getName(), drawnCard);
 
             playerPlayCard(
