@@ -21,6 +21,13 @@ public class EasyComputerEngine implements IComputerEngine {
     }
 
     @Override
+    public Card discardCard(Player player, Parade parade) {
+        // Randomly picks any card from the hand.
+        int randIdx = new Random().nextInt(player.getHand().size());
+        return player.getHand().get(randIdx);
+    }
+
+    @Override
     public String getName() {
         return "Easy";
     }

@@ -6,6 +6,7 @@ import parade.computer.HardComputerEngine;
 import parade.computer.NormalComputerEngine;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
+import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.ComputerController;
 import parade.player.controller.HumanController;
@@ -14,6 +15,11 @@ import parade.renderer.local.ClientRendererProvider;
 import parade.renderer.local.IClientRenderer;
 import parade.renderer.local.impl.AdvancedClientRenderer;
 import parade.renderer.local.impl.BasicLocalClientRenderer;
+import parade.result.AbstractResult;
+import parade.result.DeclareWinner;
+import parade.result.TieAndNoWinnerResult;
+import parade.result.TieAndWinnerResult;
+import parade.result.WinnerResult;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
@@ -231,17 +237,31 @@ public class LocalGameEngine extends AbstractGameEngine {
                 "Dealing %d cards to %d players", numCardsToDraw, playerControllerManager.size());
         List<Card> drawnCards = deck.pop(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+
+        // "Roll" a dice to decide who starts first
+        // Generate a number from 0 to 6
+        Random dice = new Random();
+        int diceRoll1 = dice.nextInt(7);
+        int diceRoll2 = dice.nextInt(7);
+        // Sets the current player based on the dice roll
+        playerControllerManager.setCurrentPlayerIdx(diceRoll1 + diceRoll2);
+        Player startingPlayer = playerControllerManager.peek().getPlayer();
+        logger.logf(
+                "Dice roll = %d, Starting player: %s",
+                diceRoll1 + diceRoll2, startingPlayer.getName());
+        clientRenderer.renderf(
+                "Dice roll: %d, %s will be starting first!\n",
+                diceRoll1 + diceRoll2, startingPlayer.getName());
+
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
         // card but alternating between players
-        List<AbstractPlayerController> playerControllers =
-                playerControllerManager.getPlayerControllers();
-        for (int i = 0; i < playerControllers.size(); i++) {
+        for (int i = 0; i < playerControllerManager.size(); i++) {
+            AbstractPlayerController controller = playerControllerManager.next();
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
-                AbstractPlayerController playerController = playerControllers.get(i);
-                Card drawnCard = drawnCards.get(i + playerControllers.size() * j);
-                playerController.getPlayer().addToHand(drawnCard);
-                logger.logf("%s drew: %s", playerController.getPlayer().getName(), drawnCard);
+                Card drawnCard = drawnCards.get(i + playerControllerManager.size() * j);
+                controller.draw(drawnCard);
+                logger.logf("%s drew: %s", controller.getPlayer().getName(), drawnCard);
             }
         }
 
@@ -249,33 +269,57 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            AbstractPlayerController player = playerControllerManager.next();
-
-            // Draw a card from the deck for the player
-            Card drawnCard = deck.pop();
-            player.draw(drawnCard);
-            logger.logf("%s drew: %s", player.getPlayer().getName(), drawnCard);
-
+            AbstractPlayerController controller = playerControllerManager.next();
             playerPlayCard(
-                    player,
+                    controller,
                     new PlayCardData(
                             playerControllerManager.getPlayerControllers(),
                             parade,
                             deck.size())); // Play a card from their hand
+
+            // Draw a card from the deck for the player
+            Card drawnCard = deck.pop();
+            controller.draw(drawnCard);
+            logger.logf("%s drew: %s", controller.getPlayer().getName(), drawnCard);
         }
+
         logger.logf("Game loop finished");
 
         // After the game loop finishes, the extra round is played.
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
-        for (int i = 0; i < playerControllers.size(); i++) {
-            AbstractPlayerController player = playerControllerManager.next();
+        for (int i = 0; i < playerControllerManager.size(); i++) {
+            AbstractPlayerController controller = playerControllerManager.next();
             playerPlayCard(
-                    player,
+                    controller,
                     new PlayCardData(
                             playerControllerManager.getPlayerControllers(),
                             parade,
                             deck.size())); // Play a card from their hand
+        }
+
+        // Each player chooses 2 cards to discard
+        for (int i = 0; i < playerControllerManager.size(); i++) {
+            AbstractPlayerController controller = playerControllerManager.next();
+            Player player = controller.getPlayer();
+            logger.logf("%s choosing 2 cards to discard.", player.getName());
+
+            for (int j = 0; j < 2; j++) {
+                Card discardedCard =
+                        controller.discardCard(
+                                new PlayCardData(
+                                        playerControllerManager.getPlayerControllers(),
+                                        parade,
+                                        deck.size()));
+                logger.logf("%s discarded: %s", player.getName(), discardedCard);
+                clientRenderer.renderln(player.getName() + " discarded: " + discardedCard);
+            }
+        }
+
+        // Add remaining cards in players' hand to their board for score calculation
+        for (int i = 0; i < playerControllerManager.size(); i++) {
+            playerControllerManager.next().moveCardsFromHandToBoard();
+            ;
         }
 
         logger.log("Tabulating scores");
@@ -283,7 +327,37 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
-        declareWinner(playerScores);
+        DeclareWinner declareWinner = new DeclareWinner();
+        AbstractResult result = declareWinner.evaluateScores(playerScores);
+
+        switch (result) {
+            case WinnerResult win ->
+                    clientRenderer.renderf(
+                            "%s wins with %d points!\n",
+                            win.getPlayer().getPlayer().getName(),
+                            playerScores.get(win.getPlayer()));
+
+            case TieAndWinnerResult tie ->
+                    clientRenderer.renderf(
+                            "Tie in score of %d points but %s wins with lesser number of cards\n",
+                            playerScores.get(tie.getPlayer()),
+                            tie.getPlayer().getPlayer().getName());
+
+            case TieAndNoWinnerResult overallTie -> {
+                clientRenderer.renderln("Overall tie with no winners");
+                int numPlayers = overallTie.getPlayers().size();
+                int score = playerScores.get(overallTie.getPlayers().get(0));
+                for (int i = 0; i < numPlayers - 1; i++) {
+                    clientRenderer.render(
+                            overallTie.getPlayers().get(i).getPlayer().getName() + ", ");
+                }
+                clientRenderer.renderf(
+                        "%s have the same score of %d points and same number of cards.\n",
+                        overallTie.getPlayers().get(numPlayers - 1).getPlayer().getName(), score);
+            }
+
+            default -> clientRenderer.renderln("Error retrieving result\n");
+        }
     }
 
     private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
@@ -306,30 +380,6 @@ public class LocalGameEngine extends AbstractGameEngine {
         clientRenderer.renderf(
                 "%s received %s from parade.%n",
                 player.getPlayer().getName(), Arrays.toString(cardsFromParade.toArray()));
-    }
-
-    /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<AbstractPlayerController, Integer> playerScores) {
-        AbstractPlayerController winner = null;
-        int lowestScore = Integer.MAX_VALUE;
-
-        for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
-            if (entry.getValue() < lowestScore) {
-                lowestScore = entry.getValue();
-                winner = entry.getKey();
-            }
-        }
-
-        if (winner != null) {
-            clientRenderer.render(
-                    "Winner: "
-                            + winner.getPlayer().getName()
-                            + " with "
-                            + lowestScore
-                            + " points!");
-        } else {
-            clientRenderer.render("The game ended in a tie!");
-        }
     }
 
     /**

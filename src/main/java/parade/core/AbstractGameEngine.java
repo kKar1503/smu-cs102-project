@@ -50,22 +50,25 @@ abstract class AbstractGameEngine {
     }
 
     Map<AbstractPlayerController, Integer> tabulateScores() {
-        Map<AbstractPlayerController, List<Card>> playerHands = new HashMap<>();
-        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
-            playerHands.put(player, player.getPlayer().getHand());
+        List<AbstractPlayerController> controllers = playerControllerManager.getPlayerControllers();
+
+        Map<AbstractPlayerController, List<Card>> playerBoards = new HashMap<>();
+        for (AbstractPlayerController controller : controllers) {
+            playerBoards.put(controller, controller.getPlayer().getBoard());
         }
 
         // Calculate majority colours for each player
         Map<AbstractPlayerController, List<Colour>> majorityColours = new HashMap<>();
-        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
-            majorityColours.put(player, decideMajority(playerHands, player).get(player));
+        for (AbstractPlayerController controller : controllers) {
+            majorityColours.put(
+                    controller, decideMajority(playerBoards, controller).get(controller));
         }
 
         Map<AbstractPlayerController, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
-        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
-            int score = calculateScore(player, playerHands, majorityColours);
-            playerScores.put(player, score);
+        for (AbstractPlayerController controller : controllers) {
+            int score = calculateScore(controller, playerBoards, majorityColours);
+            playerScores.put(controller, score);
         }
 
         return playerScores;
@@ -183,32 +186,30 @@ abstract class AbstractGameEngine {
      * @throws IllegalArgumentException If any argument is null, or if the target player does not
      *     have a card list.
      */
-    int calculateScore(
-            AbstractPlayerController targetPlayerController,
-            Map<AbstractPlayerController, List<Card>> playerCards,
+    public int calculateScore(
+            AbstractPlayerController targetPlayer,
+            Map<AbstractPlayerController, List<Card>> playerBoards,
             Map<AbstractPlayerController, List<Colour>> majorityColours) {
         int score = 0;
-        if (targetPlayerController == null || playerCards == null || majorityColours == null) {
+        if (targetPlayer == null || playerBoards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");
         }
-        List<Card> playerCardList = playerCards.get(targetPlayerController);
-        if (playerCardList == null) {
+        List<Card> playerBoardList = playerBoards.get(targetPlayer);
+        if (playerBoardList == null) {
             throw new IllegalArgumentException("Target player has no card list.");
         }
 
-        List<Colour> playerMajorityColours =
-                majorityColours.getOrDefault(targetPlayerController, new ArrayList<>());
+        List<Colour> playerMajorityColours = majorityColours.get(targetPlayer);
 
-        for (Card card : playerCardList) {
+        for (Card card : playerBoardList) {
             if (card == null || card.getColour() == null) {
                 throw new IllegalArgumentException("Card or card colour cannot be null.");
             }
-
             // Only add the value of the card if it's NOT in the player's majority colours
-            if (!playerMajorityColours.contains(card.getColour())) {
-                score += card.getNumber();
-            } else {
+            if (playerMajorityColours.contains(card.getColour())) {
                 score += 1;
+            } else {
+                score += card.getNumber();
             }
         }
 

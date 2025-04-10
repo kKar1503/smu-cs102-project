@@ -33,7 +33,7 @@ public class HumanController extends AbstractPlayerController {
         Scanner sc = new Scanner(System.in);
         int input;
         ClientRendererProvider.getInstance()
-                .renderPlayerTurn(player, latestDrawnCard, playCardData);
+                .renderPlayerTurn(player, latestDrawnCard, playCardData, false);
 
         while (true) {
             try {
@@ -52,6 +52,31 @@ public class HumanController extends AbstractPlayerController {
             sc.nextLine();
         }
         latestDrawnCard = null;
+        return player.removeFromHand(input - 1);
+    }
+
+    @Override
+    public Card discardCard(PlayCardData playCardData) {
+        Scanner sc = new Scanner(System.in);
+        int input;
+        ClientRendererProvider.getInstance().renderPlayerTurn(player, null, playCardData, true);
+
+        while (true) {
+            try {
+                input = sc.nextInt();
+                if (input < 1 || input > player.getHand().size()) {
+                    throw new IndexOutOfBoundsException();
+                }
+                break;
+            } catch (InputMismatchException e) {
+                ClientRendererProvider.getInstance().render("Invalid input. Please try again");
+            } catch (IndexOutOfBoundsException e) {
+                ClientRendererProvider.getInstance()
+                        .render("Invalid choice. Please select a valid index");
+            }
+            ClientRendererProvider.getInstance().render("Select a card to discard:");
+            sc.nextLine();
+        }
         return player.removeFromHand(input - 1);
     }
 }

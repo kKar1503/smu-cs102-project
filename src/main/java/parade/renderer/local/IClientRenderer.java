@@ -73,8 +73,10 @@ public interface IClientRenderer {
      * @param newlyDrawnCard the card that the player has drawn
      * @param playCardData the data object that contains sufficient information for the player to
      *     make a decision for their turn
+     * @param toDiscard tells the method to render for players to play or discard card
      */
-    void renderPlayerTurn(Player player, Card newlyDrawnCard, PlayCardData playCardData);
+    void renderPlayerTurn(
+            Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard);
 
     /**
      * Render the end game message for all players. This method is used for the naive implementation

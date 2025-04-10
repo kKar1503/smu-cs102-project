@@ -34,6 +34,10 @@ public abstract class AbstractPlayerController {
         player.addToBoard(cards);
     }
 
+    public void moveCardsFromHandToBoard() {
+        player.addToBoard(player.removeFromHand().toArray(Card[]::new));
+    }
+
     /**
      * Play a card from the player's hand.
      *
@@ -44,6 +48,8 @@ public abstract class AbstractPlayerController {
      * @return The card that the player wants to play
      */
     public abstract Card playCard(PlayCardData playCardData);
+
+    public abstract Card discardCard(PlayCardData playCardData);
 
     /**
      * The player controller holds a reference to the underlying {@link Player} object, which

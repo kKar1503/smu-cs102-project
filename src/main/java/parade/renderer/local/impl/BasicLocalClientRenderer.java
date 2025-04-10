@@ -68,7 +68,8 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayerTurn(Player player, Card newlyDrawnCard, PlayCardData playCardData) {
+    public void renderPlayerTurn(
+            Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
@@ -91,20 +92,20 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 "\n\n"
-                        + "Your board\n"
-                        + "===========================================================================");
+                    + "Your board\n"
+                    + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
                 "\n\n"
-                        + "Your hand\n"
-                        + "==========================================================================");
+                    + "Your hand\n"
+                    + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
-        System.out.print("\n\nSelect a card to play:");
+        System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
 
     @Override

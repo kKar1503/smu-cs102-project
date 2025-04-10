@@ -30,12 +30,25 @@ class PlayerControllerManager implements Iterator<AbstractPlayerController> {
      */
     @Override
     public AbstractPlayerController next() {
-        return lobby.get(nextIndex());
+        return lobby.get(nextIndex(true));
     }
 
-    private int nextIndex() {
+    public AbstractPlayerController peek() {
+        return lobby.get(nextIndex(false));
+    }
+
+    public void setCurrentPlayerIdx(int idx) {
+        if (idx < 0 || idx >= lobby.size()) {
+            throw new IndexOutOfBoundsException("Invalid player index: " + idx);
+        }
+        currentPlayerIdx = idx;
+    }
+
+    private int nextIndex(boolean increment) {
         int thisIndex = currentPlayerIdx;
-        currentPlayerIdx = ++currentPlayerIdx % lobby.size();
+        if (increment) {
+            currentPlayerIdx = ++currentPlayerIdx % lobby.size();
+        }
         return thisIndex;
     }
 

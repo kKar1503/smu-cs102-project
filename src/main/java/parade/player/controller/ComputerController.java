@@ -48,4 +48,9 @@ public class ComputerController extends AbstractPlayerController {
                 playCardData.getParade(),
                 playCardData.getDeckSize());
     }
+
+    @Override
+    public Card discardCard(PlayCardData playCardData) {
+        return computerEngine.discardCard(player, playCardData.getParade());
+    }
 }

@@ -35,6 +35,8 @@ public interface IComputerEngine {
      */
     Card process(Player player, List<Player> players, Parade parade, int deckSize);
 
+    Card discardCard(Player player, Parade parade);
+
     /**
      * Get the name of the engine.
      *
