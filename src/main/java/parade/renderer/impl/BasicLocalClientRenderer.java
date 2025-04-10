@@ -6,10 +6,12 @@ import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
@@ -45,10 +47,23 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderMenu() {
-        System.out.println("1. Start Game");
-        System.out.println("2. Exit");
-        System.out.print("Please select an option: ");
+    public void renderMenu() throws IllegalStateException {
+        // the stream holding the file content
+        InputStream inFromFile = getClass().getClassLoader().getResourceAsStream("RenderMenu.txt");
+        if (inFromFile == null) {
+            throw new IllegalStateException("parade_ascii_art.txt not found");
+        }
+        Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
+        String paradeWelcome = s.hasNext() ? s.next() : "";
+
+        if (paradeWelcome != null) {
+            System.out.println(
+                    ConsoleColors.PURPLE_BOLD
+                            + "============================= Welcome to Parade!"
+                            + " =============================="
+                            + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
+        }
     }
 
     @Override
@@ -121,25 +136,6 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         renderCardList(" Cards in your hand ", player.getHand());
 
         System.out.print("\n\nSelect a card to play:");
-    }
-
-    @Override
-    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
-        System.out.println("Game Over!");
-        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
-            System.out.println(entry.getKey().getName() + ": " + entry.getValue());
-        }
-    }
-
-    @Override
-    public void renderSinglePlayerEndGame(IPlayer player, int score) {
-        System.out.println("Game Over, " + player.getName() + "!");
-        System.out.println("Your score: " + score);
-    }
-
-    @Override
-    public void renderBye() {
-        System.out.println("Bye bye buddy.");
     }
 
     public String printCards(Card card) {
@@ -281,5 +277,86 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                 colorPrinter(colorCode, line4),
                 colorPrinter(colorCode, line5),
                 colorPrinter(colorCode, bottom));
+    }
+
+    @Override
+    public void renderSinglePlayerEndGame(IPlayer player, int score) {
+        System.out.println("Game Over, " + player.getName() + "!");
+        System.out.println("Your score: " + score);
+    }
+
+    @Override
+    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
+        try {
+            for (int i = 0; i < 30; i++) {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+
+                System.out.println(
+                        " ".repeat(i)
+                                + " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗  "
+                                + " ██╗███████╗██████╗ ");
+                System.out.println(
+                        " ".repeat(i)
+                                + "██╔════╝ ██╔══██╗████╗ ████║██╔════╝     ██╔══██╗██║  "
+                                + " ██║██╔════╝██╔══██╗");
+                System.out.println(
+                        " ".repeat(i)
+                                + "██║  ███╗███████║██╔████╔██║█████╗       ██║  ██║██║   ██║█████╗"
+                                + "  ██████╔╝");
+                System.out.println(
+                        " ".repeat(i)
+                                + "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝       ██║  ██║██║   ██║██╔══╝"
+                                + "  ██╔══██╗");
+                System.out.println(
+                        " ".repeat(i)
+                                + "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    "
+                                + " ██████╔╝╚██████╔╝███████╗██║  ██║");
+                System.out.println(
+                        " ".repeat(i)
+                                + " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝  ╚═════╝"
+                                + " ╚══════╝╚═╝  ╚═╝");
+
+                Thread.sleep(100);
+            }
+
+            for (int i = 0; i < 6; i++) {
+                System.out.print("\033[H\033[2J");
+
+                System.out.println("\n\033[5m");
+                System.out.println("      =============================================");
+                System.out.println("      ||    ███████╗██╗███╗   ██╗ █████╗ ██╗     ||");
+                System.out.println("      ||    ██╔════╝██║████╗  ██║██╔══██╗██║     ||");
+                System.out.println("      ||    █████╗  ██║██╔██╗ ██║███████║██║     ||");
+                System.out.println("      ||    ██╔══╝  ██║██║╚██╗██║██╔══██║██║     ||");
+                System.out.println("      ||    ██║     ██║██║ ╚████║██║  ██║███████╗||");
+                System.out.println("      ||    ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝||");
+                System.out.println("      =============================================");
+                System.out.println("\033[0m");
+            }
+
+            // Table Header
+            System.out.println("        ┌──────────────────┬───────────┐");
+            System.out.println("        │     Player       │  Score    │");
+            System.out.println("        ├──────────────────┼───────────┤");
+
+            // Display Player Scores in Table Format
+            for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
+                System.out.printf(
+                        "       │ %-16s │ %7d   │\n", entry.getKey().getName(), entry.getValue());
+            }
+
+            // Table Footer
+            System.out.println("        └──────────────────┴───────────┘");
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void renderBye() {
+        // Goodbye Message
+        System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");
     }
 }
