@@ -58,6 +58,12 @@ public class Player {
         return hand.remove(index);
     }
 
+    public List<Card> removeFromHand() {
+        List<Card> removedCards = new ArrayList<>(hand);
+        hand.clear();
+        return removedCards;
+    }
+
     public List<Card> getBoard() {
         return Collections.unmodifiableList(board);
     }
