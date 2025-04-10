@@ -1,15 +1,15 @@
 package parade.renderer.impl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 import parade.common.Card;
 import parade.engine.AbstractGameEngine;
 import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 public class BasicLocalClientRenderer implements IClientRenderer {
     public BasicLocalClientRenderer() {}
@@ -91,12 +91,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
-            System.out.println(
-                    "You drew: ["
-                            + newlyDrawnCard.getNumber()
-                            + " "
-                            + newlyDrawnCard.getColour()
-                            + "]");
+            System.out.println("You drew:\n" + rendersSingleCard(newlyDrawnCard));
         }
         // print cards in parade
         renderCardList(" Parade (read left to right, top to bottom!) ", parade);
@@ -154,11 +149,11 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     public void renderCardList(String rawLabel, List<Card> parade) {
         if (parade == null || parade.isEmpty()) {
             System.out.println("\n╔" + ConsoleColors.purple(rawLabel) + "═".repeat(40) + "╗");
-            System.out.println("║ No cards to display. ║");
+            System.out.println("║ No cards to display." + " ".repeat(39) + "║");
             System.out.println("╚" + "═".repeat(60) + "╝");
             return;
         }
-        
+
         int cardWidth = 20;
         int spacing = 1;
         int maxTerminalWidth = 100;
