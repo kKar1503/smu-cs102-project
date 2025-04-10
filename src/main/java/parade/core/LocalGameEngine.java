@@ -1,19 +1,15 @@
-package parade.engine;
+package parade.core;
 
-import parade.common.*;
-import parade.common.state.client.AbstractClientData;
-import parade.common.state.client.ClientCardPlayData;
-import parade.common.state.server.ServerPlayerDrawnCardData;
-import parade.common.state.server.ServerPlayerTurnData;
+import parade.card.Card;
 import parade.computer.EasyComputerEngine;
 import parade.computer.HardComputerEngine;
 import parade.computer.NormalComputerEngine;
-import parade.controller.IPlayerController;
-import parade.controller.local.ILocalPlayerController;
-import parade.controller.local.LocalComputerController;
-import parade.controller.local.LocalHumanController;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
+import parade.player.controller.AbstractPlayerController;
+import parade.player.controller.ComputerController;
+import parade.player.controller.HumanController;
+import parade.player.controller.PlayCardData;
 import parade.renderer.local.ClientRendererProvider;
 import parade.renderer.local.IClientRenderer;
 import parade.renderer.local.impl.AdvancedClientRenderer;
@@ -27,25 +23,25 @@ import java.util.*;
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
  * flow.
  */
-public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> {
+public class LocalGameEngine extends AbstractGameEngine {
     private final AbstractLogger logger;
     private final IClientRenderer clientRenderer;
     private final Scanner scanner;
 
     /** Initializes the game server with a deck. */
     public LocalGameEngine() {
-        super(new Lobby("Local Lobby", 2, 6, null));
+        super();
         logger = LoggerProvider.getInstance();
         scanner = new Scanner(System.in);
         clientRenderer = setupClientRenderer();
     }
 
-    private void addPlayerController(ILocalPlayerController player) {
+    private void addPlayerController(AbstractPlayerController player) {
         playerControllerManager.add(player);
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
-    private boolean removePlayerController(ILocalPlayerController player) {
+    private boolean removePlayerController(AbstractPlayerController player) {
         boolean removed = playerControllerManager.remove(player);
         if (removed) {
             logger.logf("Player %s removed from the game", player.getPlayer().getName());
@@ -55,8 +51,8 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         return removed;
     }
 
-    private ILocalPlayerController removePlayerController(int index) {
-        ILocalPlayerController removedPlayer = playerControllerManager.remove(index);
+    private AbstractPlayerController removePlayerController(int index) {
+        AbstractPlayerController removedPlayer = playerControllerManager.remove(index);
         if (removedPlayer != null) {
             logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
         } else {
@@ -71,11 +67,11 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
                 clientRenderer.renderComputerDifficulty();
                 int compInput = scanner.nextInt();
                 if (compInput == 1) {
-                    addPlayerController(new LocalComputerController(new EasyComputerEngine()));
+                    addPlayerController(new ComputerController(new EasyComputerEngine()));
                 } else if (compInput == 2) {
-                    addPlayerController(new LocalComputerController(new NormalComputerEngine()));
+                    addPlayerController(new ComputerController(new NormalComputerEngine()));
                 } else if (compInput == 3) {
-                    addPlayerController(new LocalComputerController(new HardComputerEngine()));
+                    addPlayerController(new ComputerController(new HardComputerEngine()));
                 } else {
                     throw new NoSuchElementException();
                 }
@@ -108,7 +104,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         while (true) {
             int count = 1;
             clientRenderer.renderln("Select a player to remove.");
-            for (IPlayerController player : playerControllerManager.getPlayerControllers()) {
+            for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
                 clientRenderer.renderln(count + ". " + player.getPlayer().getName());
                 count++;
             }
@@ -116,7 +112,7 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
             int input;
             try {
                 input = scanner.nextInt();
-                if (input < 1 || input > playerControllerManager.getLobby().size() + 1) {
+                if (input < 1 || input > playerControllerManager.size() + 1) {
                     throw new NoSuchElementException();
                 }
                 if (input == count) {
@@ -137,36 +133,36 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         logger.logf("Waiting for players to join lobby");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            clientRenderer.renderPlayersLobby(playerControllerManager.getLobby());
+            clientRenderer.renderPlayersLobby(playerControllerManager.getPlayers());
             int input = 0;
             try {
                 input = scanner.nextInt();
                 scanner.nextLine();
                 if (input == 1) {
                     logger.log("Adding a new player");
-                    if (playerControllerManager.getLobby().isFull()) {
+                    if (playerControllerManager.isFull()) {
                         clientRenderer.renderln("Lobby is full.");
                         continue;
                     }
                     clientRenderer.render("Enter player name: ");
                     String name = scanner.nextLine();
-                    addPlayerController(new LocalHumanController(name));
+                    addPlayerController(new HumanController(name));
                 } else if (input == 2) {
                     logger.log("Adding a new computer");
-                    if (playerControllerManager.getLobby().isFull()) {
+                    if (playerControllerManager.isFull()) {
                         clientRenderer.renderln("Lobby is full.");
                         continue;
                     }
                     addComputerDisplay();
                 } else if (input == 3) {
-                    if (playerControllerManager.getLobby().isEmpty()) {
+                    if (playerControllerManager.isEmpty()) {
                         clientRenderer.renderln("Lobby has no players.");
                         continue;
                     }
                     logger.log("Removing a player from lobby");
                     removePlayerDisplay();
                 } else if (input == 4) {
-                    if (!playerControllerManager.getLobby().isReady()) {
+                    if (!playerControllerManager.isReady()) {
                         clientRenderer.renderln("Lobby does not have enough players.");
                         continue;
                     }
@@ -220,30 +216,29 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
 
         waitForPlayersLobby();
 
-        if (!playerControllerManager.getLobby().isReady()) {
+        if (!playerControllerManager.isReady()) {
             logger.logf(
                     "Insufficient players to start the game, found %d",
-                    playerControllerManager.getLobby().size());
+                    playerControllerManager.size());
             throw new IllegalStateException("Server requires at least two players");
         }
 
-        logger.logf("Starting game with %d players", playerControllerManager.getLobby().size());
+        logger.logf("Starting game with %d players", playerControllerManager.size());
 
         // Gives out card to everyone
-        int numCardsToDraw = INITIAL_CARDS_PER_PLAYER * playerControllerManager.getLobby().size();
+        int numCardsToDraw = INITIAL_CARDS_PER_PLAYER * playerControllerManager.size();
         logger.logf(
-                "Dealing %d cards to %d players",
-                numCardsToDraw, playerControllerManager.getLobby().size());
+                "Dealing %d cards to %d players", numCardsToDraw, playerControllerManager.size());
         List<Card> drawnCards = deck.pop(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
         // card but alternating between players
-        List<ILocalPlayerController> playerControllers =
+        List<AbstractPlayerController> playerControllers =
                 playerControllerManager.getPlayerControllers();
         for (int i = 0; i < playerControllers.size(); i++) {
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
-                ILocalPlayerController playerController = playerControllers.get(i);
+                AbstractPlayerController playerController = playerControllers.get(i);
                 Card drawnCard = drawnCards.get(i + playerControllers.size() * j);
                 playerController.getPlayer().addToHand(drawnCard);
                 logger.logf("%s drew: %s", playerController.getPlayer().getName(), drawnCard);
@@ -254,21 +249,19 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         logger.log("Game loop starting");
         while (shouldGameContinue()) {
             // Each player plays a card
-            ILocalPlayerController player = playerControllerManager.next();
+            AbstractPlayerController player = playerControllerManager.next();
 
             // Draw a card from the deck for the player
             Card drawnCard = deck.pop();
-            player.send(new ServerPlayerDrawnCardData(drawnCard, deck.size()));
+            player.draw(drawnCard);
             logger.logf("%s drew: %s", player.getPlayer().getName(), drawnCard);
 
             playerPlayCard(
                     player,
-                    new ServerPlayerTurnData(
-                            playerControllerManager.getPlayers().toArray(Player[]::new),
-                            player.getPlayer(),
-                            parade.getCards().toArray(Card[]::new),
-                            deck.size(),
-                            player.getPlayer().getHand().size())); // Play a card from their hand
+                    new PlayCardData(
+                            playerControllerManager.getPlayerControllers(),
+                            parade,
+                            deck.size())); // Play a card from their hand
         }
         logger.logf("Game loop finished");
 
@@ -276,44 +269,27 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
         for (int i = 0; i < playerControllers.size(); i++) {
-            ILocalPlayerController player = playerControllerManager.next();
+            AbstractPlayerController player = playerControllerManager.next();
             playerPlayCard(
                     player,
-                    new ServerPlayerTurnData(
-                            playerControllerManager.getPlayers().toArray(Player[]::new),
-                            player.getPlayer(),
-                            parade.getCards().toArray(Card[]::new),
-                            deck.size(),
-                            player.getPlayer().getHand().size())); // Play a card from their hand
+                    new PlayCardData(
+                            playerControllerManager.getPlayerControllers(),
+                            parade,
+                            deck.size())); // Play a card from their hand
         }
 
         logger.log("Tabulating scores");
-        Map<ILocalPlayerController, Integer> playerScores = tabulateScores();
+        Map<AbstractPlayerController, Integer> playerScores = tabulateScores();
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
         declareWinner(playerScores);
     }
 
-    private void playerPlayCard(
-            ILocalPlayerController player, ServerPlayerTurnData playerTurnData) {
+    private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
         // Playing card
         logger.logf("%s playing a card", player.getPlayer().getName());
-        AbstractClientData clientData = player.send(playerTurnData);
-
-        Card playedCard;
-        if (clientData instanceof ClientCardPlayData cardPlayData) {
-            playedCard = cardPlayData.getCard();
-        } else if (clientData == null) {
-            logger.logf("%s did not play a card", player.getPlayer().getName());
-            throw new IllegalStateException("Client data is null");
-        } else {
-            logger.logf(
-                    "%s did not play a card, received: %s",
-                    player.getPlayer().getName(), clientData);
-            throw new IllegalStateException("Client data is not a card play data");
-        }
-
+        Card playedCard = player.playCard(playCardData);
         logger.logf(
                 "%s played and placed card into parade: %s",
                 player.getPlayer().getName(), playedCard);
@@ -333,11 +309,11 @@ public class LocalGameEngine extends AbstractGameEngine<ILocalPlayerController> 
     }
 
     /** Declares the winner based on the lowest score. */
-    private void declareWinner(Map<ILocalPlayerController, Integer> playerScores) {
-        ILocalPlayerController winner = null;
+    private void declareWinner(Map<AbstractPlayerController, Integer> playerScores) {
+        AbstractPlayerController winner = null;
         int lowestScore = Integer.MAX_VALUE;
 
-        for (Map.Entry<ILocalPlayerController, Integer> entry : playerScores.entrySet()) {
+        for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
             if (entry.getValue() < lowestScore) {
                 lowestScore = entry.getValue();
                 winner = entry.getKey();

@@ -1,20 +1,24 @@
-package parade.engine;
+package parade.core;
 
-import parade.common.*;
-import parade.controller.IPlayerController;
+import parade.card.Card;
+import parade.card.Colour;
+import parade.card.Deck;
+import parade.card.Parade;
+import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 
 import java.util.*;
 
-abstract class AbstractGameEngine<T extends IPlayerController> {
+abstract class AbstractGameEngine {
     static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
     static final int PARADE_SIZE = 6; // Number of cards in the parade
 
     final Deck deck = new Deck(); // The deck of cards used in the game
-    final PlayerControllerManager<T> playerControllerManager;
+    final PlayerControllerManager playerControllerManager;
     final Parade parade; // The list of cards currently in the parade
 
-    AbstractGameEngine(Lobby lobby) {
-        playerControllerManager = new PlayerControllerManager<>(lobby);
+    AbstractGameEngine() {
+        playerControllerManager = new PlayerControllerManager();
         List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
         parade = new Parade(parade_cards);
     }
@@ -33,7 +37,7 @@ abstract class AbstractGameEngine<T extends IPlayerController> {
             // Game ends when the deck is empty
             return false;
         }
-        for (IPlayerController player : playerControllerManager.getPlayerControllers()) {
+        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
             Set<Colour> uniqueColours = new HashSet<>();
             for (Card card : player.getPlayer().getBoard()) {
                 uniqueColours.add(card.getColour());
@@ -45,21 +49,21 @@ abstract class AbstractGameEngine<T extends IPlayerController> {
         return true;
     }
 
-    Map<T, Integer> tabulateScores() {
-        Map<T, List<Card>> playerHands = new HashMap<>();
-        for (T player : playerControllerManager.getPlayerControllers()) {
+    Map<AbstractPlayerController, Integer> tabulateScores() {
+        Map<AbstractPlayerController, List<Card>> playerHands = new HashMap<>();
+        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
             playerHands.put(player, player.getPlayer().getHand());
         }
 
         // Calculate majority colours for each player
-        Map<T, List<Colour>> majorityColours = new HashMap<>();
-        for (T player : playerControllerManager.getPlayerControllers()) {
+        Map<AbstractPlayerController, List<Colour>> majorityColours = new HashMap<>();
+        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
             majorityColours.put(player, decideMajority(playerHands, player).get(player));
         }
 
-        Map<T, Integer> playerScores = new HashMap<>();
+        Map<AbstractPlayerController, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
-        for (T player : playerControllerManager.getPlayerControllers()) {
+        for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
             int score = calculateScore(player, playerHands, majorityColours);
             playerScores.put(player, score);
         }
@@ -110,7 +114,9 @@ abstract class AbstractGameEngine<T extends IPlayerController> {
      * @throws IllegalArgumentException If {@code playerCards} or {@code targetPlayer} is null, or
      *     if the target player is not present in the map.
      */
-    Map<T, List<Colour>> decideMajority(Map<T, List<Card>> playerCards, T targetPlayerController) {
+    Map<AbstractPlayerController, List<Colour>> decideMajority(
+            Map<AbstractPlayerController, List<Card>> playerCards,
+            AbstractPlayerController targetPlayerController) {
 
         Player targetPlayer = targetPlayerController.getPlayer();
 
@@ -122,7 +128,7 @@ abstract class AbstractGameEngine<T extends IPlayerController> {
             throw new IllegalArgumentException("Target player is not present in player cards.");
         }
 
-        Map<T, List<Colour>> majorityColours = new HashMap<>();
+        Map<AbstractPlayerController, List<Colour>> majorityColours = new HashMap<>();
         List<Colour> targetMajorityColours = new ArrayList<>();
 
         // Step 1: Count occurrences of each colour for the target player
@@ -136,7 +142,7 @@ abstract class AbstractGameEngine<T extends IPlayerController> {
 
             boolean isMajority = true; // Assume majority until proven otherwise
 
-            for (Map.Entry<T, List<Card>> entry : playerCards.entrySet()) {
+            for (Map.Entry<AbstractPlayerController, List<Card>> entry : playerCards.entrySet()) {
                 Player otherPlayer = entry.getKey().getPlayer();
                 if (!otherPlayer.equals(targetPlayer)) { // Don't compare against self
                     int otherCount = countColours(entry.getValue()).getOrDefault(colour, 0);
@@ -178,9 +184,9 @@ abstract class AbstractGameEngine<T extends IPlayerController> {
      *     have a card list.
      */
     int calculateScore(
-            T targetPlayerController,
-            Map<T, List<Card>> playerCards,
-            Map<T, List<Colour>> majorityColours) {
+            AbstractPlayerController targetPlayerController,
+            Map<AbstractPlayerController, List<Card>> playerCards,
+            Map<AbstractPlayerController, List<Colour>> majorityColours) {
         int score = 0;
         if (targetPlayerController == null || playerCards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");
