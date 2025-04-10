@@ -1,6 +1,6 @@
 package parade.settings;
 
-import parade.common.exceptions.InvalidSettingException;
+import parade.exceptions.InvalidSettingException;
 
 import java.io.FileInputStream;
 import java.io.IOException;

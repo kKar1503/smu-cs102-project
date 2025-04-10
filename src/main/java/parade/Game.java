@@ -1,13 +1,13 @@
 package parade;
 
-import parade.engine.LocalGameEngine;
+import parade.core.LocalGameEngine;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.settings.Settings;
 
 import java.io.IOException;
 
-public class Local {
+public class Game {
     public static void main(String[] args) throws IOException {
 
         new Settings.Builder()

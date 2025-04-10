@@ -1,27 +1,41 @@
-package parade.common;
+package parade.player;
 
-import java.io.Serial;
-import java.io.Serializable;
+import parade.card.Card;
+
 import java.util.*;
 
-public class Player implements Serializable {
-    @Serial private static final long serialVersionUID = 3559231237142260576L;
-
-    private final UUID id = UUID.randomUUID();
-    private final String name;
-    private final List<Card> hand = new LinkedList<>();
-    private final List<Card> board = new ArrayList<>();
+public class Player {
+    // Name needs to be unique as it's used for identification
+    private String name;
+    private final List<Card> hand;
+    private final List<Card> board;
 
     public Player(String name) {
         this.name = name;
+        this.hand = new LinkedList<>();
+        this.board = new ArrayList<>();
     }
 
-    public String getId() {
-        return id.toString();
+    // This is a Copy constructor, useful for creating a new player with the same state as an
+    // existing one. For @Greg usage to write his Computer simulation logic.
+    public Player(Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        this.name = player.name;
+        this.hand = new LinkedList<>(player.hand);
+        this.board = new ArrayList<>(player.board);
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        this.name = name;
     }
 
     public List<Card> getHand() {
@@ -70,20 +84,18 @@ public class Player implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Player player)) return false;
-        return Objects.equals(id, player.id);
+        return Objects.equals(name, player.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(name);
     }
 
     @Override
     public String toString() {
         return "Player{"
-                + "id='"
-                + id
-                + "', name='"
+                + "name='"
                 + name
                 + "', hand="
                 + Arrays.toString(hand.toArray(Card[]::new))
