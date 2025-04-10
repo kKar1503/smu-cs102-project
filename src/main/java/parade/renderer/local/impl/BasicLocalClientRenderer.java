@@ -55,7 +55,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         System.out.println("2. Add Computer" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
         System.out.println(
                 "3. Remove player/computer" + (lobby.isEmpty() ? " (Lobby is empty)" : ""));
-        System.out.println("4. Start Game" + (lobby.size() >= 2 ? " (Not enough players)" : ""));
+        System.out.println("4. Start Game" + (lobby.size() < 2 ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 

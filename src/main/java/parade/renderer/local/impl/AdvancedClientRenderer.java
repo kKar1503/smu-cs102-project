@@ -68,7 +68,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
         }
         System.out.println();
         System.out.println("1. Add Player" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println("2. Start Game" + (lobby.size() >= 2 ? " (Not enough players)" : ""));
+        System.out.println("2. Start Game" + (lobby.size() < 2 ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
