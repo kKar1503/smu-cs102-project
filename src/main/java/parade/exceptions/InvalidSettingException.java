@@ -1,4 +1,4 @@
-package parade.common.exceptions;
+package parade.exceptions;
 
 /**
  * Exception thrown when an invalid setting configuration is encountered when building the Settings

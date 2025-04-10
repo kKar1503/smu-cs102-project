@@ -1,4 +1,4 @@
-package parade.common.exceptions;
+package parade.exceptions;
 
 public class UnexpectedUserInputException extends RuntimeException {
     public UnexpectedUserInputException() {}
