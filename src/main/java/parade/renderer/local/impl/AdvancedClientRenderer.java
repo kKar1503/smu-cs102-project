@@ -90,7 +90,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
         // print cards in parade
         System.out.println(
                 "\nParade\n======================================================================");
-        List<Card> parade = playCardData.getParade();
+        List<Card> parade = playCardData.getParade().getCards();
         for (Card card : parade) {
             System.out.print((parade.indexOf(card) + 1) + "." + printCards(card) + "  ");
         }
