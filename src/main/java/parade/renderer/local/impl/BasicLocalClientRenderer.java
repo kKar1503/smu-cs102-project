@@ -1,9 +1,8 @@
 package parade.renderer.local.impl;
 
-import parade.common.Card;
-import parade.common.Lobby;
-import parade.common.Player;
-import parade.common.state.server.ServerPlayerTurnData;
+import parade.card.Card;
+import parade.player.Player;
+import parade.player.controller.PlayCardData;
 import parade.renderer.local.IClientRenderer;
 import parade.utils.ConsoleColors;
 
@@ -46,17 +45,17 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayersLobby(Lobby lobby) {
+    public void renderPlayersLobby(List<Player> lobby) {
         System.out.println("Players in lobby: ");
         for (int i = 1; i <= lobby.size(); i++) {
             System.out.printf("%d. %s\n", i, lobby.get(i - 1).getName());
         }
         System.out.println();
-        System.out.println("1. Add Player" + (lobby.isFull() ? " (Lobby is full)" : ""));
-        System.out.println("2. Add Computer" + (lobby.isFull() ? " (Lobby is full)" : ""));
+        System.out.println("1. Add Player" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
+        System.out.println("2. Add Computer" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
         System.out.println(
                 "3. Remove player/computer" + (lobby.isEmpty() ? " (Lobby is empty)" : ""));
-        System.out.println("4. Start Game" + (lobby.isReady() ? " (Not enough players)" : ""));
+        System.out.println("4. Start Game" + (lobby.size() >= 2 ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
@@ -69,8 +68,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     @Override
-    public void renderPlayerTurn(
-            Player player, Card newlyDrawnCard, ServerPlayerTurnData playerTurnData) {
+    public void renderPlayerTurn(Player player, Card newlyDrawnCard, PlayCardData playCardData) {
         // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
@@ -84,7 +82,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         // print cards in parade
         System.out.println(
                 "\nParade\n======================================================================");
-        List<Card> parade = List.of(playerTurnData.getParade());
+        List<Card> parade = playCardData.getParade();
         for (Card card : parade) {
             System.out.print((parade.indexOf(card) + 1) + "." + printCards(card) + "  ");
         }

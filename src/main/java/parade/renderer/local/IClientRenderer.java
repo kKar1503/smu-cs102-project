@@ -1,10 +1,10 @@
 package parade.renderer.local;
 
-import parade.common.Card;
-import parade.common.Lobby;
-import parade.common.Player;
-import parade.common.state.server.ServerPlayerTurnData;
+import parade.card.Card;
+import parade.player.Player;
+import parade.player.controller.PlayCardData;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IClientRenderer {
@@ -50,7 +50,7 @@ public interface IClientRenderer {
      * Render the screen for a single player, this is to display for the player to prompt them for
      * input to join the lobby.
      */
-    void renderPlayersLobby(Lobby lobby);
+    void renderPlayersLobby(List<Player> lobby);
 
     /**
      * Render the screen for a human player, this is to display for the player to prompt them for
@@ -71,10 +71,10 @@ public interface IClientRenderer {
      *
      * @param player the player to render the screen for
      * @param newlyDrawnCard the card that the player has drawn
-     * @param playerTurnData the data object that contains sufficient information for the player to
+     * @param playCardData the data object that contains sufficient information for the player to
      *     make a decision for their turn
      */
-    void renderPlayerTurn(Player player, Card newlyDrawnCard, ServerPlayerTurnData playerTurnData);
+    void renderPlayerTurn(Player player, Card newlyDrawnCard, PlayCardData playCardData);
 
     /**
      * Render the end game message for all players. This method is used for the naive implementation
