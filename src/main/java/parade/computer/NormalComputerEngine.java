@@ -17,7 +17,7 @@ import java.util.Map;
  * minimise the number of cards taken from the parade. - Avoids playing cards that match the colours
  * in the parade to reduce losses.
  */
-public class NormalComputerEngine implements IComputerEngine {
+public class NormalComputerEngine implements ComputerEngine {
     @Override
     public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
         Card bestCard = null;

@@ -22,7 +22,7 @@ import java.util.Map;
  * <p>This engine simulates the loss it would incur for each possible move and also predicts how
  * much it can force the opponent to lose.
  */
-public class HardComputerEngine implements IComputerEngine {
+public class HardComputerEngine implements ComputerEngine {
     @Override
     public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
         Card bestCard = null;

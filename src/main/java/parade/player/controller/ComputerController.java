@@ -1,7 +1,7 @@
 package parade.player.controller;
 
 import parade.card.Card;
-import parade.computer.IComputerEngine;
+import parade.computer.ComputerEngine;
 
 /**
  * The ComputerController class is a representation of a computer player in the game. It relies on
@@ -13,7 +13,7 @@ import parade.computer.IComputerEngine;
  * to the game server.
  */
 public class ComputerController extends AbstractPlayerController {
-    private final IComputerEngine computerEngine;
+    private final ComputerEngine computerEngine;
     private static int index = 1;
 
     /**
@@ -22,7 +22,7 @@ public class ComputerController extends AbstractPlayerController {
      * @param name The name of the AI player.
      * @param computerEngine The computer engine to attach for the controller.
      */
-    public ComputerController(String name, IComputerEngine computerEngine) {
+    public ComputerController(String name, ComputerEngine computerEngine) {
         super(name);
         this.computerEngine = computerEngine;
     }
@@ -34,7 +34,7 @@ public class ComputerController extends AbstractPlayerController {
      *
      * @param computerEngine The computer engine to attach for the controller.
      */
-    public ComputerController(IComputerEngine computerEngine) {
+    public ComputerController(ComputerEngine computerEngine) {
         this("Computer " + index++ + " [" + computerEngine.getName() + "]", computerEngine);
     }
 

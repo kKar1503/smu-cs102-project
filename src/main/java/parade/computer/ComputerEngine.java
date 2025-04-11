@@ -14,7 +14,7 @@ import java.util.List;
  * it to consume all required information to process the game state and return the ideal card to
  * play.
  */
-public interface IComputerEngine {
+public interface ComputerEngine {
     /**
      * Process the game state and return the ideal card to play.
      *
