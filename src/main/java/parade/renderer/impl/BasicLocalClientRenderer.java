@@ -288,27 +288,33 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
-                System.out.println(" ".repeat(i) + "███████╗██╗███╗   ██╗ █████╗ ██╗");
-                System.out.println(" ".repeat(i) + "██╔════╝██║████╗  ██║██╔══██╗██║");
-                System.out.println(" ".repeat(i) + "█████╗  ██║██╔██╗ ██║███████║██║");
-                System.out.println(" ".repeat(i) + "██╔══╝  ██║██║╚██╗██║██╔══██║██║");
-                System.out.println(" ".repeat(i) + "██║     ██║██║ ╚████║██║  ██║███████╗");
-                System.out.println(" ".repeat(i) + "╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝");
+                String asciiArt = 
+                  "  ______ _____ _   _          _      \n"
+                + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                + " | |__    | | |  \\| |  /  \\  | |     \n"
+                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                + "                                      \n"
+                + "                                      ";
+
+            System.out.println(purple(asciiArt));
                 Thread.sleep(100);
             }
 
             for (int i = 0; i < 6; i++) {
                 clearConsole();
-                System.out.println("\n\033[5m");
-                System.out.println("        =============================================");
-                System.out.println("        ||    ███████╗██╗███╗   ██╗ █████╗ ██╗     ||");
-                System.out.println("        ||    ██╔════╝██║████╗  ██║██╔══██╗██║     ||");
-                System.out.println("        ||    █████╗  ██║██╔██╗ ██║███████║██║     ||");
-                System.out.println("        ||    ██╔══╝  ██║██║╚██╗██║██╔══██║██║     ||");
-                System.out.println("        ||    ██║     ██║██║ ╚████║██║  ██║███████╗||");
-                System.out.println("        ||    ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝||");
-                System.out.println("        =============================================");
-                System.out.println("\033[0m");
+                String asciiArt = 
+                  "  ______ _____ _   _          _      \n"
+                + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                + " | |__    | | |  \\| |  /  \\  | |     \n"
+                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                + "                                      \n"
+                + "                                      ";
+
+            System.out.println(purple(asciiArt));
             }
 
             int playerColWidth = 32;
@@ -396,7 +402,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
      * animation.
      */
     private void clearConsole() {
-        System.out.print("\033[H\033[2J");
+        System.out.print(ConsoleColors.CLEAR);
         System.out.flush();
     }
 
@@ -409,58 +415,54 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     private String returnDice(int num) {
         String[] toPrint = {};
 
-        // ANSI escape codes for white background and black text
-        String whiteBg = "\u001B[47m";
-        String blackText = "\u001B[30m";
-        String reset = "\u001B[0m";
 
         // Define each possible dice face
         String[] dice1 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice2 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o       ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║       o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice3 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o       ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║       o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice4 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice5 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice6 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         // Choose the appropriate dice face
