@@ -4,6 +4,9 @@ public class ConsoleColors {
     // Reset
     public static final String RESET = "\033[0m"; // Text Reset
 
+    // Clear
+    public static final String CLEAR = "\033[H\033[2J"; // Clear console
+
     // Regular Colors
     public static final String BLACK = "\033[0;90m"; // BLACK - SPECIAL  \033[0;30m
 
@@ -23,6 +26,7 @@ public class ConsoleColors {
     public static final String BLACK_BACKGROUND = "\033[40m"; // BLACK
     public static final String RED_BACKGROUND = "\033[41m"; // RED
     public static final String PURPLE_BACKGROUND = "\033[48;5;99m"; // PURPLE - SPECIAL
+    public static final String WHITE_BACKGROUND = "\033[47m"; // White 
 
     // High Intensity backgrounds
     public static final String GREEN_BACKGROUND_BRIGHT = "\033[0;102m"; // GREEN
@@ -30,6 +34,7 @@ public class ConsoleColors {
     public static final String BLUE_BACKGROUND_BRIGHT = "\033[0;104m"; // BLUE
     public static final String RED_BACKGROUND_BRIGHT = "\033[0;101m"; // Bright Red
     public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // Bright Purple
+    
 
     // Helper functions for colors
     public static String black(String text) {
@@ -88,4 +93,11 @@ public class ConsoleColors {
     public static String purpleBackground(String text) {
         return PURPLE_BACKGROUND + text + RESET;
     }
+   
+    public static String whiteBgBlackText(String text) {
+        return WHITE_BACKGROUND + BLACK + text + RESET;
+    }
+
+    
+    
 }
