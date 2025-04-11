@@ -1,13 +1,9 @@
 package parade.computer;
 
-import parade.card.Card;
-import parade.card.Colour;
-import parade.card.Parade;
+import parade.card.*;
 import parade.player.Player;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
