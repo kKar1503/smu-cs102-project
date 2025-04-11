@@ -1,11 +1,5 @@
 package parade.renderer.impl;
 
-import parade.common.Card;
-import parade.engine.AbstractGameEngine;
-import parade.player.IPlayer;
-import parade.renderer.IClientRenderer;
-import parade.utils.ConsoleColors;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +7,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import parade.common.Card;
+import parade.engine.AbstractGameEngine;
+import parade.player.IPlayer;
+import parade.renderer.IClientRenderer;
+import parade.utils.ConsoleColors;
 
 /**
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
@@ -294,6 +294,17 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                 System.out.println(" ".repeat(i) + "██╔══╝  ██║██║╚██╗██║██╔══██║██║");
                 System.out.println(" ".repeat(i) + "██║     ██║██║ ╚████║██║  ██║███████╗");
                 System.out.println(" ".repeat(i) + "╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝");
+                // String asciiArt = 
+                //   "  ______ _____ _   _          _      \n"
+                // + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                // + " | |__    | | |  \\| |  /  \\  | |     \n"
+                // + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                // + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                // + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                // + "                                      \n"
+                // + "                                      ";
+                // System.out.println(purple(asciiArt));
+                
                 Thread.sleep(100);
             }
 
@@ -308,6 +319,18 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                 System.out.println("        ||    ██║     ██║██║ ╚████║██║  ██║███████╗||");
                 System.out.println("        ||    ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝||");
                 System.out.println("        =============================================");
+
+                // String asciiArt = 
+                //   "  ______ _____ _   _          _      \n"
+                // + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                // + " | |__    | | |  \\| |  /  \\  | |     \n"
+                // + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                // + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                // + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                // + "                                      \n"
+                // + "                                      ";
+                // System.out.println(purple(asciiArt));
+
                 System.out.println("\033[0m");
             }
 
