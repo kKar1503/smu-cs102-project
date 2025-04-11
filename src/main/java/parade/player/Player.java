@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Player {
     // Name needs to be unique as it's used for identification
-    private String name;
+    private final String name;
     private final List<Card> hand;
     private final List<Card> board;
 
@@ -29,13 +29,6 @@ public class Player {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        this.name = name;
     }
 
     public List<Card> getHand() {
@@ -76,9 +69,6 @@ public class Player {
     private void verifyCards(Card[] cards) {
         if (cards == null) {
             throw new IllegalArgumentException("Cards cannot be null");
-        }
-        if (cards.length == 0) {
-            throw new IllegalArgumentException("At least one card must be provided");
         }
         for (Card card : cards) {
             if (card == null) {

@@ -1,9 +1,9 @@
 package parade.renderer.local;
 
 public class ClientRendererProvider {
-    private static IClientRenderer instance = null;
+    private static ClientRenderer instance = null;
 
-    public static void setInstance(IClientRenderer clientRenderer) {
+    public static void setInstance(ClientRenderer clientRenderer) {
         instance = clientRenderer;
     }
 
@@ -13,7 +13,7 @@ public class ClientRendererProvider {
      * @return the instance of the TextRenderer that has been set to this provider
      * @throws IllegalStateException if the instance is not yet set
      */
-    public static IClientRenderer getInstance() throws IllegalStateException {
+    public static ClientRenderer getInstance() throws IllegalStateException {
         if (instance == null) {
             throw new IllegalStateException("ClientRenderer is not yet set");
         }

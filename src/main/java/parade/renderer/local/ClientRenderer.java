@@ -7,7 +7,7 @@ import parade.player.controller.PlayCardData;
 import java.util.List;
 import java.util.Map;
 
-public interface IClientRenderer {
+public interface ClientRenderer {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *
@@ -85,15 +85,6 @@ public interface IClientRenderer {
      * @param playerScores a map of players and their scores
      */
     void renderEndGame(Map<Player, Integer> playerScores);
-
-    /**
-     * Render the end game message for a single player, this is probably only used when this is a
-     * single player game. Or network implementation
-     *
-     * @param player the player to render the end game screen for
-     * @param score the player's score
-     */
-    void renderSinglePlayerEndGame(Player player, int score);
 
     /** Bye bye buddy. */
     void renderBye();

@@ -1,8 +1,6 @@
 package parade.computer;
 
-import parade.card.Card;
-import parade.card.Colour;
-import parade.card.Parade;
+import parade.card.*;
 import parade.player.Player;
 
 import java.util.ArrayList;
@@ -87,39 +85,23 @@ public class HardComputerEngine implements ComputerEngine {
      */
     public List<Card> simulateParadeRemoval(List<Card> cards, Card placeCard) {
 
-        // List to store cards to be removed
         List<Card> removedCards = new ArrayList<>();
-
-        // Remove mode
-        if ((cards).size() > placeCard.getNumber()) {
-
+    
+        if (cards.size() > placeCard.getNumber()) {
             int removeZoneCardIndex = cards.size() - placeCard.getNumber();
-            // Count from index of numbers
-            for (int i = 0; i < removeZoneCardIndex; i++) { // i here is the index
-
-                // Obtains card to compare
+    
+            for (int i = 0; i < removeZoneCardIndex; i++) {
                 Card cardAtIndex = cards.get(i);
-
-                // Check which ones to remove (equal or less than)
                 if (cardAtIndex.getNumber() <= placeCard.getNumber()
                         || cardAtIndex.getColour() == placeCard.getColour()) {
                     removedCards.add(cardAtIndex);
                 }
             }
-
-            // Remove from the cards
-            for (Card card : cards) {
-                if (removedCards.contains(card)) {
-                    cards.remove(card);
-                }
-            }
-
-            // Add placeCard
-            cards.add(placeCard);
         }
-
+    
         return removedCards;
     }
+    
 
     /** Calculates the score of a board based on the card majority rules. */
     private int calculateScore(List<Card> board, List<Colour> majorityColour) {
@@ -216,6 +198,6 @@ public class HardComputerEngine implements ComputerEngine {
 
     @Override
     public String getName() {
-        return "Hard";
+        return "Hard Computer";
     }
 }

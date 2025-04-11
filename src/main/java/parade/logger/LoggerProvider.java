@@ -1,9 +1,6 @@
 package parade.logger;
 
-import parade.logger.impl.JsonLogger;
-import parade.logger.impl.MultiLogger;
-import parade.logger.impl.NopLogger;
-import parade.logger.impl.PrettyLogger;
+import parade.logger.impl.*;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 

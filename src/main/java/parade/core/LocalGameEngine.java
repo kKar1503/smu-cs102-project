@@ -1,25 +1,15 @@
 package parade.core;
 
 import parade.card.Card;
-import parade.computer.EasyComputerEngine;
-import parade.computer.HardComputerEngine;
-import parade.computer.NormalComputerEngine;
+import parade.computer.*;
+import parade.core.result.*;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.player.Player;
-import parade.player.controller.AbstractPlayerController;
-import parade.player.controller.ComputerController;
-import parade.player.controller.HumanController;
-import parade.player.controller.PlayCardData;
+import parade.player.controller.*;
+import parade.renderer.local.ClientRenderer;
 import parade.renderer.local.ClientRendererProvider;
-import parade.renderer.local.IClientRenderer;
-import parade.renderer.local.impl.AdvancedClientRenderer;
-import parade.renderer.local.impl.BasicLocalClientRenderer;
-import parade.result.AbstractResult;
-import parade.result.DeclareWinner;
-import parade.result.TieAndNoWinnerResult;
-import parade.result.TieAndWinnerResult;
-import parade.result.WinnerResult;
+import parade.renderer.local.impl.*;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
@@ -31,7 +21,7 @@ import java.util.*;
  */
 public class LocalGameEngine extends AbstractGameEngine {
     private final AbstractLogger logger;
-    private final IClientRenderer clientRenderer;
+    private final ClientRenderer clientRenderer;
     private final Scanner scanner;
 
     /** Initializes the game server with a deck. */
@@ -47,61 +37,48 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
-    private boolean removePlayerController(AbstractPlayerController player) {
-        boolean removed = playerControllerManager.remove(player);
-        if (removed) {
-            logger.logf("Player %s removed from the game", player.getPlayer().getName());
-        } else {
-            logger.logf("Player %s not found in the game", player.getPlayer().getName());
-        }
-        return removed;
-    }
-
     private AbstractPlayerController removePlayerController(int index) {
-        AbstractPlayerController removedPlayer = playerControllerManager.remove(index);
-        if (removedPlayer != null) {
-            logger.logf("Player %s removed from the game", removedPlayer.getPlayer().getName());
-        } else {
-            logger.logf("Player at index %d is null", index);
-        }
-        return removedPlayer;
+        AbstractPlayerController playerController = playerControllerManager.remove(index);
+        logger.logf("Player %s removed from the game", playerController.getPlayer().getName());
+        return playerController;
     }
 
-    private void chooseComputerDifficulty(String name) {
+    private ComputerEngine chooseComputerDifficulty() {
         while (true) {
             try {
                 clientRenderer.renderComputerDifficulty();
                 int compInput = scanner.nextInt();
-                if (compInput == 1) {
-                    addPlayerController(new ComputerController(new EasyComputerEngine()));
-                } else if (compInput == 2) {
-                    addPlayerController(new ComputerController(new NormalComputerEngine()));
-                } else if (compInput == 3) {
-                    addPlayerController(new ComputerController(new HardComputerEngine()));
-                } else {
-                    throw new NoSuchElementException();
-                }
-                return;
+                return switch (compInput) {
+                    case 1 -> new EasyComputerEngine();
+                    case 2 -> new NormalComputerEngine();
+                    case 3 -> new HardComputerEngine();
+                    default -> throw new NoSuchElementException();
+                };
             } catch (NoSuchElementException e) {
                 logger.log("User entered invalid input", e);
                 clientRenderer.renderln("Input not found, please try again");
+            } finally {
                 scanner.nextLine();
             }
         }
     }
 
-    private void addComputerDisplay() {
+    private ComputerController addComputerDisplay() {
         while (true) {
             clientRenderer.render("Enter computer's name:");
             try {
-                String name = scanner.nextLine();
-                chooseComputerDifficulty(name);
-                return;
+                String name = scanner.nextLine().trim();
+
+                if (name.isEmpty()) {
+                    clientRenderer.renderln("Name cannot be empty. Please try again.");
+                    continue;
+                }
+
+                ComputerEngine engine = chooseComputerDifficulty();
+                return new ComputerController(PlayerNameRegistry.getUniqueName(name), engine);
             } catch (NoSuchElementException e) {
                 logger.log("User entered invalid input", e);
                 clientRenderer.renderln("Invalid input, please try again");
-            } finally {
-                scanner.nextLine();
             }
         }
     }
@@ -111,15 +88,13 @@ public class LocalGameEngine extends AbstractGameEngine {
             int count = 1;
             clientRenderer.renderln("Select a player to remove.");
             for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
-                clientRenderer.renderln(count + ". " + player.getPlayer().getName());
-                count++;
+                clientRenderer.renderln(count++ + ". " + player.getPlayer().getName());
             }
             clientRenderer.renderln(count + ". Return back to main menu");
-            int input;
             try {
-                input = scanner.nextInt();
+                int input = scanner.nextInt();
                 if (input < 1 || input > playerControllerManager.size() + 1) {
-                    throw new NoSuchElementException();
+                    throw new NoSuchElementException("Out of range: " + input);
                 }
                 if (input == count) {
                     return;
@@ -140,9 +115,8 @@ public class LocalGameEngine extends AbstractGameEngine {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             clientRenderer.renderPlayersLobby(playerControllerManager.getPlayers());
-            int input = 0;
             try {
-                input = scanner.nextInt();
+                int input = scanner.nextInt();
                 scanner.nextLine();
                 if (input == 1) {
                     logger.log("Adding a new player");
@@ -150,16 +124,29 @@ public class LocalGameEngine extends AbstractGameEngine {
                         clientRenderer.renderln("Lobby is full.");
                         continue;
                     }
-                    clientRenderer.render("Enter player name: ");
-                    String name = scanner.nextLine();
-                    addPlayerController(new HumanController(name));
+                    while (true) {
+                        clientRenderer.render("Enter player name: ");
+                        String name = scanner.nextLine().trim();
+
+                        if (name.isEmpty()) {
+                            clientRenderer.renderln(
+                                    "Name cannot be empty. Please enter a valid name.");
+                            continue;
+                        }
+
+                        HumanController humanController =
+                                new HumanController(PlayerNameRegistry.getUniqueName(name));
+                        addPlayerController(humanController);
+                        break;
+                    }
                 } else if (input == 2) {
                     logger.log("Adding a new computer");
                     if (playerControllerManager.isFull()) {
                         clientRenderer.renderln("Lobby is full.");
                         continue;
                     }
-                    addComputerDisplay();
+                    ComputerController computerController = addComputerDisplay();
+                    addPlayerController(computerController);
                 } else if (input == 3) {
                     if (playerControllerManager.isEmpty()) {
                         clientRenderer.renderln("Lobby has no players.");
@@ -250,7 +237,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 "Dice roll = %d, Starting player: %s",
                 diceRoll1 + diceRoll2, startingPlayer.getName());
         clientRenderer.renderf(
-                "Dice roll: %d, %s will be starting first!\n",
+                "Dice roll: %d, %s will be starting first!%n",
                 diceRoll1 + diceRoll2, startingPlayer.getName());
 
         // Dish out the cards one by one, like real life you know? Like not getting the
@@ -330,18 +317,16 @@ public class LocalGameEngine extends AbstractGameEngine {
         AbstractResult result = declareWinner.evaluateScores(playerScores);
 
         switch (result) {
-            case WinnerResult win ->
-                    clientRenderer.renderf(
-                            "%s wins with %d points!\n",
-                            win.getPlayer().getPlayer().getName(),
-                            playerScores.get(win.getPlayer()));
-
-            case TieAndWinnerResult tie ->
-                    clientRenderer.renderf(
-                            "Tie in score of %d points but %s wins with lesser number of cards\n",
-                            playerScores.get(tie.getPlayer()),
-                            tie.getPlayer().getPlayer().getName());
-
+            case WinnerResult win -> {
+                clientRenderer.renderf(
+                        "%s wins with %d points!%n",
+                        win.getPlayer().getPlayer().getName(), playerScores.get(win.getPlayer()));
+            }
+            case TieAndWinnerResult tie -> {
+                clientRenderer.renderf(
+                        "Tie in score of %d points but %s wins with lesser number of cards%n",
+                        playerScores.get(tie.getPlayer()), tie.getPlayer().getPlayer().getName());
+            }
             case TieAndNoWinnerResult overallTie -> {
                 clientRenderer.renderln("Overall tie with no winners");
                 int numPlayers = overallTie.getPlayers().size();
@@ -351,12 +336,12 @@ public class LocalGameEngine extends AbstractGameEngine {
                             overallTie.getPlayers().get(i).getPlayer().getName() + ", ");
                 }
                 clientRenderer.renderf(
-                        "%s have the same score of %d points and same number of cards.\n",
+                        "%s have the same score of %d points and same number of cards.%n",
                         overallTie.getPlayers().get(numPlayers - 1).getPlayer().getName(), score);
             }
-
-            default -> clientRenderer.renderln("Error retrieving result\n");
+            default -> clientRenderer.renderln("Error retrieving result");
         }
+        clientRenderer.renderBye();
     }
 
     private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
@@ -370,7 +355,7 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         // Place card in parade and receive cards from parade
         List<Card> cardsFromParade = parade.placeCard(playedCard); // Apply parade logic
-        player.getPlayer().addToBoard(cardsFromParade.toArray(Card[]::new));
+        player.receiveFromParade(cardsFromParade.toArray(Card[]::new));
         logger.logf(
                 "%s received %d cards from parade to add to board: %s",
                 player.getPlayer().getName(),
@@ -386,15 +371,16 @@ public class LocalGameEngine extends AbstractGameEngine {
      *
      * @return the client renderer
      */
-    private IClientRenderer setupClientRenderer() {
+    private ClientRenderer setupClientRenderer() {
         Settings settings = Settings.getInstance();
 
         String clientRendererType = settings.get(SettingKey.CLIENT_RENDERER);
 
-        IClientRenderer clientRenderer =
+        ClientRenderer clientRenderer =
                 switch (clientRendererType) {
                     case "basic_local" -> new BasicLocalClientRenderer();
                     case "advanced_local" -> new AdvancedClientRenderer();
+                    case "debug" -> new DebugClientRenderer();
                     default ->
                             throw new IllegalStateException(
                                     "Unknown client renderer in settings: " + clientRendererType);

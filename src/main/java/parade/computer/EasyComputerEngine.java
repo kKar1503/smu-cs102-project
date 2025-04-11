@@ -12,7 +12,7 @@ import java.util.Random;
  *
  * <p>EasyComputerEngine selects a card to play randomly from the player's hand.
  */
-public class EasyComputerEngine implements IComputerEngine {
+public class EasyComputerEngine implements ComputerEngine {
     @Override
     public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
         // Randomly picks any card from the hand.
@@ -29,6 +29,6 @@ public class EasyComputerEngine implements IComputerEngine {
 
     @Override
     public String getName() {
-        return "Easy";
+        return "Easy Computer";
     }
 }

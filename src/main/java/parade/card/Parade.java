@@ -15,6 +15,11 @@ public class Parade {
         this.cards.addAll(cards);
     }
 
+    // Copy constructor
+    public Parade(Parade parade) {
+        this.cards = new LinkedList<>(parade.cards);
+    }
+
     // PlaceCard
     public List<Card> placeCard(Card placeCard) {
 

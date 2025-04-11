@@ -1,13 +1,9 @@
 package parade.computer;
 
-import parade.card.Card;
-import parade.card.Colour;
-import parade.card.Parade;
+import parade.card.*;
 import parade.player.Player;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The NormalComputer class represents an AI player with a basic strategy. It attempts to minimise
@@ -17,7 +13,7 @@ import java.util.Map;
  * minimise the number of cards taken from the parade. - Avoids playing cards that match the colours
  * in the parade to reduce losses.
  */
-public class NormalComputerEngine implements IComputerEngine {
+public class NormalComputerEngine implements ComputerEngine {
     @Override
     public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
         Card bestCard = null;
@@ -25,11 +21,9 @@ public class NormalComputerEngine implements IComputerEngine {
         int minColourImpact = Integer.MAX_VALUE; // Tracks how much the card colour matches parade
 
         for (Card card : player.getHand()) {
-            int loss =
-                    simulateLoss(card, parade.getCards()); // Estimate how many cards will be taken
+            int loss = simulateLoss(card, parade); // Estimate how many cards will be taken
             int colourImpact =
-                    countColourMatches(
-                            card, parade.getCards()); // Count parade cards with same colour
+                    countColourMatches(card, parade); // Count parade cards with same colour
 
             // Prioritize moves that result in fewer cards collected.
             // If tied, prefer cards with less colour impact to avoid building towards majorities.
@@ -100,12 +94,13 @@ public class NormalComputerEngine implements IComputerEngine {
      * @param parade The current parade lineup.
      * @return Estimated number of cards that would be taken.
      */
-    private int simulateLoss(Card card, List<Card> parade) {
+    private int simulateLoss(Card card, Parade parade) {
         int loss = 0;
-        int position = parade.size() - card.getNumber(); // Safe zone size
+        List<Card> cards = parade.getCards();
+        int position = cards.size() - card.getNumber(); // Safe zone size
 
-        for (int i = Math.max(0, position); i < parade.size(); i++) {
-            Card paradeCard = parade.get(i);
+        for (int i = Math.max(0, position); i < cards.size(); i++) {
+            Card paradeCard = cards.get(i);
             if (paradeCard.getNumber() <= card.getNumber()
                     || paradeCard.getColour().equals(card.getColour())) {
                 loss++; // Would be taken by this card
@@ -123,9 +118,9 @@ public class NormalComputerEngine implements IComputerEngine {
      * @param parade The current parade lineup.
      * @return Number of matching colour cards in the parade.
      */
-    private int countColourMatches(Card card, List<Card> parade) {
+    private int countColourMatches(Card card, Parade parade) {
         int matches = 0;
-        for (Card paradeCard : parade) {
+        for (Card paradeCard : parade.getCards()) {
             if (paradeCard.getColour().equals(card.getColour())) {
                 matches++;
             }
@@ -135,6 +130,6 @@ public class NormalComputerEngine implements IComputerEngine {
 
     @Override
     public String getName() {
-        return "Normal";
+        return "Normal Computer";
     }
 }
