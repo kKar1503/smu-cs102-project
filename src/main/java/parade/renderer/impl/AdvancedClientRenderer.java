@@ -16,27 +16,51 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game.
+ * It outputs styled game content to the console.
+ */
 public class AdvancedClientRenderer implements IClientRenderer {
+
+    // Constructor: Initializes the renderer
     public AdvancedClientRenderer() {}
 
+    /**
+     * Renders a plain message without a line break.
+     * @param message The message to print.
+     */
     @Override
     public void render(String message) {
         System.out.print(message);
     }
 
+    /**
+     * Renders a message followed by a line break.
+     * @param message The message to print.
+     */
     @Override
     public void renderln(String message) {
         System.out.println(message);
     }
 
+    /**
+     * Renders a formatted message using the specified format and arguments.
+     * @param format The format string.
+     * @param args Arguments referenced by the format specifiers in the format string.
+     */
     @Override
     public void renderf(String format, Object... args) {
         System.out.printf(format, args);
     }
 
+    /**
+     * Renders a stylized welcome message from an ASCII art file.
+     * Throws an exception if the file cannot be found.
+     * Also displays a sample Parade card.
+     */
     @Override
     public void renderWelcome() throws IllegalStateException {
-        // the stream holding the file content
+        // Load the ASCII art welcome banner from the resource file
         InputStream inFromFile =
                 getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
         if (inFromFile == null) {
@@ -45,6 +69,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
         Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
         String paradeWelcome = s.hasNext() ? s.next() : "";
 
+        // Render the welcome banner with styling
         if (paradeWelcome != null) {
             System.out.println(
                     ConsoleColors.PURPLE_BOLD
@@ -55,10 +80,14 @@ public class AdvancedClientRenderer implements IClientRenderer {
             System.out.println(
                     "===================================================================================");
 
+            // Print a sample card
             System.out.println(renderSingleCard(new Card(1, Colour.BLACK), 4));
         }
     }
 
+    /**
+     * Displays the main menu options to the user.
+     */
     @Override
     public void renderMenu() {
         System.out.println("1. Start Game");
@@ -66,6 +95,11 @@ public class AdvancedClientRenderer implements IClientRenderer {
         System.out.print("Please select an option: ");
     }
 
+    /**
+     * Displays the current players in the lobby and menu options.
+     * Indicates whether the lobby is full or not ready.
+     * @param players List of players currently in the lobby.
+     */
     @Override
     public void renderPlayersLobby(List<IPlayer> players) {
         System.out.println("Players in lobby: ");
@@ -86,40 +120,63 @@ public class AdvancedClientRenderer implements IClientRenderer {
         System.out.print("Please select an option: ");
     }
 
+    /**
+     * Displays a prompt related to selecting computer difficulty.
+     * (Currently not implemented.)
+     */
     @Override
     public void renderComputerDifficulty() {}
-    ;
 
+    /**
+     * Displays the current state of a player's turn, including:
+     * - Drawn card (if any)
+     * - Parade line
+     * - Player's board (sorted)
+     * - Player's hand
+     * Prompts the player to select a card to play.
+     *
+     * @param player The player whose turn is being rendered.
+     * @param newlyDrawnCard The card the player drew this turn.
+     * @param parade The current parade line.
+     */
     @Override
     public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
-        // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
+
+        // Show the card that was drawn
         if (newlyDrawnCard != null) {
             System.out.println("You drew:" + renderSingleCard(newlyDrawnCard, 4));
         }
-        // print cards in parade
+
+        // Display the parade line
         System.out.println(
                 "\nParade\n======================================================================");
         printCardsHorizontally(parade, false);
-        // sort board and print
+
+        // Display the player's board, sorted by color and number
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 "\n\n"
                     + "Your board\n"
                     + "===========================================================================");
-
         printStackedCards(board);
 
-        // print player's hand
+        // Display the player's hand
         System.out.println(
                 "\n\n"
                     + "Your hand\n"
                     + "==========================================================================");
         printCardsHorizontally(parade, true);
+
+        // Prompt player for input
         System.out.print("\n\nSelect a card to play:");
     }
 
+    /**
+     * Renders final scores and ends the game.
+     * @param playerScores A map of players to their final scores.
+     */
     @Override
     public void renderEndGame(Map<IPlayer, Integer> playerScores) {
         System.out.println("Game Over!");
@@ -128,11 +185,14 @@ public class AdvancedClientRenderer implements IClientRenderer {
         }
     }
 
+    /**
+     * Displays a farewell message when the game ends.
+     */
     @Override
     public void renderBye() {
-        // Goodbye Message
         System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");
     }
+
 
     /**
      * Render the parade or the player hand, depending on the boolean set
