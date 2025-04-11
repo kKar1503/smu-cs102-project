@@ -5,7 +5,6 @@ import parade.card.Colour;
 import parade.card.Parade;
 import parade.player.Player;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +28,11 @@ public class HardComputerEngine implements ComputerEngine {
         int bestScore = Integer.MAX_VALUE; // Lower is better
 
         for (Card card : player.getHand()) {
-            int selfLoss = simulateLoss(card, parade.getCards()); // Cards AI will take
-            int colorPenalty = countColourMatches(card, parade.getCards()); // Colour match risk
+            int selfLoss = simulateLoss(card, parade); // Cards AI will take
+            int colorPenalty = countColourMatches(card, parade); // Colour match risk
             int simulatedImpact =
                     simulateWorstOpponentLoss(
-                            player,
-                            card,
-                            parade.getCards()); // How many cards next player might take
+                            player, card, parade); // How many cards next player might take
 
             // Heuristic weight scoring:
             // - Self loss is weighted most heavily
@@ -103,12 +100,13 @@ public class HardComputerEngine implements ComputerEngine {
      * @param parade The current state of the parade.
      * @return The estimated number of cards that would be collected.
      */
-    private int simulateLoss(Card card, List<Card> parade) {
+    private int simulateLoss(Card card, Parade parade) {
         int loss = 0;
-        int position = parade.size() - card.getNumber();
+        List<Card> cards = parade.getCards();
+        int position = cards.size() - card.getNumber();
 
-        for (int i = Math.max(0, position); i < parade.size(); i++) {
-            Card paradeCard = parade.get(i);
+        for (int i = Math.max(0, position); i < cards.size(); i++) {
+            Card paradeCard = cards.get(i);
             if (paradeCard.getNumber() <= card.getNumber()
                     || paradeCard.getColour().equals(card.getColour())) {
                 loss++;
@@ -125,9 +123,9 @@ public class HardComputerEngine implements ComputerEngine {
      * @param parade The current parade lineup.
      * @return Number of matching colour cards in the parade.
      */
-    private int countColourMatches(Card card, List<Card> parade) {
+    private int countColourMatches(Card card, Parade parade) {
         int matches = 0;
-        for (Card paradeCard : parade) {
+        for (Card paradeCard : parade.getCards()) {
             if (paradeCard.getColour().equals(card.getColour())) {
                 matches++;
             }
@@ -146,9 +144,9 @@ public class HardComputerEngine implements ComputerEngine {
      * @param parade The current parade lineup.
      * @return The worst-case number of cards the next player may collect.
      */
-    private int simulateWorstOpponentLoss(Player player, Card playedCard, List<Card> parade) {
-        List<Card> simulatedParade = new ArrayList<>(parade);
-        simulatedParade.add(playedCard); // Simulate the played card being added
+    private int simulateWorstOpponentLoss(Player player, Card playedCard, Parade parade) {
+        Parade simulatedParade = new Parade(parade);
+        parade.placeCard(playedCard);
 
         int maxLoss = 0;
         for (Card opponentCard :
@@ -163,6 +161,6 @@ public class HardComputerEngine implements ComputerEngine {
 
     @Override
     public String getName() {
-        return "Hard";
+        return "Hard Computer";
     }
 }

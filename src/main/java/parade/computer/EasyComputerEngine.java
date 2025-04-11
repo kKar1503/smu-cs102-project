@@ -29,6 +29,6 @@ public class EasyComputerEngine implements ComputerEngine {
 
     @Override
     public String getName() {
-        return "Easy";
+        return "Easy Computer";
     }
 }
