@@ -1,7 +1,7 @@
 package parade.player.controller;
 
 import parade.card.Card;
-import parade.renderer.ClientRendererProvider;
+import parade.menu.MenuRendererProvider;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -32,7 +32,7 @@ public class HumanController extends AbstractPlayerController {
     public Card playCard(PlayCardData playCardData) {
         Scanner sc = new Scanner(System.in);
         int input;
-        ClientRendererProvider.getInstance()
+        MenuRendererProvider.getInstance()
                 .renderPlayerTurn(player, latestDrawnCard, playCardData, false);
 
         while (true) {
@@ -43,12 +43,12 @@ public class HumanController extends AbstractPlayerController {
                 }
                 break;
             } catch (InputMismatchException e) {
-                ClientRendererProvider.getInstance().render("Invalid input. Please try again");
+                MenuRendererProvider.getInstance().render("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
-                ClientRendererProvider.getInstance()
+                MenuRendererProvider.getInstance()
                         .render("Invalid choice. Please select a valid index");
             }
-            ClientRendererProvider.getInstance().render("Select a card to play:");
+            MenuRendererProvider.getInstance().render("Select a card to play:");
             sc.nextLine();
         }
         latestDrawnCard = null;
@@ -59,7 +59,7 @@ public class HumanController extends AbstractPlayerController {
     public Card discardCard(PlayCardData playCardData) {
         Scanner sc = new Scanner(System.in);
         int input;
-        ClientRendererProvider.getInstance().renderPlayerTurn(player, null, playCardData, true);
+        MenuRendererProvider.getInstance().renderPlayerTurn(player, null, playCardData, true);
 
         while (true) {
             try {
@@ -69,12 +69,12 @@ public class HumanController extends AbstractPlayerController {
                 }
                 break;
             } catch (InputMismatchException e) {
-                ClientRendererProvider.getInstance().render("Invalid input. Please try again");
+                MenuRendererProvider.getInstance().render("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
-                ClientRendererProvider.getInstance()
+                MenuRendererProvider.getInstance()
                         .render("Invalid choice. Please select a valid index");
             }
-            ClientRendererProvider.getInstance().render("Select a card to discard:");
+            MenuRendererProvider.getInstance().render("Select a card to discard:");
             sc.nextLine();
         }
         return player.removeFromHand(input - 1);
