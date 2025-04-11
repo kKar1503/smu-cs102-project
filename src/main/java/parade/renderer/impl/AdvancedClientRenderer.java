@@ -105,7 +105,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
     public void renderPlayersLobby(List<IPlayer> players) {
         System.out.println("Players in lobby: ");
         for (int i = 1; i <= players.size(); i++) {
-            System.out.printf("%d. %s\n", i, players.get(i - 1).getName());
+            System.out.printf("%d. %s%s", i, players.get(i - 1).getName(), System.lineSeparator());
         }
         System.out.println();
         System.out.println(
@@ -137,7 +137,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
     public void renderPlayerTurn(
             IPlayer player, Card newlyDrawnCard, List<Card> parade, boolean toDiscard) {
         // print player's name and drawn card
-        System.out.println("\n" + player.getName() + "'s turn.");
+        System.out.println(System.lineSeparator() + player.getName() + "'s turn.");
 
         // Show the card that was drawn
         if (newlyDrawnCard != null) {
@@ -146,27 +146,29 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
         // Display the parade line
         System.out.println(
-                "\nParade\n======================================================================");
+                System.lineSeparator() +
+                "Parade" + System.lineSeparator() +
+                "======================================================================");
         printCardsHorizontally(parade, false);
 
         // Display the player's board, sorted by color and number
         List<Card> board = player.getBoard();
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
-                "\n\n"
-                    + "Your board\n"
+                System.lineSeparator() + System.lineSeparator()
+                    + "Your board" + System.lineSeparator()
                     + "===========================================================================");
         printStackedCards(board);
 
         // Display the player's hand
         System.out.println(
-                "\n\n"
-                    + "Your hand\n"
+                System.lineSeparator() + System.lineSeparator()
+                    + "Your hand" + System.lineSeparator()
                     + "==========================================================================");
         printCardsHorizontally(parade, true);
 
         // Prompt player for input
-        System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
+        System.out.printf(System.lineSeparator() + System.lineSeparator() + "Select a card to %s:", toDiscard ? "discard" : "play");
     }
 
     /**
@@ -185,7 +187,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
     /** Displays a farewell message when the game ends. */
     @Override
     public void renderBye() {
-        System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");
+        System.out.println(System.lineSeparator() + "THANK YOU FOR PLAYING! SEE YOU NEXT TIME!" + System.lineSeparator());
     }
 
     /**
@@ -305,11 +307,11 @@ public class AdvancedClientRenderer implements IClientRenderer {
      * @param gaps Left-Right Padding surrounding the card
      */
     public String renderSingleCard(Card card, int gaps) {
-        return "\n"
+        return System.lineSeparator()
                 + renderTopHalfCard(card, gaps)
-                + "\n"
+                + System.lineSeparator()
                 + renderMiddleCard(card, gaps)
-                + "\n"
+                + System.lineSeparator()
                 + renderBottomHalfCard(card, gaps);
     }
 
@@ -423,7 +425,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
             "╚══════════╝"
         };
 
-        System.out.println("Shaking block...\n");
+        System.out.println("Shaking block..." + System.lineSeparator());
 
         for (int i = 0; i < 15; i++) {
             int offset = (int) (Math.random() * 6); // random indent 0–5
@@ -528,6 +530,6 @@ public class AdvancedClientRenderer implements IClientRenderer {
                 break;
         }
 
-        return String.join("\n", Arrays.stream(toPrint).toArray(String[]::new));
+        return String.join(System.lineSeparator(), Arrays.stream(toPrint).toArray(String[]::new));
     }
 }
