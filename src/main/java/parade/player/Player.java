@@ -70,9 +70,6 @@ public class Player {
         if (cards == null) {
             throw new IllegalArgumentException("Cards cannot be null");
         }
-        if (cards.length == 0) {
-            throw new IllegalArgumentException("At least one card must be provided");
-        }
         for (Card card : cards) {
             if (card == null) {
                 throw new IllegalArgumentException("Cards cannot contain null values");

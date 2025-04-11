@@ -8,12 +8,7 @@ import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
@@ -144,6 +139,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
         // Display the player's board, sorted by color and number
         List<Card> board = player.getBoard();
+        board = new ArrayList<>(board);
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 System.lineSeparator()
