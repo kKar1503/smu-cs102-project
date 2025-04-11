@@ -319,7 +319,6 @@ public class LocalGameEngine extends AbstractGameEngine {
         // Add remaining cards in players' hand to their board for score calculation
         for (int i = 0; i < playerControllerManager.size(); i++) {
             playerControllerManager.next().moveCardsFromHandToBoard();
-            ;
         }
 
         logger.log("Tabulating scores");
