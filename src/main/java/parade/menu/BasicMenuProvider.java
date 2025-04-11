@@ -1,4 +1,4 @@
-package parade.renderer;
+package parade.menu;
 
 import parade.card.Card;
 import parade.player.Player;
@@ -12,7 +12,7 @@ import java.util.*;
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class BasicLocalClientRenderer implements MenuRenderer {
+public class BasicMenuProvider implements MenuProvider {
     /** Renders a plain message without newline. */
     @Override
     public void render(String message) {

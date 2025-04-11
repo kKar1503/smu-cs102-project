@@ -1,8 +1,7 @@
-package parade.renderer;
+package parade.menu;
 
 import parade.card.Card;
 import parade.card.Colour;
-import parade.menu.WelcomeMenu;
 import parade.menu.option.WelcomeMenuOption;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
@@ -15,7 +14,7 @@ import java.util.*;
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
  * styled game content to the console.
  */
-public class AdvancedClientRenderer implements MenuRenderer {
+public class AdvancedMenuProvider implements MenuProvider {
     /**
      * Renders a plain message without a line break.
      *

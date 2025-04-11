@@ -1,4 +1,4 @@
-package parade.renderer;
+package parade.menu;
 
 import parade.card.Card;
 import parade.menu.option.WelcomeMenuOption;
@@ -8,7 +8,7 @@ import parade.player.controller.PlayCardData;
 import java.util.List;
 import java.util.Map;
 
-public interface MenuRenderer {
+public interface MenuProvider {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *
@@ -39,7 +39,7 @@ public interface MenuRenderer {
      */
     void renderWelcome();
 
-    WelcomeMenuOption renderMainMenu();
+    WelcomeMenuOption mainMenu();
 
     /**
      * Render the screen for a single player, this is to display for the player to prompt them for

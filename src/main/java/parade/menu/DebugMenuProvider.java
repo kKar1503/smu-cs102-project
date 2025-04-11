@@ -1,4 +1,4 @@
-package parade.renderer;
+package parade.menu;
 
 import parade.card.Card;
 import parade.player.Player;
@@ -11,7 +11,7 @@ import java.util.*;
  * A debug text-based implementation of the client renderer for development. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class DebugClientRenderer implements MenuRenderer {
+public class DebugMenuProvider implements MenuProvider {
     @Override
     public void render(String message) {
         System.out.print(message);
