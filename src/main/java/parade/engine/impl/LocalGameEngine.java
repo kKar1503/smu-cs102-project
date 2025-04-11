@@ -13,6 +13,7 @@ import parade.renderer.ClientRendererProvider;
 import parade.renderer.IClientRenderer;
 import parade.renderer.impl.AdvancedClientRenderer;
 import parade.renderer.impl.BasicLocalClientRenderer;
+import parade.renderer.impl.DebugClientRenderer;
 import parade.result.AbstractResult;
 import parade.result.DeclareWinner;
 import parade.result.TieAndNoWinnerResult;
@@ -427,6 +428,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 switch (clientRendererType) {
                     case "basic_local" -> new BasicLocalClientRenderer();
                     case "advanced_local" -> new AdvancedClientRenderer();
+                    case "debug" -> new DebugClientRenderer();
                     case "basic_network" ->
                             throw new UnsupportedOperationException(
                                     "Basic network renderer is not supported for local game");
