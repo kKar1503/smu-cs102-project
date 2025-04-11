@@ -1,7 +1,7 @@
 package parade.logger.impl;
 
 import parade.logger.AbstractLogger;
-import parade.utils.ConsoleColors;
+import parade.utils.Ansi;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -30,9 +30,9 @@ public class PrettyLogger extends AbstractLogger {
                         .filter(loggerFrameFilter)
                         .map(StackTraceElement::toString)
                         .toList();
-        sb.append(ConsoleColors.RED).append(e).append(System.lineSeparator());
+        sb.append(Ansi.RED).append(e).append(System.lineSeparator());
         stackTrace.forEach(x -> sb.append("    ").append(x).append(System.lineSeparator()));
-        sb.append(ConsoleColors.RESET);
+        sb.append(Ansi.RESET);
         writelnFlush(sb.toString());
     }
 
@@ -43,15 +43,15 @@ public class PrettyLogger extends AbstractLogger {
 
     private String format(String message) {
         LogInfo logInfo = new LogInfo(message); // use LogInfo to retrieve the caller and timestamp
-        return ConsoleColors.GREY
+        return Ansi.GREY
                 + new SimpleDateFormat("HH:mma").format(logInfo.getTimestamp()).toUpperCase()
-                + ConsoleColors.RESET
+                + Ansi.RESET
                 + " "
                 + logInfo.getCaller()
                 + " "
-                + ConsoleColors.CYAN
+                + Ansi.CYAN
                 + " > "
-                + ConsoleColors.RESET
+                + Ansi.RESET
                 + message;
     }
 }
