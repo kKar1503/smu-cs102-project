@@ -13,23 +13,21 @@ import parade.renderer.ClientRendererProvider;
 import parade.renderer.IClientRenderer;
 import parade.renderer.impl.AdvancedClientRenderer;
 import parade.renderer.impl.BasicLocalClientRenderer;
-import parade.settings.SettingKey;
-import parade.settings.Settings;
 import parade.result.AbstractResult;
-import parade.result.WinnerResult;
+import parade.result.DeclareWinner;
 import parade.result.TieAndNoWinnerResult;
 import parade.result.TieAndWinnerResult;
+import parade.result.WinnerResult;
+import parade.settings.SettingKey;
+import parade.settings.Settings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.Scanner;
-
-import javax.swing.Renderer;
-
-import parade.result.DeclareWinner;
 
 /**
  * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
@@ -273,11 +271,12 @@ public class LocalGameEngine extends AbstractGameEngine {
         int diceRoll2 = dice.nextInt(7);
         // Sets the current player based on the dice roll
         setCurrentPlayer(diceRoll1 + diceRoll2);
-        logger.logf("Dice roll = %d, Starting player: %s", diceRoll1 + diceRoll2,
-                         getCurrentPlayer().getName());
-        clientRenderer.renderf("Dice roll: %d, %s will be starting first!\n", 
-                    diceRoll1 + diceRoll2, getCurrentPlayer().getName());
-        
+        logger.logf(
+                "Dice roll = %d, Starting player: %s",
+                diceRoll1 + diceRoll2, getCurrentPlayer().getName());
+        clientRenderer.renderf(
+                "Dice roll: %d, %s will be starting first!\n",
+                diceRoll1 + diceRoll2, getCurrentPlayer().getName());
 
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
@@ -303,7 +302,6 @@ public class LocalGameEngine extends AbstractGameEngine {
             Card drawnCard = drawFromDeck();
             player.draw(drawnCard);
             logger.logf("%s drew: %s", player.getName(), drawnCard);
-
 
             nextPlayer();
         }
@@ -347,15 +345,17 @@ public class LocalGameEngine extends AbstractGameEngine {
         DeclareWinner declareWinner = new DeclareWinner();
         AbstractResult result = declareWinner.evaluateScores(playerScores);
 
-        switch(result) {
+        switch (result) {
             case WinnerResult win ->
-                clientRenderer.renderf("%s wins with %d points!\n", 
-                    win.getPlayer().getName(), playerScores.get(win.getPlayer()));
-            
+                    clientRenderer.renderf(
+                            "%s wins with %d points!\n",
+                            win.getPlayer().getName(), playerScores.get(win.getPlayer()));
+
             case TieAndWinnerResult tie ->
-                clientRenderer.renderf("Tie in score of %d points but %s wins with lesser number of cards\n",
-                    playerScores.get(tie.getPlayer()), tie.getPlayer().getName());
-            
+                    clientRenderer.renderf(
+                            "Tie in score of %d points but %s wins with lesser number of cards\n",
+                            playerScores.get(tie.getPlayer()), tie.getPlayer().getName());
+
             case TieAndNoWinnerResult overallTie -> {
                 clientRenderer.renderln("Overall tie with no winners");
                 int numPlayers = overallTie.getPlayers().size();
@@ -363,12 +363,12 @@ public class LocalGameEngine extends AbstractGameEngine {
                 for (int i = 0; i < numPlayers - 1; i++) {
                     clientRenderer.render(overallTie.getPlayers().get(i).getName() + ", ");
                 }
-                clientRenderer.renderf("%s have the same score of %d points and same number of cards.\n",
-                    overallTie.getPlayers().get(numPlayers - 1).getName(), score);
+                clientRenderer.renderf(
+                        "%s have the same score of %d points and same number of cards.\n",
+                        overallTie.getPlayers().get(numPlayers - 1).getName(), score);
             }
 
-            default ->
-                clientRenderer.renderln("Error retrieving result\n");
+            default -> clientRenderer.renderln("Error retrieving result\n");
         }
     }
 
