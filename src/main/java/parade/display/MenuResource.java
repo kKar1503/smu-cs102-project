@@ -1,4 +1,4 @@
-package parade.menu;
+package parade.display;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -6,7 +6,8 @@ import java.util.*;
 
 class MenuResource {
     static enum MenuResourceType {
-        ADVANCED_WELCOME_MENU("advanced_welcome_menu.txt");
+        ADVANCED_WELCOME_SCREEN("advanced_welcome_screen.txt"),
+        BASIC_WELCOME_MENU("basic_welcome_menu.txt");
 
         private final String fileName;
 

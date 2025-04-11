@@ -1,13 +1,13 @@
-package parade.menu;
+package parade.display;
 
 import parade.card.Card;
 import parade.card.Colour;
-import parade.menu.option.WelcomeMenuOption;
+import parade.display.option.LobbyMenuOption;
+import parade.display.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -16,71 +16,17 @@ import java.util.*;
  */
 public class AdvancedMenuProvider implements MenuProvider {
     /**
-     * Renders a plain message without a line break.
-     *
-     * @param message The message to print.
-     */
-    @Override
-    public void render(String message) {
-        System.out.print(message);
-    }
-
-    /**
-     * Renders a message followed by a line break.
-     *
-     * @param message The message to print.
-     */
-    @Override
-    public void renderln(String message) {
-        System.out.println(message);
-    }
-
-    /**
-     * Renders a formatted message using the specified format and arguments.
-     *
-     * @param format The format string.
-     * @param args Arguments referenced by the format specifiers in the format string.
-     */
-    @Override
-    public void renderf(String format, Object... args) {
-        System.out.printf(format, args);
-    }
-
-    /**
      * Renders a stylized welcome message from an ASCII art file. Throws an exception if the file
      * cannot be found. Also displays a sample Parade card.
      */
     @Override
     public void renderWelcome() throws IllegalStateException {
-        // Load the ASCII art welcome banner from the resource file
-        InputStream inFromFile =
-                getClass().getClassLoader().getResourceAsStream("parade_ascii_art.txt");
-        if (inFromFile == null) {
-            throw new IllegalStateException("parade_ascii_art.txt not found");
-        }
-        Scanner s = new Scanner(inFromFile).useDelimiter("\\Z");
-        String paradeWelcome = s.hasNext() ? s.next() : "";
-
-        // Render the welcome banner with styling
-        if (paradeWelcome != null) {
-            System.out.println(
-                    Ansi.PURPLE_BOLD
-                            + "============================= Welcome to Parade!"
-                            + " =============================="
-                            + Ansi.RESET);
-            System.out.println(Ansi.PURPLE + paradeWelcome + Ansi.RESET);
-            System.out.println(
-                    "===================================================================================");
-
-            // Print a sample card
-            System.out.println(renderSingleCard(new Card(1, Colour.BLACK), 4));
-        }
+        new AsciiWelcomeScreen().display();
     }
 
-    /** Displays the main menu options to the user. */
     @Override
-    public WelcomeMenuOption renderMenu() {
-        WelcomeMenu welcomeMenu = new WelcomeMenu();
+    public MainMenuOption mainMenuPrompt() {
+        MainMenu welcomeMenu = new MainMenu();
         return welcomeMenu.prompt();
     }
 
@@ -91,15 +37,8 @@ public class AdvancedMenuProvider implements MenuProvider {
      * @param lobby List of players currently in the lobby.
      */
     @Override
-    public void renderPlayersLobby(List<Player> lobby) {
-        System.out.println("Players in lobby: ");
-        for (int i = 1; i <= lobby.size(); i++) {
-            System.out.printf("%d. %s%n", i, lobby.get(i - 1).getName());
-        }
-        System.out.println();
-        System.out.println("1. Add Player" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println("2. Start Game" + (lobby.size() < 2 ? " (Not enough players)" : ""));
-        System.out.print("Please select an option: ");
+    public LobbyMenuOption renderPlayersLobby(List<Player> lobby) {
+        return new LobbyMenu(lobby).prompt();
     }
 
     /** Displays a prompt related to selecting computer difficulty. (Currently not implemented.) */
@@ -358,12 +297,12 @@ public class AdvancedMenuProvider implements MenuProvider {
      */
     public String printConsoleColour(String colour, String colourisedString) {
         return switch (colour) {
-            case "red" -> Ansi.red(colourisedString);
-            case "black" -> Ansi.black(colourisedString);
-            case "green" -> Ansi.green(colourisedString);
-            case "blue" -> Ansi.blue(colourisedString);
-            case "yellow" -> Ansi.yellow(colourisedString);
-            case "purple" -> Ansi.purple(colourisedString);
+            case "red" -> Ansi.RED.apply(colourisedString);
+            case "black" -> Ansi.BLACK.apply(colourisedString);
+            case "green" -> Ansi.GREEN.apply(colourisedString);
+            case "blue" -> Ansi.BLUE.apply(colourisedString);
+            case "yellow" -> Ansi.YELLOW.apply(colourisedString);
+            case "purple" -> Ansi.PURPLE.apply(colourisedString);
             default -> colourisedString; // no colour - white
         };
     }
@@ -417,51 +356,51 @@ public class AdvancedMenuProvider implements MenuProvider {
     private String[] returnDice(int num) {
         // Define each possible dice face
         String[] dice1 = {
-            Ansi.whiteBgBlackText("╔═════════╗"),
-            Ansi.whiteBgBlackText("║         ║"),
-            Ansi.whiteBgBlackText("║    o    ║"),
-            Ansi.whiteBgBlackText("║         ║"),
-            Ansi.whiteBgBlackText("╚═════════╝")
+            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
         };
 
         String[] dice2 = {
-            Ansi.whiteBgBlackText("╔═════════╗"),
-            Ansi.whiteBgBlackText("║ o       ║"),
-            Ansi.whiteBgBlackText("║         ║"),
-            Ansi.whiteBgBlackText("║       o ║"),
-            Ansi.whiteBgBlackText("╚═════════╝")
+            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o       ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║       o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
         };
 
         String[] dice3 = {
-            Ansi.whiteBgBlackText("╔═════════╗"),
-            Ansi.whiteBgBlackText("║ o       ║"),
-            Ansi.whiteBgBlackText("║    o    ║"),
-            Ansi.whiteBgBlackText("║       o ║"),
-            Ansi.whiteBgBlackText("╚═════════╝")
+            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o       ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║       o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
         };
 
         String[] dice4 = {
-            Ansi.whiteBgBlackText("╔═════════╗"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("║         ║"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("╚═════════╝")
+            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
         };
 
         String[] dice5 = {
-            Ansi.whiteBgBlackText("╔═════════╗"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("║    o    ║"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("╚═════════╝")
+            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
         };
 
         String[] dice6 = {
-            Ansi.whiteBgBlackText("╔═════════╗"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("║ o     o ║"),
-            Ansi.whiteBgBlackText("╚═════════╝")
+            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
+            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
         };
 
         return switch (num) {
@@ -497,7 +436,7 @@ public class AdvancedMenuProvider implements MenuProvider {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(Ansi.purple(line));
+                    System.out.println(Ansi.PURPLE.apply(line));
                 }
                 Thread.sleep(100);
             }
@@ -516,7 +455,7 @@ public class AdvancedMenuProvider implements MenuProvider {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(Ansi.purple(line));
+                    System.out.println(Ansi.PURPLE.apply(line));
                 }
             }
 

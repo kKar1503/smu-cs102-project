@@ -1,4 +1,4 @@
-package parade.menu;
+package parade.display;
 
 public class MenuRendererProvider {
     private static MenuProvider instance = null;

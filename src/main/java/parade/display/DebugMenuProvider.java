@@ -1,6 +1,8 @@
-package parade.menu;
+package parade.display;
 
 import parade.card.Card;
+import parade.display.option.LobbyMenuOption;
+import parade.display.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
@@ -13,49 +15,18 @@ import java.util.*;
  */
 public class DebugMenuProvider implements MenuProvider {
     @Override
-    public void render(String message) {
-        System.out.print(message);
-    }
-
-    @Override
-    public void renderln(String message) {
-        System.out.println(message);
-    }
-
-    @Override
-    public void renderf(String format, Object... args) {
-        System.out.printf(format, args);
-    }
-
-    @Override
     public void renderWelcome() throws IllegalStateException {
-        System.out.println(
-                Ansi.PURPLE_BOLD
-                        + "============================= Welcome to Parade!"
-                        + " =============================="
-                        + Ansi.RESET);
+        new DynamicSeparator("Welcome to Parade!", Ansi.PURPLE::apply).display();
     }
 
     @Override
-    public void renderMenu() {
-        System.out.println("1. Start Game");
-        System.out.println("2. Exit");
-        System.out.print("Please select an option: ");
+    public MainMenuOption mainMenuPrompt() {
+        return new MainMenu().prompt();
     }
 
     @Override
-    public void renderPlayersLobby(List<Player> players) {
-        System.out.println("Players in lobby: ");
-        for (int i = 1; i <= players.size(); i++) {
-            System.out.printf("%d. %s%n", i, players.get(i - 1).getName());
-        }
-        System.out.println();
-        System.out.println("1. Add Player" + (players.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println("2. Add Computer" + (players.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println(
-                "3. Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""));
-        System.out.println("4. Start Game" + (players.size() < 2 ? " (Not enough players)" : ""));
-        System.out.print("Please select an option: ");
+    public LobbyMenuOption renderPlayersLobby(List<Player> players) {
+        return new LobbyMenu(players).prompt();
     }
 
     @Override

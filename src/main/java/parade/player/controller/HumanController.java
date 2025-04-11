@@ -1,7 +1,7 @@
 package parade.player.controller;
 
 import parade.card.Card;
-import parade.menu.MenuRendererProvider;
+import parade.display.MenuRendererProvider;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -43,12 +43,11 @@ public class HumanController extends AbstractPlayerController {
                 }
                 break;
             } catch (InputMismatchException e) {
-                MenuRendererProvider.getInstance().render("Invalid input. Please try again");
+                System.out.print("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
-                MenuRendererProvider.getInstance()
-                        .render("Invalid choice. Please select a valid index");
+                System.out.print("Invalid choice. Please select a valid index");
             }
-            MenuRendererProvider.getInstance().render("Select a card to play:");
+            System.out.print("Select a card to play:");
             sc.nextLine();
         }
         latestDrawnCard = null;
@@ -69,12 +68,11 @@ public class HumanController extends AbstractPlayerController {
                 }
                 break;
             } catch (InputMismatchException e) {
-                MenuRendererProvider.getInstance().render("Invalid input. Please try again");
+                System.out.print("Invalid input. Please try again");
             } catch (IndexOutOfBoundsException e) {
-                MenuRendererProvider.getInstance()
-                        .render("Invalid choice. Please select a valid index");
+                System.out.print("Invalid choice. Please select a valid index");
             }
-            MenuRendererProvider.getInstance().render("Select a card to discard:");
+            System.out.print("Select a card to discard:");
             sc.nextLine();
         }
         return player.removeFromHand(input - 1);

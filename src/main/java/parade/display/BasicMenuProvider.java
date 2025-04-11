@@ -1,11 +1,12 @@
-package parade.menu;
+package parade.display;
 
 import parade.card.Card;
+import parade.display.option.LobbyMenuOption;
+import parade.display.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -13,29 +14,6 @@ import java.util.*;
  * displaying game state and prompting the user via console.
  */
 public class BasicMenuProvider implements MenuProvider {
-    /** Renders a plain message without newline. */
-    @Override
-    public void render(String message) {
-        System.out.print(message);
-    }
-
-    /** Renders a message followed by a newline. */
-    @Override
-    public void renderln(String message) {
-        System.out.println(message);
-    }
-
-    /**
-     * Renders a formatted message to the console, similar to printf.
-     *
-     * @param format the format string
-     * @param args the arguments to format the string with
-     */
-    @Override
-    public void renderf(String format, Object... args) {
-        System.out.printf(format, args);
-    }
-
     /**
      * Renders the welcome banner for the game. Throws an exception if file is missing.
      *
@@ -43,37 +21,12 @@ public class BasicMenuProvider implements MenuProvider {
      */
     @Override
     public void renderWelcome() throws IllegalStateException {
-        System.out.println(
-                Ansi.PURPLE_BOLD
-                        + "============================= ✨ Welcome to Parade! ✨"
-                        + " =============================="
-                        + Ansi.RESET);
+        new DynamicSeparator("✨ Welcome to Parade! ✨", Ansi.PURPLE::apply);
     }
 
-    /**
-     * Renders the main menu from an external file.
-     *
-     * @throws IllegalStateException if the RenderMenu.txt file cannot be found
-     */
     @Override
-    public void renderMenu() throws IllegalStateException {
-        InputStream inFromFile = getClass().getClassLoader().getResourceAsStream("RenderMenu.txt");
-        if (inFromFile == null) {
-            throw new IllegalStateException("RenderMenu.txt not found");
-        }
-
-        Scanner scanner = new Scanner(inFromFile).useDelimiter("\\Z");
-        String menuText = scanner.hasNext() ? scanner.next() : "";
-        scanner.close();
-
-        if (menuText != null) {
-            System.out.println(
-                    Ansi.PURPLE_BOLD
-                            + "============================= Welcome to Parade!"
-                            + " =============================="
-                            + Ansi.RESET);
-            System.out.println(Ansi.PURPLE + menuText + Ansi.RESET);
-        }
+    public MainMenuOption mainMenuPrompt() {
+        return new AsciiMainMenu().prompt();
     }
 
     /**
@@ -82,18 +35,8 @@ public class BasicMenuProvider implements MenuProvider {
      * @param lobby list of players currently in the lobby
      */
     @Override
-    public void renderPlayersLobby(List<Player> lobby) {
-        System.out.println("Players in lobby: ");
-        for (int i = 1; i <= lobby.size(); i++) {
-            System.out.printf("%d. %s%n", i, lobby.get(i - 1).getName());
-        }
-        System.out.println();
-        System.out.println("1. Add Player" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println("2. Add Computer" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println(
-                "3. Remove player/computer" + (lobby.isEmpty() ? " (Lobby is empty)" : ""));
-        System.out.println("4. Start Game" + (lobby.size() < 2 ? " (Not enough players)" : ""));
-        System.out.print("Please select an option: ");
+    public LobbyMenuOption renderPlayersLobby(List<Player> lobby) {
+        return new LobbyMenu(lobby).prompt();
     }
 
     /** Renders the computer difficulty selection menu. */
@@ -157,7 +100,7 @@ public class BasicMenuProvider implements MenuProvider {
     public void renderCardList(String label, List<Card> cards) {
         if (cards == null || cards.isEmpty()) {
             System.out.println();
-            System.out.println("╔" + Ansi.purple(label) + "═".repeat(40) + "╗");
+            System.out.println("╔" + Ansi.PURPLE.apply(label) + "═".repeat(40) + "╗");
             System.out.println("║ No cards to display." + " ".repeat(39) + "║");
             System.out.println("╚" + "═".repeat(60) + "╝");
             return;
@@ -181,7 +124,7 @@ public class BasicMenuProvider implements MenuProvider {
 
         String topBorder =
                 "╔"
-                        + Ansi.purple(label)
+                        + Ansi.PURPLE.apply(label)
                         + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
                         + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
@@ -220,12 +163,12 @@ public class BasicMenuProvider implements MenuProvider {
      */
     public String colorPrinter(String colour, String text) {
         return switch (colour) {
-            case "RED" -> Ansi.redBackground(text);
-            case "BLUE" -> Ansi.brightBlueBackground(text);
-            case "GREEN" -> Ansi.brightGreenBackground(text);
-            case "YELLOW" -> Ansi.brightYellowBackground(text);
-            case "PURPLE" -> Ansi.purpleBackground(text);
-            default -> Ansi.blackBackground(text);
+            case "RED" -> Ansi.RED_BACKGROUND.apply(text);
+            case "BLUE" -> Ansi.BLUE_BACKGROUND_BRIGHT.apply(text);
+            case "GREEN" -> Ansi.GREEN_BACKGROUND_BRIGHT.apply(text);
+            case "YELLOW" -> Ansi.YELLOW_BACKGROUND_BRIGHT.apply(text);
+            case "PURPLE" -> Ansi.PURPLE_BACKGROUND.apply(text);
+            default -> Ansi.BLACK_BACKGROUND.apply(text);
         };
     }
 
@@ -286,7 +229,7 @@ public class BasicMenuProvider implements MenuProvider {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(Ansi.purple(line));
+                    System.out.println(Ansi.PURPLE.apply(line));
                 }
                 Thread.sleep(100);
             }
@@ -305,7 +248,7 @@ public class BasicMenuProvider implements MenuProvider {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(Ansi.purple(line));
+                    System.out.println(Ansi.PURPLE.apply(line));
                 }
             }
 

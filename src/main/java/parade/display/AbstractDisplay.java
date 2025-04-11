@@ -1,4 +1,4 @@
-package parade.menu;
+package parade.display;
 
 import java.io.*;
 
@@ -9,6 +9,10 @@ abstract class AbstractDisplay {
 
     void println(String s) {
         out.println(s);
+    }
+
+    void println() {
+        out.println();
     }
 
     void print(String s) {
@@ -25,6 +29,11 @@ abstract class AbstractDisplay {
 
     void printlnFlush(String s) {
         out.println(s);
+        out.flush();
+    }
+
+    void printlnFlush() {
+        out.println();
         out.flush();
     }
 
