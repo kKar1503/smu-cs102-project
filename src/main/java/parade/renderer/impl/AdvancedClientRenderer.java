@@ -1,5 +1,7 @@
 package parade.renderer.impl;
 
+import static parade.utils.ConsoleColors.*;
+
 import parade.common.Card;
 import parade.common.Colour;
 import parade.engine.AbstractGameEngine;
@@ -169,19 +171,6 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
         // Prompt player for input
         System.out.printf(System.lineSeparator() + System.lineSeparator() + "Select a card to %s:", toDiscard ? "discard" : "play");
-    }
-
-    /**
-     * Renders final scores and ends the game.
-     *
-     * @param playerScores A map of players to their final scores.
-     */
-    @Override
-    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
-        System.out.println("Game Over!");
-        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
-            System.out.println(entry.getKey().getName() + ": " + entry.getValue());
-        }
     }
 
     /** Displays a farewell message when the game ends. */
@@ -450,63 +439,60 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     // This just prints many new lines to "clear" the screen for shaking effect
     private void clearConsole() {
-        System.out.print("\033[H\033[2J");
+        System.out.print(ConsoleColors.CLEAR);
         System.out.flush();
     }
 
     private String returnDice(int num) {
         String[] toPrint = {};
 
-        String whiteBg = "\u001B[47m";
-        String blackText = "\u001B[30m";
-        String reset = "\u001B[0m";
-
+        // Define each possible dice face
         String[] dice1 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice2 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o       ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║       o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice3 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o       ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║       o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice4 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice5 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice6 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         switch (num) {
