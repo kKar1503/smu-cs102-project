@@ -455,56 +455,53 @@ public class AdvancedClientRenderer implements IClientRenderer {
     private String returnDice(int num) {
         String[] toPrint = {};
 
-        String whiteBg = "\u001B[47m";
-        String blackText = "\u001B[30m";
-        String reset = "\u001B[0m";
-
+        // Define each possible dice face
         String[] dice1 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice2 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o       ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║       o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice3 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o       ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║       o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice4 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║         ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice5 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║    o    ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-
+        
         String[] dice6 = {
-            whiteBg + blackText + "╔═════════╗" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "║ o     o ║" + reset,
-            whiteBg + blackText + "╚═════════╝" + reset
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
 
         switch (num) {
