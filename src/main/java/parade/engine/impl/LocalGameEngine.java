@@ -374,6 +374,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         
             default -> clientRenderer.renderln("Error retrieving result" + System.lineSeparator());
         }
+        clientRenderer.renderBye();
     }
 
     private void playerPlayCard(IPlayer player) {
