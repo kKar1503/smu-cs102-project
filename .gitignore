@@ -25,6 +25,7 @@ bin/
 .DS_Store
 
 ### Build ###
+*.class
 target
 !**/src/**/target/
 
