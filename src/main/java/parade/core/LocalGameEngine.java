@@ -11,8 +11,8 @@ import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.ComputerController;
 import parade.player.controller.HumanController;
 import parade.player.controller.PlayCardData;
+import parade.renderer.local.ClientRenderer;
 import parade.renderer.local.ClientRendererProvider;
-import parade.renderer.local.IClientRenderer;
 import parade.renderer.local.impl.AdvancedClientRenderer;
 import parade.renderer.local.impl.BasicLocalClientRenderer;
 import parade.result.AbstractResult;
@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class LocalGameEngine extends AbstractGameEngine {
     private final AbstractLogger logger;
-    private final IClientRenderer clientRenderer;
+    private final ClientRenderer clientRenderer;
     private final Scanner scanner;
 
     /** Initializes the game server with a deck. */
@@ -386,12 +386,12 @@ public class LocalGameEngine extends AbstractGameEngine {
      *
      * @return the client renderer
      */
-    private IClientRenderer setupClientRenderer() {
+    private ClientRenderer setupClientRenderer() {
         Settings settings = Settings.getInstance();
 
         String clientRendererType = settings.get(SettingKey.CLIENT_RENDERER);
 
-        IClientRenderer clientRenderer =
+        ClientRenderer clientRenderer =
                 switch (clientRendererType) {
                     case "basic_local" -> new BasicLocalClientRenderer();
                     case "advanced_local" -> new AdvancedClientRenderer();

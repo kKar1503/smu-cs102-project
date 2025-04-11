@@ -3,14 +3,14 @@ package parade.renderer.local.impl;
 import parade.card.Card;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
-import parade.renderer.local.IClientRenderer;
+import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class BasicLocalClientRenderer implements IClientRenderer {
+public class BasicLocalClientRenderer implements ClientRenderer {
     public BasicLocalClientRenderer() {}
 
     @Override
@@ -92,16 +92,16 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println(
                 "\n\n"
-                    + "Your board\n"
-                    + "===========================================================================");
+                        + "Your board\n"
+                        + "===========================================================================");
         for (Card card : board) {
             System.out.print(printCards(card) + " ");
         }
         // print player's hand
         System.out.println(
                 "\n\n"
-                    + "Your hand\n"
-                    + "==========================================================================");
+                        + "Your hand\n"
+                        + "==========================================================================");
         for (Card card : player.getHand()) {
             System.out.print((player.getHand().indexOf(card) + 1) + "." + printCards(card) + "  ");
         }

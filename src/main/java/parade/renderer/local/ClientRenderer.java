@@ -7,7 +7,7 @@ import parade.player.controller.PlayCardData;
 import java.util.List;
 import java.util.Map;
 
-public interface IClientRenderer {
+public interface ClientRenderer {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *
