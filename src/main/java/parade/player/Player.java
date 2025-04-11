@@ -11,7 +11,7 @@ public class Player {
     private final List<Card> board;
 
     public Player(String name) {
-        this.name = name;
+        this.name = PlayerNameRegistry.getUniqueName(name);
         this.hand = new LinkedList<>();
         this.board = new ArrayList<>();
     }
@@ -29,13 +29,6 @@ public class Player {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        this.name = name;
     }
 
     public List<Card> getHand() {
