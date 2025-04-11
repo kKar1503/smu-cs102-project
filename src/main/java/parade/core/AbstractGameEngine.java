@@ -10,7 +10,7 @@ import parade.player.controller.AbstractPlayerController;
 import java.util.*;
 
 abstract class AbstractGameEngine {
-    static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
+    static final int INITIAL_CARDS_PER_PLAYER = 5; // Number of cards each player starts with
     static final int PARADE_SIZE = 6; // Number of cards in the parade
 
     final Deck deck = new Deck(); // The deck of cards used in the game
@@ -19,8 +19,7 @@ abstract class AbstractGameEngine {
 
     AbstractGameEngine() {
         playerControllerManager = new PlayerControllerManager();
-        List<Card> parade_cards = new ArrayList<>(deck.pop(PARADE_SIZE));
-        parade = new Parade(parade_cards);
+        parade = new Parade(deck.pop(PARADE_SIZE));
     }
 
     public abstract void start();
@@ -149,9 +148,9 @@ abstract class AbstractGameEngine {
                 Player otherPlayer = entry.getKey().getPlayer();
                 if (!otherPlayer.equals(targetPlayer)) { // Don't compare against self
                     int otherCount = countColours(entry.getValue()).getOrDefault(colour, 0);
+                    // 2 player mode (majority -> 2 or more cards)
                     if ((playerCards.size() == 2 && otherCount > targetCount - 2)
-                            || // 2 player mode (majority -> 2 or more cards)
-                            (playerCards.size() > 2
+                            || (playerCards.size() > 2
                                     && otherCount > targetCount)) { // multiplayer mode
                         isMajority = false;
                         break;
@@ -178,7 +177,7 @@ abstract class AbstractGameEngine {
      * Otherwise, the card's actual number value is added to the score.
      *
      * @param targetPlayerController The player whose score is to be calculated. Must not be null.
-     * @param playerCards A map where the key is a {@link Player} and the value is their list of
+     * @param playerBoards A map where the key is a {@link Player} and the value is their list of
      *     cards. Must not be null.
      * @param majorityColours A map where the key is a {@link Player} and the value is a list of
      *     {@link Colour} that are majority for that player. Must not be null.
@@ -187,19 +186,19 @@ abstract class AbstractGameEngine {
      *     have a card list.
      */
     public int calculateScore(
-            AbstractPlayerController targetPlayer,
+            AbstractPlayerController targetPlayerController,
             Map<AbstractPlayerController, List<Card>> playerBoards,
             Map<AbstractPlayerController, List<Colour>> majorityColours) {
         int score = 0;
-        if (targetPlayer == null || playerBoards == null || majorityColours == null) {
+        if (targetPlayerController == null || playerBoards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");
         }
-        List<Card> playerBoardList = playerBoards.get(targetPlayer);
+        List<Card> playerBoardList = playerBoards.get(targetPlayerController);
         if (playerBoardList == null) {
             throw new IllegalArgumentException("Target player has no card list.");
         }
 
-        List<Colour> playerMajorityColours = majorityColours.get(targetPlayer);
+        List<Colour> playerMajorityColours = majorityColours.get(targetPlayerController);
 
         for (Card card : playerBoardList) {
             if (card == null || card.getColour() == null) {

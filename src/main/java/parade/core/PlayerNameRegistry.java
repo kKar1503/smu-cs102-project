@@ -1,4 +1,4 @@
-package parade.player;
+package parade.core;
 
 import java.util.*;
 

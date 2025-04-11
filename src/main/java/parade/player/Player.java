@@ -6,12 +6,12 @@ import java.util.*;
 
 public class Player {
     // Name needs to be unique as it's used for identification
-    private String name;
+    private final String name;
     private final List<Card> hand;
     private final List<Card> board;
 
     public Player(String name) {
-        this.name = PlayerNameRegistry.getUniqueName(name);
+        this.name = name;
         this.hand = new LinkedList<>();
         this.board = new ArrayList<>();
     }
