@@ -448,7 +448,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     // This just prints many new lines to "clear" the screen for shaking effect
     private void clearConsole() {
-        System.out.print("\033[H\033[2J");
+        System.out.print(ConsoleColors.CLEAR);
         System.out.flush();
     }
 
