@@ -13,6 +13,7 @@ import parade.engine.AbstractGameEngine;
 import parade.player.IPlayer;
 import parade.renderer.IClientRenderer;
 import parade.utils.ConsoleColors;
+import static parade.utils.ConsoleColors.purple;
 
 /**
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
@@ -288,33 +289,33 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
-                String asciiArt = 
-                  "  ______ _____ _   _          _      \n"
-                + " |  ____|_   _| \\ | |   /\\   | |     \n"
-                + " | |__    | | |  \\| |  /  \\  | |     \n"
-                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
-                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
-                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
-                + "                                      \n"
-                + "                                      ";
+                String asciiArt =
+                        "  ______ _____ _   _          _      \n"
+                                + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                                + " | |__    | | |  \\| |  /  \\  | |     \n"
+                                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                                + "                                      \n"
+                                + "                                      ";
 
-            System.out.println(purple(asciiArt));
+                System.out.println(purple(asciiArt));
                 Thread.sleep(100);
             }
 
             for (int i = 0; i < 6; i++) {
                 clearConsole();
-                String asciiArt = 
-                  "  ______ _____ _   _          _      \n"
-                + " |  ____|_   _| \\ | |   /\\   | |     \n"
-                + " | |__    | | |  \\| |  /  \\  | |     \n"
-                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
-                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
-                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
-                + "                                      \n"
-                + "                                      ";
+                String asciiArt =
+                        "  ______ _____ _   _          _      \n"
+                                + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                                + " | |__    | | |  \\| |  /  \\  | |     \n"
+                                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                                + "                                      \n"
+                                + "                                      ";
 
-            System.out.println(purple(asciiArt));
+                System.out.println(purple(asciiArt));
             }
 
             int playerColWidth = 32;
@@ -415,7 +416,6 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     private String returnDice(int num) {
         String[] toPrint = {};
 
-
         // Define each possible dice face
         String[] dice1 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
@@ -432,7 +432,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║       o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice3 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o       ║"),
@@ -440,7 +440,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║       o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice4 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
@@ -448,7 +448,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice5 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
@@ -456,7 +456,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice6 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o     o ║"),

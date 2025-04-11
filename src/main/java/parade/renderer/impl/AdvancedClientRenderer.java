@@ -1,5 +1,7 @@
 package parade.renderer.impl;
 
+import static parade.utils.ConsoleColors.*;
+
 import parade.common.Card;
 import parade.common.Colour;
 import parade.engine.AbstractGameEngine;
@@ -167,19 +169,6 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
         // Prompt player for input
         System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
-    }
-
-    /**
-     * Renders final scores and ends the game.
-     *
-     * @param playerScores A map of players to their final scores.
-     */
-    @Override
-    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
-        System.out.println("Game Over!");
-        for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
-            System.out.println(entry.getKey().getName() + ": " + entry.getValue());
-        }
     }
 
     /** Displays a farewell message when the game ends. */
@@ -471,7 +460,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║       o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice3 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o       ║"),
@@ -479,7 +468,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║       o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice4 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
@@ -487,7 +476,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice5 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
@@ -495,7 +484,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
             ConsoleColors.whiteBgBlackText("╚═════════╝")
         };
-        
+
         String[] dice6 = {
             ConsoleColors.whiteBgBlackText("╔═════════╗"),
             ConsoleColors.whiteBgBlackText("║ o     o ║"),
@@ -526,5 +515,80 @@ public class AdvancedClientRenderer implements IClientRenderer {
         }
 
         return String.join("\n", Arrays.stream(toPrint).toArray(String[]::new));
+    }
+
+    /**
+     * Renders the game ending screen with animation and final scores.
+     *
+     * @param playerScores final score map of all players
+     */
+    @Override
+    public void renderEndGame(Map<IPlayer, Integer> playerScores) {
+        try {
+            for (int i = 0; i < 30; i++) {
+                clearConsole();
+                String asciiArt =
+                        "  ______ _____ _   _          _      \n"
+                                + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                                + " | |__    | | |  \\| |  /  \\  | |     \n"
+                                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                                + "                                      \n"
+                                + "                                      ";
+
+                System.out.println(purple(asciiArt));
+                Thread.sleep(100);
+            }
+
+            for (int i = 0; i < 6; i++) {
+                clearConsole();
+                String asciiArt =
+                        "  ______ _____ _   _          _      \n"
+                                + " |  ____|_   _| \\ | |   /\\   | |     \n"
+                                + " | |__    | | |  \\| |  /  \\  | |     \n"
+                                + " |  __|   | | | . ` | / /\\ \\ | |     \n"
+                                + " | |     _| |_| |\\  |/ ____ \\| |____ \n"
+                                + " |_|    |_____|_| \\_/_/    \\_\\______|\n"
+                                + "                                      \n"
+                                + "                                      ";
+
+                System.out.println(purple(asciiArt));
+            }
+
+            int playerColWidth = 32;
+            int scoreColWidth = 9;
+            String header =
+                    String.format(
+                            "        ┌%s┐\n"
+                                    + "        │ %-"
+                                    + playerColWidth
+                                    + "s │ %-"
+                                    + scoreColWidth
+                                    + "s │\n"
+                                    + "        ├%s┤",
+                            "─".repeat(playerColWidth + 2 + scoreColWidth + 3),
+                            "Player",
+                            "Score",
+                            "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
+            System.out.println(header);
+
+            for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
+                System.out.printf(
+                        "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
+                        entry.getKey().getName(),
+                        entry.getValue());
+            }
+
+            System.out.println(
+                    "        └"
+                            + "─".repeat(playerColWidth + 2)
+                            + "┴"
+                            + "─".repeat(scoreColWidth + 2)
+                            + "┘");
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
