@@ -1,4 +1,5 @@
 @echo off
+setlocal
 
 :: Get the artifactId dynamically from pom.xml
 for /f "delims=" %%i in ('mvn help:evaluate -Dexpression^=project.artifactId -q -DforceStdout') do set ARTIFACT_ID=%%i

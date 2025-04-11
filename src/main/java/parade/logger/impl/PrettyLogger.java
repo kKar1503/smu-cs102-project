@@ -1,7 +1,6 @@
 package parade.logger.impl;
 
 import parade.logger.AbstractLogger;
-import parade.logger.AbstractLogger.LogInfo;
 import parade.utils.ConsoleColors;
 
 import java.io.PrintWriter;
@@ -22,7 +21,8 @@ public class PrettyLogger extends AbstractLogger {
 
     @Override
     public void log(String message, Exception e) {
-        writeln(format(message));
+        StringBuilder sb = new StringBuilder();
+        sb.append(format(message)).append(System.lineSeparator());
         Predicate<StackTraceElement> loggerFrameFilter =
                 elem -> !elem.getClassName().startsWith(this.getClass().getPackageName());
         List<String> stackTrace =
@@ -30,10 +30,10 @@ public class PrettyLogger extends AbstractLogger {
                         .filter(loggerFrameFilter)
                         .map(StackTraceElement::toString)
                         .toList();
-        writeln(ConsoleColors.RED + e);
-        stackTrace.forEach(x -> writeln("    " + x));
-        write(ConsoleColors.RESET);
-        flush();
+        sb.append(ConsoleColors.RED).append(e).append(System.lineSeparator());
+        stackTrace.forEach(x -> sb.append("    ").append(x).append(System.lineSeparator()));
+        sb.append(ConsoleColors.RESET);
+        writelnFlush(sb.toString());
     }
 
     @Override

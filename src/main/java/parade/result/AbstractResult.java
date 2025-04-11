@@ -1,5 +1,3 @@
 package parade.result;
 
-public abstract class AbstractResult {
-    
-}
+public abstract class AbstractResult {}

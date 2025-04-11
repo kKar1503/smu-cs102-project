@@ -1,17 +1,17 @@
 package parade.result;
 
-import parade.player.IPlayer;
+import parade.player.controller.AbstractPlayerController;
 
 import java.util.*;
 
-public class TieAndNoWinnerResult extends AbstractResult{
-    private List<IPlayer> playerList;
+public class TieAndNoWinnerResult extends AbstractResult {
+    private List<AbstractPlayerController> playerList;
 
-    protected TieAndNoWinnerResult(List<IPlayer> playerList) {
+    protected TieAndNoWinnerResult(List<AbstractPlayerController> playerList) {
         this.playerList = playerList;
     }
 
-    public List<IPlayer> getPlayers() {
+    public List<AbstractPlayerController> getPlayers() {
         return playerList;
     }
 }

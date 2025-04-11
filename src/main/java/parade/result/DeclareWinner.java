@@ -1,29 +1,32 @@
 package parade.result;
 
-import parade.player.IPlayer;
+import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 
 import java.util.*;
 
 public class DeclareWinner {
 
-    public AbstractResult evaluateScores(Map<IPlayer,Integer> playerScores) {
+    public AbstractResult evaluateScores(Map<AbstractPlayerController, Integer> playerScores) {
 
         int lowestScore = Integer.MAX_VALUE;
-        List<IPlayer> resultList = new ArrayList<>();
+        List<AbstractPlayerController> resultList = new ArrayList<>();
         boolean tieScoreWithWinner = false;
 
-        for (IPlayer player : playerScores.keySet()) {
-
-            int currentScore = playerScores.get(player);
+        for (AbstractPlayerController controller : playerScores.keySet()) {
+            Player player = controller.getPlayer();
+            int currentScore = playerScores.get(controller);
             if (currentScore < lowestScore) {
-                lowestScore = currentScore; 
-                resultList.clear(); // Remove all existing players if there is one with a lower score
-                resultList.add(player);
+                lowestScore = currentScore;
+                resultList
+                        .clear(); // Remove all existing players if there is one with a lower score
+                resultList.add(controller);
                 tieScoreWithWinner = false;
             } else if (currentScore == lowestScore) {
                 // Check if current player and potential winners all have the same number of cards
                 boolean sameCardCount = true;
-                for (IPlayer resultPlayer : resultList) {
+                for (AbstractPlayerController resultController : resultList) {
+                    Player resultPlayer = resultController.getPlayer();
                     if (resultPlayer.getBoard().size() != player.getBoard().size()) {
                         sameCardCount = false;
                         break;
@@ -31,14 +34,15 @@ public class DeclareWinner {
                 }
                 // If everyone have the same score and tie, add the player into the list
                 if (sameCardCount) {
-                    resultList.add(player);
+                    resultList.add(controller);
                     continue;
                 }
-                for (IPlayer resultPlayer : resultList) {
+                for (AbstractPlayerController resultController : resultList) {
+                    Player resultPlayer = resultController.getPlayer();
                     // If player has lesser cards, there will not be an overall tie
                     if (player.getBoard().size() < resultPlayer.getBoard().size()) {
                         resultList.clear();
-                        resultList.add(player);
+                        resultList.add(controller);
                         tieScoreWithWinner = true;
                     }
                 }

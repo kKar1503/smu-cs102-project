@@ -1,15 +1,15 @@
 package parade.result;
 
-import parade.player.IPlayer;
+import parade.player.controller.AbstractPlayerController;
 
 public class WinnerResult extends AbstractResult {
-    private IPlayer player;
+    private AbstractPlayerController player;
 
-    protected WinnerResult(IPlayer player) {
+    protected WinnerResult(AbstractPlayerController player) {
         this.player = player;
     }
 
-    public IPlayer getPlayer() {
+    public AbstractPlayerController getPlayer() {
         return player;
     }
 }
