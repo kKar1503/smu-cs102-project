@@ -1,27 +1,15 @@
 package parade.core;
 
 import parade.card.Card;
-import parade.computer.ComputerEngine;
-import parade.computer.EasyComputerEngine;
-import parade.computer.HardComputerEngine;
-import parade.computer.NormalComputerEngine;
+import parade.computer.*;
+import parade.core.result.*;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.player.Player;
-import parade.player.controller.AbstractPlayerController;
-import parade.player.controller.ComputerController;
-import parade.player.controller.HumanController;
-import parade.player.controller.PlayCardData;
+import parade.player.controller.*;
 import parade.renderer.ClientRenderer;
 import parade.renderer.ClientRendererProvider;
-import parade.renderer.impl.AdvancedClientRenderer;
-import parade.renderer.impl.BasicLocalClientRenderer;
-import parade.renderer.impl.DebugClientRenderer;
-import parade.result.AbstractResult;
-import parade.result.DeclareWinner;
-import parade.result.TieAndNoWinnerResult;
-import parade.result.TieAndWinnerResult;
-import parade.result.WinnerResult;
+import parade.renderer.impl.*;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
@@ -47,16 +35,6 @@ public class LocalGameEngine extends AbstractGameEngine {
     private void addPlayerController(AbstractPlayerController player) {
         playerControllerManager.add(player);
         logger.logf("Player %s added to the game", player.getPlayer().getName());
-    }
-
-    private boolean removePlayerController(AbstractPlayerController player) {
-        boolean removed = playerControllerManager.remove(player);
-        if (removed) {
-            logger.logf("Player %s removed from the game", player.getPlayer().getName());
-        } else {
-            logger.logf("Player %s not found in the game", player.getPlayer().getName());
-        }
-        return removed;
     }
 
     private AbstractPlayerController removePlayerController(int index) {

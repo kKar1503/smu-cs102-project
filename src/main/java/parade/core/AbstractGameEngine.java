@@ -1,9 +1,6 @@
 package parade.core;
 
-import parade.card.Card;
-import parade.card.Colour;
-import parade.card.Deck;
-import parade.card.Parade;
+import parade.card.*;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
 

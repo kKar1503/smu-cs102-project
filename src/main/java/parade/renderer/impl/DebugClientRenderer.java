@@ -6,9 +6,7 @@ import parade.player.controller.PlayCardData;
 import parade.renderer.ClientRenderer;
 import parade.utils.Ansi;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A debug text-based implementation of the client renderer for development. Responsible for
@@ -94,6 +92,7 @@ public class DebugClientRenderer implements ClientRenderer {
         }
         // sort board and print
         List<Card> board = player.getBoard();
+        board = new ArrayList<>(board);
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         System.out.println();
         System.out.println();

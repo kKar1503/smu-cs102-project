@@ -7,12 +7,7 @@ import parade.renderer.ClientRenderer;
 import parade.utils.Ansi;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for

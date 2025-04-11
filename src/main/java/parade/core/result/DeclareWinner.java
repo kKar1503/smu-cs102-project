@@ -1,4 +1,4 @@
-package parade.result;
+package parade.core.result;
 
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;

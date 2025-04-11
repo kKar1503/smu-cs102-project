@@ -1,7 +1,5 @@
 package parade.card;
 
-import java.io.Serial;
-import java.io.Serializable;
 
 public class Card {
     private final int number;
