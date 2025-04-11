@@ -38,9 +38,6 @@ class PlayerControllerManager implements Iterator<AbstractPlayerController> {
     }
 
     public void setCurrentPlayerIdx(int idx) {
-        if (idx < 0 || idx >= lobby.size()) {
-            throw new IndexOutOfBoundsException("Invalid player index: " + idx);
-        }
         currentPlayerIdx = idx % lobby.size();
     }
 
