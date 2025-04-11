@@ -1,10 +1,11 @@
-package parade.renderer.impl;
+package parade.renderer;
 
 import parade.card.Card;
 import parade.card.Colour;
+import parade.menu.WelcomeMenu;
+import parade.menu.option.WelcomeMenuOption;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
-import parade.renderer.ClientRenderer;
 import parade.utils.Ansi;
 
 import java.io.InputStream;
@@ -14,7 +15,7 @@ import java.util.*;
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
  * styled game content to the console.
  */
-public class AdvancedClientRenderer implements ClientRenderer {
+public class AdvancedClientRenderer implements MenuRenderer {
     /**
      * Renders a plain message without a line break.
      *
@@ -79,10 +80,9 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
     /** Displays the main menu options to the user. */
     @Override
-    public void renderMenu() {
-        System.out.println("1. Start Game");
-        System.out.println("2. Exit");
-        System.out.print("Please select an option: ");
+    public WelcomeMenuOption renderMenu() {
+        WelcomeMenu welcomeMenu = new WelcomeMenu();
+        return welcomeMenu.prompt();
     }
 
     /**

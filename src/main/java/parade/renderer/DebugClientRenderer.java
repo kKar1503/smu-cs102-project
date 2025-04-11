@@ -1,9 +1,8 @@
-package parade.renderer.impl;
+package parade.renderer;
 
 import parade.card.Card;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
-import parade.renderer.ClientRenderer;
 import parade.utils.Ansi;
 
 import java.util.*;
@@ -12,7 +11,7 @@ import java.util.*;
  * A debug text-based implementation of the client renderer for development. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class DebugClientRenderer implements ClientRenderer {
+public class DebugClientRenderer implements MenuRenderer {
     @Override
     public void render(String message) {
         System.out.print(message);

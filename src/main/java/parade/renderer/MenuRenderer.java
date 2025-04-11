@@ -1,13 +1,14 @@
 package parade.renderer;
 
 import parade.card.Card;
+import parade.menu.option.WelcomeMenuOption;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
 
 import java.util.List;
 import java.util.Map;
 
-public interface ClientRenderer {
+public interface MenuRenderer {
     /**
      * Render a message to the screen. This is used to display messages to the user.
      *
@@ -38,13 +39,7 @@ public interface ClientRenderer {
      */
     void renderWelcome();
 
-    /**
-     * Render the menu for the game. This is used to display the main menu for the game.
-     *
-     * <p>This should ends with a print() method instead of println(). Because we expect the method
-     * follow directly with a Scanner that reads the input.
-     */
-    void renderMenu();
+    WelcomeMenuOption renderMainMenu();
 
     /**
      * Render the screen for a single player, this is to display for the player to prompt them for
