@@ -258,7 +258,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 "Dice roll = %d, Starting player: %s",
                 diceRoll1 + diceRoll2, startingPlayer.getName());
         clientRenderer.renderf(
-                "Dice roll: %d, %s will be starting first!\n",
+                "Dice roll: %d, %s will be starting first!%n",
                 diceRoll1 + diceRoll2, startingPlayer.getName());
 
         // Dish out the cards one by one, like real life you know? Like not getting the
@@ -340,12 +340,12 @@ public class LocalGameEngine extends AbstractGameEngine {
         switch (result) {
             case WinnerResult win -> {
                 clientRenderer.renderf(
-                        "%s wins with %d points!\n",
+                        "%s wins with %d points!%n",
                         win.getPlayer().getPlayer().getName(), playerScores.get(win.getPlayer()));
             }
             case TieAndWinnerResult tie -> {
                 clientRenderer.renderf(
-                        "Tie in score of %d points but %s wins with lesser number of cards\n",
+                        "Tie in score of %d points but %s wins with lesser number of cards%n",
                         playerScores.get(tie.getPlayer()), tie.getPlayer().getPlayer().getName());
             }
             case TieAndNoWinnerResult overallTie -> {
@@ -357,11 +357,12 @@ public class LocalGameEngine extends AbstractGameEngine {
                             overallTie.getPlayers().get(i).getPlayer().getName() + ", ");
                 }
                 clientRenderer.renderf(
-                        "%s have the same score of %d points and same number of cards.\n",
+                        "%s have the same score of %d points and same number of cards.%n",
                         overallTie.getPlayers().get(numPlayers - 1).getPlayer().getName(), score);
             }
-            default -> clientRenderer.renderln("Error retrieving result\n");
+            default -> clientRenderer.renderln("Error retrieving result");
         }
+        clientRenderer.renderBye();
     }
 
     private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
