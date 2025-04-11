@@ -71,8 +71,10 @@ public interface IClientRenderer {
      * @param player the player to render the screen for
      * @param newlyDrawnCard the card that the player has drawn
      * @param parade the parade cards on the table
+     * @param toDiscard tells the method to render for players to play or discard card
      */
-    void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade);
+    void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade, boolean toDiscard);
+
 
     /**
      * Render the end game message for all players. This method is used for the naive implementation

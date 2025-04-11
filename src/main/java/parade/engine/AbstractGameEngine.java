@@ -11,7 +11,7 @@ import java.util.*;
 public abstract class AbstractGameEngine {
     public static final int MIN_PLAYERS = 2; // Minimum number of players required to start the game
     public static final int MAX_PLAYERS = 6; // Maximum number of players allowed
-    public static final int INITIAL_CARDS_PER_PLAYER = 4; // Number of cards each player starts with
+    public static final int INITIAL_CARDS_PER_PLAYER = 5; // Number of cards each player starts with
     public static final int PARADE_SIZE = 6; // Number of cards in the parade
 
     private final List<IPlayer> players = new ArrayList<>(); // List of players in the game
@@ -79,6 +79,15 @@ public abstract class AbstractGameEngine {
      */
     protected IPlayer getCurrentPlayer() {
         return lobby.getCurrentPlayer();
+    }
+
+    /**
+     * Sets the current player to be a specific index
+     * 
+     * @param idx The index of the player
+     */
+    protected void setCurrentPlayer(int idx) {
+        lobby.setCurrentPlayer(idx);
     }
 
     /** Advances to the next player by delegating to the Lobby. */
@@ -194,21 +203,21 @@ public abstract class AbstractGameEngine {
     }
 
     protected Map<IPlayer, Integer> tabulateScores() {
-        Map<IPlayer, List<Card>> playerHands = new HashMap<>();
+        Map<IPlayer, List<Card>> playerBoards = new HashMap<>();
         for (IPlayer player : players) {
-            playerHands.put(player, player.getHand());
+            playerBoards.put(player, player.getBoard());
         }
 
         // Calculate majority colours for each player
         Map<IPlayer, List<Colour>> majorityColours = new HashMap<>();
         for (IPlayer player : players) {
-            majorityColours.put(player, decideMajority(playerHands, player).get(player));
+            majorityColours.put(player, decideMajority(playerBoards, player).get(player));
         }
 
         Map<IPlayer, Integer> playerScores = new HashMap<>();
         // Calculate scores for each player
         for (IPlayer player : players) {
-            int score = calculateScore(player, playerHands, majorityColours);
+            int score = calculateScore(player, playerBoards, majorityColours);
             playerScores.put(player, score);
         }
 
@@ -325,30 +334,29 @@ public abstract class AbstractGameEngine {
      */
     public int calculateScore(
             IPlayer targetPlayer,
-            Map<IPlayer, List<Card>> playerCards,
+            Map<IPlayer, List<Card>> playerBoards,
             Map<IPlayer, List<Colour>> majorityColours) {
         int score = 0;
-        if (targetPlayer == null || playerCards == null || majorityColours == null) {
+        if (targetPlayer == null || playerBoards == null || majorityColours == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");
         }
-        List<Card> playerCardList = playerCards.get(targetPlayer);
-        if (playerCardList == null) {
+        List<Card> playerBoardList = playerBoards.get(targetPlayer);
+        if (playerBoardList == null) {
             throw new IllegalArgumentException("Target player has no card list.");
         }
 
         List<Colour> playerMajorityColours =
-                majorityColours.getOrDefault(targetPlayer, new ArrayList<>());
+                majorityColours.get(targetPlayer);
 
-        for (Card card : playerCardList) {
+        for (Card card : playerBoardList) {
             if (card == null || card.getColour() == null) {
                 throw new IllegalArgumentException("Card or card colour cannot be null.");
             }
-
             // Only add the value of the card if it's NOT in the player's majority colours
-            if (!playerMajorityColours.contains(card.getColour())) {
-                score += card.getNumber();
-            } else {
+            if (playerMajorityColours.contains(card.getColour())) {
                 score += 1;
+            } else {
+                score += card.getNumber();
             }
         }
 

@@ -1,5 +1,11 @@
 package parade.renderer.impl;
 
+import parade.common.Card;
+import parade.engine.AbstractGameEngine;
+import parade.player.IPlayer;
+import parade.renderer.IClientRenderer;
+import parade.utils.ConsoleColors;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,15 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import parade.common.Card;
-import parade.engine.AbstractGameEngine;
-import parade.player.IPlayer;
-import parade.renderer.IClientRenderer;
-import parade.utils.ConsoleColors;
-
 /**
- * A basic text-based implementation of the client renderer for local gameplay.
- * Responsible for displaying game state and prompting the user via console.
+ * A basic text-based implementation of the client renderer for local gameplay. Responsible for
+ * displaying game state and prompting the user via console.
  */
 public class BasicLocalClientRenderer implements IClientRenderer {
 
@@ -52,9 +52,11 @@ public class BasicLocalClientRenderer implements IClientRenderer {
      */
     @Override
     public void renderWelcome() throws IllegalStateException {
-        System.out.println(ConsoleColors.PURPLE_BOLD +
-                "============================= ✨ Welcome to Parade! ✨ ==============================" +
-                ConsoleColors.RESET);
+        System.out.println(
+                ConsoleColors.PURPLE_BOLD
+                        + "============================= ✨ Welcome to Parade! ✨"
+                        + " =============================="
+                        + ConsoleColors.RESET);
     }
 
     /**
@@ -74,9 +76,11 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         scanner.close();
 
         if (menuText != null) {
-            System.out.println(ConsoleColors.PURPLE_BOLD +
-                    "============================= Welcome to Parade! ==============================" +
-                    ConsoleColors.RESET);
+            System.out.println(
+                    ConsoleColors.PURPLE_BOLD
+                            + "============================= Welcome to Parade!"
+                            + " =============================="
+                            + ConsoleColors.RESET);
             System.out.println(ConsoleColors.PURPLE + menuText + ConsoleColors.RESET);
         }
     }
@@ -93,10 +97,23 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             System.out.printf("%d. %s%n", i + 1, players.get(i).getName());
         }
         System.out.println();
-        System.out.println("1. Add Player" + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
-        System.out.println("2. Add Computer" + (players.size() == AbstractGameEngine.MAX_PLAYERS ? " (Lobby is full)" : ""));
-        System.out.println("3. Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""));
-        System.out.println("4. Start Game" + (players.size() < AbstractGameEngine.MIN_PLAYERS ? " (Not enough players)" : ""));
+        System.out.println(
+                "1. Add Player"
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
+        System.out.println(
+                "2. Add Computer"
+                        + (players.size() == AbstractGameEngine.MAX_PLAYERS
+                                ? " (Lobby is full)"
+                                : ""));
+        System.out.println(
+                "3. Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""));
+        System.out.println(
+                "4. Start Game"
+                        + (players.size() < AbstractGameEngine.MIN_PLAYERS
+                                ? " (Not enough players)"
+                                : ""));
         System.out.print("Please select an option: ");
     }
 
@@ -117,7 +134,8 @@ public class BasicLocalClientRenderer implements IClientRenderer {
      * @param parade the current parade lineup
      */
     @Override
-    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
+    public void renderPlayerTurn(
+            IPlayer player, Card newlyDrawnCard, List<Card> parade, boolean toDiscard) {
         System.out.println("\n" + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
             System.out.println("You drew:\n" + rendersSingleCard(newlyDrawnCard));
@@ -130,7 +148,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         renderCardList(" Your scoring board ", board);
         renderCardList(" Cards in your hand ", player.getHand());
 
-        System.out.print("\n\nSelect a card to play:");
+        System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
 
     /**
@@ -173,7 +191,11 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         int cardsInFirstRow = Math.min(cardsPerRow, totalCards);
         int contentWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * spacing;
 
-        String topBorder = "╔" + ConsoleColors.purple(label) + "═".repeat(Math.max(0, contentWidth - label.trim().length())) + "╗";
+        String topBorder =
+                "╔"
+                        + ConsoleColors.purple(label)
+                        + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
+                        + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
 
         System.out.println("\n" + topBorder);
@@ -231,24 +253,29 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         String numberStr = String.valueOf(card.getNumber());
         String colorName = card.getColour().name();
         int padding = (width - colorName.length()) / 2;
-        String centeredColorName = " ".repeat(padding) + colorName + " ".repeat(width - colorName.length() - padding);
+        String centeredColorName =
+                " ".repeat(padding) + colorName + " ".repeat(width - colorName.length() - padding);
 
         String[] lines = {
-                "┌" + "─".repeat(width) + "┐",
-                String.format("│ %-2s%s│", numberStr, " ".repeat(width - 3)),
-                String.format("│%s│", " ".repeat(width)),
-                String.format("│%s│", centeredColorName),
-                String.format("│%-" + width + "s│", "      /\\__/\\"),
-                String.format("│%-" + width + "s│", "     | @ . @|"),
-                String.format("│%-" + width + "s│", "      \\  -  /"),
-                String.format("│%-" + width + "s│", "  ////|     |\\\\\\\\"),
-                String.format("│%-" + width + "s│", "   ==\\|__|__|/=="),
-                String.format("│%s│", " ".repeat(width)),
-                String.format("│%s%2s │", " ".repeat(width - 3), numberStr),
-                "└" + "─".repeat(width) + "┘"
+            "┌" + "─".repeat(width) + "┐",
+            String.format("│ %-2s%s│", numberStr, " ".repeat(width - 3)),
+            String.format("│%s│", " ".repeat(width)),
+            String.format("│%s│", centeredColorName),
+            String.format("│%-" + width + "s│", "      /\\__/\\"),
+            String.format("│%-" + width + "s│", "     | @ . @|"),
+            String.format("│%-" + width + "s│", "      \\  -  /"),
+            String.format("│%-" + width + "s│", "  ////|     |\\\\\\\\"),
+            String.format("│%-" + width + "s│", "   ==\\|__|__|/=="),
+            String.format("│%s│", " ".repeat(width)),
+            String.format("│%s%2s │", " ".repeat(width - 3), numberStr),
+            "└" + "─".repeat(width) + "┘"
         };
 
-        return String.join("\n", Arrays.stream(lines).map(line -> colorPrinter(colorCode, line)).toArray(String[]::new));
+        return String.join(
+                "\n",
+                Arrays.stream(lines)
+                        .map(line -> colorPrinter(colorCode, line))
+                        .toArray(String[]::new));
     }
 
     /**
@@ -286,32 +313,43 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
             int playerColWidth = 32;
             int scoreColWidth = 9;
-            String header = String.format(
-                    "        ┌%s┐\n" +
-                    "        │ %-"+playerColWidth+"s │ %-"+scoreColWidth+"s │\n" +
-                    "        ├%s┤",
-                    "─".repeat(playerColWidth + 2 + scoreColWidth + 3),
-                    "Player", "Score",
-                    "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2)
-            );
+            String header =
+                    String.format(
+                            "        ┌%s┐\n"
+                                    + "        │ %-"
+                                    + playerColWidth
+                                    + "s │ %-"
+                                    + scoreColWidth
+                                    + "s │\n"
+                                    + "        ├%s┤",
+                            "─".repeat(playerColWidth + 2 + scoreColWidth + 3),
+                            "Player",
+                            "Score",
+                            "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
             System.out.println(header);
 
             for (Map.Entry<IPlayer, Integer> entry : playerScores.entrySet()) {
-                System.out.printf("        │ %-"+playerColWidth+"s │ %"+scoreColWidth+"d │%n",
-                        entry.getKey().getName(), entry.getValue());
+                System.out.printf(
+                        "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
+                        entry.getKey().getName(),
+                        entry.getValue());
             }
 
-            System.out.println("        └" + "─".repeat(playerColWidth + 2) + "┴" + "─".repeat(scoreColWidth + 2) + "┘");
+            System.out.println(
+                    "        └"
+                            + "─".repeat(playerColWidth + 2)
+                            + "┴"
+                            + "─".repeat(scoreColWidth + 2)
+                            + "┘");
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-
     /**
-     * Renders an animated dice-rolling block with shaking effect.
-     * This is purely visual and does not determine any game outcome.
+     * Renders an animated dice-rolling block with shaking effect. This is purely visual and does
+     * not determine any game outcome.
      */
     public void renderRoll() {
         String[] block = {
@@ -354,8 +392,8 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     }
 
     /**
-     * Clears the console screen using ANSI escape codes.
-     * This helps give the illusion of a dynamic animation.
+     * Clears the console screen using ANSI escape codes. This helps give the illusion of a dynamic
+     * animation.
      */
     private void clearConsole() {
         System.out.print("\033[H\033[2J");
@@ -427,20 +465,30 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
         // Choose the appropriate dice face
         switch (num) {
-            case 1: toPrint = dice1; break;
-            case 2: toPrint = dice2; break;
-            case 3: toPrint = dice3; break;
-            case 4: toPrint = dice4; break;
-            case 5: toPrint = dice5; break;
-            case 6: toPrint = dice6; break;
+            case 1:
+                toPrint = dice1;
+                break;
+            case 2:
+                toPrint = dice2;
+                break;
+            case 3:
+                toPrint = dice3;
+                break;
+            case 4:
+                toPrint = dice4;
+                break;
+            case 5:
+                toPrint = dice5;
+                break;
+            case 6:
+                toPrint = dice6;
+                break;
         }
 
         return String.join("\n", Arrays.stream(toPrint).toArray(String[]::new));
     }
 
-    /**
-     * Renders a simple farewell message at the end of the game session.
-     */
+    /** Renders a simple farewell message at the end of the game session. */
     @Override
     public void renderBye() {
         System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");

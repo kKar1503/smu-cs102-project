@@ -13,6 +13,11 @@ import parade.renderer.ClientRendererProvider;
 import parade.renderer.IClientRenderer;
 import parade.renderer.impl.AdvancedClientRenderer;
 import parade.renderer.impl.BasicLocalClientRenderer;
+import parade.result.AbstractResult;
+import parade.result.DeclareWinner;
+import parade.result.TieAndNoWinnerResult;
+import parade.result.TieAndWinnerResult;
+import parade.result.WinnerResult;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
 
@@ -257,16 +262,32 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Dealing %d cards to %d players", numCardsToDraw, getPlayersCount());
         List<Card> drawnCards = drawFromDeck(numCardsToDraw); // Draw all the cards first
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+
+        // "Roll" a dice to decide who starts first
+        // Generate a number from 0 to 6
+        Random dice = new Random();
+        int diceRoll1 = dice.nextInt(7);
+        int diceRoll2 = dice.nextInt(7);
+        // Sets the current player based on the dice roll
+        setCurrentPlayer(diceRoll1 + diceRoll2);
+        logger.logf(
+                "Dice roll = %d, Starting player: %s",
+                diceRoll1 + diceRoll2, getCurrentPlayer().getName());
+        clientRenderer.renderf(
+                "Dice roll: %d, %s will be starting first!\n",
+                diceRoll1 + diceRoll2, getCurrentPlayer().getName());
+
         // Dish out the cards one by one, like real life you know? Like not getting the
         // direct next
         // card but alternating between players
         for (int i = 0; i < getPlayersCount(); i++) {
-            IPlayer player = getPlayer(i);
+            IPlayer player = getCurrentPlayer();
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
                 Card drawnCard = drawnCards.get(i + getPlayersCount() * j);
                 player.draw(drawnCard);
                 logger.logf("%s drew: %s", player.getName(), drawnCard);
             }
+            nextPlayer();
         }
 
         // Game loop continues until the deck is empty or an end condition is met
@@ -274,22 +295,44 @@ public class LocalGameEngine extends AbstractGameEngine {
         while (shouldGameContinue()) {
             // Each player plays a card
             IPlayer player = getCurrentPlayer();
+            playerPlayCard(player); // Play a card from their hand
 
             // Draw a card from the deck for the player
             Card drawnCard = drawFromDeck();
             player.draw(drawnCard);
             logger.logf("%s drew: %s", player.getName(), drawnCard);
 
-            playerPlayCard(player); // Play a card from their hand
             nextPlayer();
         }
+
         logger.logf("Game loop finished");
 
         // After the game loop finishes, the extra round is played.
         logger.log("Game loop finished, running final round");
         clientRenderer.renderln("Final round started. Players do not draw a card.");
+        // Each player plays their last card
         for (int i = 0; i < getPlayersCount(); i++) {
             playerPlayCard(getCurrentPlayer());
+            nextPlayer();
+        }
+
+        // Each player chooses 2 cards to discard
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            logger.logf("%s choosing 2 cards to discard.", player.getName());
+
+            for (int j = 0; j < 2; j++) {
+                Card discardedCard = player.discardCard(getParadeCards());
+                logger.logf("%s discarded: %s", player.getName(), discardedCard);
+                clientRenderer.renderln(player.getName() + " discarded: " + discardedCard);
+            }
+            nextPlayer();
+        }
+
+        // Add remaining cards in players' hand to their board for score calculation
+        for (int i = 0; i < getPlayersCount(); i++) {
+            IPlayer player = getCurrentPlayer();
+            player.addToBoard(player.getHand());
             nextPlayer();
         }
 
@@ -298,7 +341,34 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");
-        declareWinner(playerScores);
+        DeclareWinner declareWinner = new DeclareWinner();
+        AbstractResult result = declareWinner.evaluateScores(playerScores);
+
+        switch (result) {
+            case WinnerResult win ->
+                    clientRenderer.renderf(
+                            "%s wins with %d points!\n",
+                            win.getPlayer().getName(), playerScores.get(win.getPlayer()));
+
+            case TieAndWinnerResult tie ->
+                    clientRenderer.renderf(
+                            "Tie in score of %d points but %s wins with lesser number of cards\n",
+                            playerScores.get(tie.getPlayer()), tie.getPlayer().getName());
+
+            case TieAndNoWinnerResult overallTie -> {
+                clientRenderer.renderln("Overall tie with no winners");
+                int numPlayers = overallTie.getPlayers().size();
+                int score = playerScores.get(overallTie.getPlayers().get(0));
+                for (int i = 0; i < numPlayers - 1; i++) {
+                    clientRenderer.render(overallTie.getPlayers().get(i).getName() + ", ");
+                }
+                clientRenderer.renderf(
+                        "%s have the same score of %d points and same number of cards.\n",
+                        overallTie.getPlayers().get(numPlayers - 1).getName(), score);
+            }
+
+            default -> clientRenderer.renderln("Error retrieving result\n");
+        }
     }
 
     private void playerPlayCard(IPlayer player) {

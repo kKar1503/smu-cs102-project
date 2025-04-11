@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import parade.common.exceptions.InsufficientCardException;
+
 /**
  * The Human class represents a human player in the game. It implements the Player interface and
  * provides functionality for a human player such as drawing and playing cards.
@@ -37,11 +39,12 @@ public class LocalHuman implements IPlayer {
      * @param parade The current lineup of cards in the parade.
      * @return The card chosen by the player.
      */
+    @Override
     public Card playCard(List<Card> parade) {
 
         Scanner sc = new Scanner(System.in);
         int input;
-        ClientRendererProvider.getInstance().renderPlayerTurn(this, latestDrawnCard, parade);
+        ClientRendererProvider.getInstance().renderPlayerTurn(this, latestDrawnCard, parade, false);
 
         while (true) {
             try {
@@ -60,6 +63,38 @@ public class LocalHuman implements IPlayer {
             sc.nextLine();
         }
         latestDrawnCard = null;
+        return hand.remove(input - 1);
+    }
+
+    /**
+     * Choose card(s) to discard from player's hand
+     *
+     * @param parade The list of cards currently in the parade.
+     * @return The card to be discarded.
+     */
+    @Override
+    public Card discardCard(List<Card> parade) {
+
+        Scanner sc = new Scanner(System.in);
+        int input;
+        ClientRendererProvider.getInstance().renderPlayerTurn(this, null, parade, true);
+
+        while (true) {
+            try {
+                input = sc.nextInt();
+                if (input < 1 || input > hand.size()) {
+                    throw new IndexOutOfBoundsException();
+                }
+                break;
+            } catch (InputMismatchException e) {
+                ClientRendererProvider.getInstance().render("Invalid input. Please try again");
+            } catch (IndexOutOfBoundsException e) {
+                ClientRendererProvider.getInstance()
+                        .render("Invalid choice. Please select a valid index");
+            }
+            ClientRendererProvider.getInstance().render("Select a card to discard:");
+            sc.nextLine();
+        }
         return hand.remove(input - 1);
     }
 

@@ -30,4 +30,10 @@ public class EasyComputer extends Computer {
         Random rand = new Random();
         return hand.get(rand.nextInt(hand.size())); // Randomly picks any card from the hand.
     }
+
+    @Override
+    public Card discardCard(List<Card> parade) {
+        Random rand = new Random();
+        return hand.get(rand.nextInt(hand.size())); // Randomly picks any card to discard.
+    }
 }

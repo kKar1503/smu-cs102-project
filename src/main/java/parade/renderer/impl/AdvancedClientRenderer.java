@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game.
- * It outputs styled game content to the console.
+ * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
+ * styled game content to the console.
  */
 public class AdvancedClientRenderer implements IClientRenderer {
 
@@ -27,6 +27,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     /**
      * Renders a plain message without a line break.
+     *
      * @param message The message to print.
      */
     @Override
@@ -36,6 +37,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     /**
      * Renders a message followed by a line break.
+     *
      * @param message The message to print.
      */
     @Override
@@ -45,6 +47,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
 
     /**
      * Renders a formatted message using the specified format and arguments.
+     *
      * @param format The format string.
      * @param args Arguments referenced by the format specifiers in the format string.
      */
@@ -54,9 +57,8 @@ public class AdvancedClientRenderer implements IClientRenderer {
     }
 
     /**
-     * Renders a stylized welcome message from an ASCII art file.
-     * Throws an exception if the file cannot be found.
-     * Also displays a sample Parade card.
+     * Renders a stylized welcome message from an ASCII art file. Throws an exception if the file
+     * cannot be found. Also displays a sample Parade card.
      */
     @Override
     public void renderWelcome() throws IllegalStateException {
@@ -85,9 +87,7 @@ public class AdvancedClientRenderer implements IClientRenderer {
         }
     }
 
-    /**
-     * Displays the main menu options to the user.
-     */
+    /** Displays the main menu options to the user. */
     @Override
     public void renderMenu() {
         System.out.println("1. Start Game");
@@ -96,8 +96,9 @@ public class AdvancedClientRenderer implements IClientRenderer {
     }
 
     /**
-     * Displays the current players in the lobby and menu options.
-     * Indicates whether the lobby is full or not ready.
+     * Displays the current players in the lobby and menu options. Indicates whether the lobby is
+     * full or not ready.
+     *
      * @param players List of players currently in the lobby.
      */
     @Override
@@ -120,27 +121,22 @@ public class AdvancedClientRenderer implements IClientRenderer {
         System.out.print("Please select an option: ");
     }
 
-    /**
-     * Displays a prompt related to selecting computer difficulty.
-     * (Currently not implemented.)
-     */
+    /** Displays a prompt related to selecting computer difficulty. (Currently not implemented.) */
     @Override
     public void renderComputerDifficulty() {}
 
     /**
-     * Displays the current state of a player's turn, including:
-     * - Drawn card (if any)
-     * - Parade line
-     * - Player's board (sorted)
-     * - Player's hand
-     * Prompts the player to select a card to play.
+     * Displays the current state of a player's turn, including: - Drawn card (if any) - Parade line
+     * - Player's board (sorted) - Player's hand Prompts the player to select a card to play.
      *
      * @param player The player whose turn is being rendered.
      * @param newlyDrawnCard The card the player drew this turn.
      * @param parade The current parade line.
      */
     @Override
-    public void renderPlayerTurn(IPlayer player, Card newlyDrawnCard, List<Card> parade) {
+    public void renderPlayerTurn(
+            IPlayer player, Card newlyDrawnCard, List<Card> parade, boolean toDiscard) {
+        // print player's name and drawn card
         System.out.println("\n" + player.getName() + "'s turn.");
 
         // Show the card that was drawn
@@ -170,11 +166,12 @@ public class AdvancedClientRenderer implements IClientRenderer {
         printCardsHorizontally(parade, true);
 
         // Prompt player for input
-        System.out.print("\n\nSelect a card to play:");
+        System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
 
     /**
      * Renders final scores and ends the game.
+     *
      * @param playerScores A map of players to their final scores.
      */
     @Override
@@ -185,14 +182,11 @@ public class AdvancedClientRenderer implements IClientRenderer {
         }
     }
 
-    /**
-     * Displays a farewell message when the game ends.
-     */
+    /** Displays a farewell message when the game ends. */
     @Override
     public void renderBye() {
         System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");
     }
-
 
     /**
      * Render the parade or the player hand, depending on the boolean set
