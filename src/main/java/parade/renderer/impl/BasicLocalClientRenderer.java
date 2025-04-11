@@ -1,11 +1,5 @@
 package parade.renderer.impl;
 
-import parade.common.Card;
-import parade.engine.AbstractGameEngine;
-import parade.player.IPlayer;
-import parade.renderer.IClientRenderer;
-import parade.utils.ConsoleColors;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +7,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import parade.common.Card;
+import parade.engine.AbstractGameEngine;
+import parade.player.IPlayer;
+import parade.renderer.IClientRenderer;
+import parade.utils.ConsoleColors;
 
 /**
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
@@ -136,9 +136,9 @@ public class BasicLocalClientRenderer implements IClientRenderer {
     @Override
     public void renderPlayerTurn(
             IPlayer player, Card newlyDrawnCard, List<Card> parade, boolean toDiscard) {
-        System.out.println("\n" + player.getName() + "'s turn.");
+        System.out.println(System.lineSeparator() + player.getName() + "'s turn.");
         if (newlyDrawnCard != null) {
-            System.out.println("You drew:\n" + rendersSingleCard(newlyDrawnCard));
+            System.out.println("You drew:" + System.lineSeparator() + rendersSingleCard(newlyDrawnCard));
         }
 
         renderCardList(" Parade (read left to right, top to bottom!) ", parade);
@@ -148,7 +148,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
         renderCardList(" Your scoring board ", board);
         renderCardList(" Cards in your hand ", player.getHand());
 
-        System.out.printf("\n\nSelect a card to %s:", toDiscard ? "discard" : "play");
+        System.out.printf(System.lineSeparator() + System.lineSeparator() + "Select a card to %s:", toDiscard ? "discard" : "play");
     }
 
     /**
@@ -169,7 +169,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
      */
     public void renderCardList(String label, List<Card> cards) {
         if (cards == null || cards.isEmpty()) {
-            System.out.println("\n╔" + ConsoleColors.purple(label) + "═".repeat(40) + "╗");
+            System.out.println(System.lineSeparator() + "╔" + ConsoleColors.purple(label) + "═".repeat(40) + "╗");
             System.out.println("║ No cards to display." + " ".repeat(39) + "║");
             System.out.println("╚" + "═".repeat(60) + "╝");
             return;
@@ -184,7 +184,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
         List<String[]> renderedCards = new ArrayList<>();
         for (Card card : cards) {
-            renderedCards.add(rendersSingleCard(card).split("\n"));
+            renderedCards.add(rendersSingleCard(card).split(System.lineSeparator()));
         }
 
         int linesPerCard = renderedCards.get(0).length;
@@ -198,7 +198,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                         + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
 
-        System.out.println("\n" + topBorder);
+        System.out.println(System.lineSeparator() + topBorder);
 
         for (int start = 0; start < totalCards; start += cardsPerRow) {
             int end = Math.min(start + cardsPerRow, totalCards);
@@ -271,8 +271,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             "└" + "─".repeat(width) + "┘"
         };
 
-        return String.join(
-                "\n",
+        return String.join(System.lineSeparator(),
                 Arrays.stream(lines)
                         .map(line -> colorPrinter(colorCode, line))
                         .toArray(String[]::new));
@@ -299,7 +298,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
 
             for (int i = 0; i < 6; i++) {
                 clearConsole();
-                System.out.println("\n\033[5m");
+                System.out.println(System.lineSeparator() + "\033[5m");
                 System.out.println("        =============================================");
                 System.out.println("        ||    ███████╗██╗███╗   ██╗ █████╗ ██╗     ||");
                 System.out.println("        ||    ██╔════╝██║████╗  ██║██╔══██╗██║     ||");
@@ -315,12 +314,12 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             int scoreColWidth = 9;
             String header =
                     String.format(
-                            "        ┌%s┐\n"
+                            "        ┌%s┐" + System.lineSeparator()
                                     + "        │ %-"
                                     + playerColWidth
                                     + "s │ %-"
                                     + scoreColWidth
-                                    + "s │\n"
+                                    + "s │" + System.lineSeparator()
                                     + "        ├%s┤",
                             "─".repeat(playerColWidth + 2 + scoreColWidth + 3),
                             "Player",
@@ -361,7 +360,7 @@ public class BasicLocalClientRenderer implements IClientRenderer {
             "╚══════════╝"
         };
 
-        System.out.println("Shaking block...\n");
+        System.out.println("Shaking block..." + System.lineSeparator());
 
         // Simulate shaking animation by redrawing the block with random offsets
         for (int i = 0; i < 15; i++) {
@@ -485,12 +484,12 @@ public class BasicLocalClientRenderer implements IClientRenderer {
                 break;
         }
 
-        return String.join("\n", Arrays.stream(toPrint).toArray(String[]::new));
+        return String.join(System.lineSeparator(), Arrays.stream(toPrint).toArray(String[]::new));
     }
 
     /** Renders a simple farewell message at the end of the game session. */
     @Override
     public void renderBye() {
-        System.out.println("\nTHANK YOU FOR PLAYING! SEE YOU NEXT TIME!\n");
+        System.out.println(System.lineSeparator() + "THANK YOU FOR PLAYING! SEE YOU NEXT TIME!" + System.lineSeparator());
     }
 }
