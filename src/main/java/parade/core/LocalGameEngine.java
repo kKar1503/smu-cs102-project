@@ -375,7 +375,7 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         // Place card in parade and receive cards from parade
         List<Card> cardsFromParade = parade.placeCard(playedCard); // Apply parade logic
-        player.getPlayer().addToBoard(cardsFromParade.toArray(Card[]::new));
+        player.receiveFromParade(cardsFromParade.toArray(Card[]::new));
         logger.logf(
                 "%s received %d cards from parade to add to board: %s",
                 player.getPlayer().getName(),
