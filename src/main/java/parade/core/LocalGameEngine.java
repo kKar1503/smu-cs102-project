@@ -16,6 +16,7 @@ import parade.renderer.local.ClientRenderer;
 import parade.renderer.local.ClientRendererProvider;
 import parade.renderer.local.impl.AdvancedClientRenderer;
 import parade.renderer.local.impl.BasicLocalClientRenderer;
+import parade.renderer.local.impl.DebugClientRenderer;
 import parade.result.AbstractResult;
 import parade.result.DeclareWinner;
 import parade.result.TieAndNoWinnerResult;
@@ -401,6 +402,7 @@ public class LocalGameEngine extends AbstractGameEngine {
                 switch (clientRendererType) {
                     case "basic_local" -> new BasicLocalClientRenderer();
                     case "advanced_local" -> new AdvancedClientRenderer();
+                    case "debug" -> new DebugClientRenderer();
                     default ->
                             throw new IllegalStateException(
                                     "Unknown client renderer in settings: " + clientRendererType);
