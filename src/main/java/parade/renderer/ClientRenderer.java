@@ -1,4 +1,4 @@
-package parade.renderer.local;
+package parade.renderer;
 
 import parade.card.Card;
 import parade.player.Player;

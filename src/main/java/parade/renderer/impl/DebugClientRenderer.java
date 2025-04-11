@@ -1,10 +1,10 @@
-package parade.renderer.local.impl;
+package parade.renderer.impl;
 
 import parade.card.Card;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
-import parade.renderer.local.ClientRenderer;
-import parade.utils.ConsoleColors;
+import parade.renderer.ClientRenderer;
+import parade.utils.Ansi;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,10 +33,10 @@ public class DebugClientRenderer implements ClientRenderer {
     @Override
     public void renderWelcome() throws IllegalStateException {
         System.out.println(
-                ConsoleColors.PURPLE_BOLD
+                Ansi.PURPLE_BOLD
                         + "============================= Welcome to Parade!"
                         + " =============================="
-                        + ConsoleColors.RESET);
+                        + Ansi.RESET);
     }
 
     @Override

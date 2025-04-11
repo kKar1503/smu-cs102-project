@@ -1,11 +1,11 @@
-package parade.renderer.local.impl;
+package parade.renderer.impl;
 
 import parade.card.Card;
 import parade.card.Colour;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
-import parade.renderer.local.ClientRenderer;
-import parade.utils.ConsoleColors;
+import parade.renderer.ClientRenderer;
+import parade.utils.Ansi;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,9 +20,6 @@ import java.util.Scanner;
  * styled game content to the console.
  */
 public class AdvancedClientRenderer implements ClientRenderer {
-    // Constructor: Initializes the renderer
-    public AdvancedClientRenderer() {}
-
     /**
      * Renders a plain message without a line break.
      *
@@ -72,11 +69,11 @@ public class AdvancedClientRenderer implements ClientRenderer {
         // Render the welcome banner with styling
         if (paradeWelcome != null) {
             System.out.println(
-                    ConsoleColors.PURPLE_BOLD
+                    Ansi.PURPLE_BOLD
                             + "============================= Welcome to Parade!"
                             + " =============================="
-                            + ConsoleColors.RESET);
-            System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
+                            + Ansi.RESET);
+            System.out.println(Ansi.PURPLE + paradeWelcome + Ansi.RESET);
             System.out.println(
                     "===================================================================================");
 
@@ -366,12 +363,12 @@ public class AdvancedClientRenderer implements ClientRenderer {
      */
     public String printConsoleColour(String colour, String colourisedString) {
         return switch (colour) {
-            case "red" -> ConsoleColors.red(colourisedString);
-            case "black" -> ConsoleColors.black(colourisedString);
-            case "green" -> ConsoleColors.green(colourisedString);
-            case "blue" -> ConsoleColors.blue(colourisedString);
-            case "yellow" -> ConsoleColors.yellow(colourisedString);
-            case "purple" -> ConsoleColors.purple(colourisedString);
+            case "red" -> Ansi.red(colourisedString);
+            case "black" -> Ansi.black(colourisedString);
+            case "green" -> Ansi.green(colourisedString);
+            case "blue" -> Ansi.blue(colourisedString);
+            case "yellow" -> Ansi.yellow(colourisedString);
+            case "purple" -> Ansi.purple(colourisedString);
             default -> colourisedString; // no colour - white
         };
     }
@@ -412,7 +409,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
     // This just prints many new lines to "clear" the screen for shaking effect
     private void clearConsole() {
-        System.out.print(ConsoleColors.CLEAR);
+        System.out.print(Ansi.CLEAR);
         System.out.flush();
     }
 
@@ -425,51 +422,51 @@ public class AdvancedClientRenderer implements ClientRenderer {
     private String[] returnDice(int num) {
         // Define each possible dice face
         String[] dice1 = {
-            ConsoleColors.whiteBgBlackText("╔═════════╗"),
-            ConsoleColors.whiteBgBlackText("║         ║"),
-            ConsoleColors.whiteBgBlackText("║    o    ║"),
-            ConsoleColors.whiteBgBlackText("║         ║"),
-            ConsoleColors.whiteBgBlackText("╚═════════╝")
+            Ansi.whiteBgBlackText("╔═════════╗"),
+            Ansi.whiteBgBlackText("║         ║"),
+            Ansi.whiteBgBlackText("║    o    ║"),
+            Ansi.whiteBgBlackText("║         ║"),
+            Ansi.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice2 = {
-            ConsoleColors.whiteBgBlackText("╔═════════╗"),
-            ConsoleColors.whiteBgBlackText("║ o       ║"),
-            ConsoleColors.whiteBgBlackText("║         ║"),
-            ConsoleColors.whiteBgBlackText("║       o ║"),
-            ConsoleColors.whiteBgBlackText("╚═════════╝")
+            Ansi.whiteBgBlackText("╔═════════╗"),
+            Ansi.whiteBgBlackText("║ o       ║"),
+            Ansi.whiteBgBlackText("║         ║"),
+            Ansi.whiteBgBlackText("║       o ║"),
+            Ansi.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice3 = {
-            ConsoleColors.whiteBgBlackText("╔═════════╗"),
-            ConsoleColors.whiteBgBlackText("║ o       ║"),
-            ConsoleColors.whiteBgBlackText("║    o    ║"),
-            ConsoleColors.whiteBgBlackText("║       o ║"),
-            ConsoleColors.whiteBgBlackText("╚═════════╝")
+            Ansi.whiteBgBlackText("╔═════════╗"),
+            Ansi.whiteBgBlackText("║ o       ║"),
+            Ansi.whiteBgBlackText("║    o    ║"),
+            Ansi.whiteBgBlackText("║       o ║"),
+            Ansi.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice4 = {
-            ConsoleColors.whiteBgBlackText("╔═════════╗"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("║         ║"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("╚═════════╝")
+            Ansi.whiteBgBlackText("╔═════════╗"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("║         ║"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice5 = {
-            ConsoleColors.whiteBgBlackText("╔═════════╗"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("║    o    ║"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("╚═════════╝")
+            Ansi.whiteBgBlackText("╔═════════╗"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("║    o    ║"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("╚═════════╝")
         };
 
         String[] dice6 = {
-            ConsoleColors.whiteBgBlackText("╔═════════╗"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("║ o     o ║"),
-            ConsoleColors.whiteBgBlackText("╚═════════╝")
+            Ansi.whiteBgBlackText("╔═════════╗"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("║ o     o ║"),
+            Ansi.whiteBgBlackText("╚═════════╝")
         };
 
         return switch (num) {
@@ -505,7 +502,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(ConsoleColors.purple(line));
+                    System.out.println(Ansi.purple(line));
                 }
                 Thread.sleep(100);
             }
@@ -524,7 +521,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(ConsoleColors.purple(line));
+                    System.out.println(Ansi.purple(line));
                 }
             }
 

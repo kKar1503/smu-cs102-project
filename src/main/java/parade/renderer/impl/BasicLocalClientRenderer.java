@@ -1,10 +1,10 @@
-package parade.renderer.local.impl;
+package parade.renderer.impl;
 
 import parade.card.Card;
 import parade.player.Player;
 import parade.player.controller.PlayCardData;
-import parade.renderer.local.ClientRenderer;
-import parade.utils.ConsoleColors;
+import parade.renderer.ClientRenderer;
+import parade.utils.Ansi;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,8 +19,6 @@ import java.util.Scanner;
  * displaying game state and prompting the user via console.
  */
 public class BasicLocalClientRenderer implements ClientRenderer {
-    public BasicLocalClientRenderer() {}
-
     /** Renders a plain message without newline. */
     @Override
     public void render(String message) {
@@ -52,10 +50,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     @Override
     public void renderWelcome() throws IllegalStateException {
         System.out.println(
-                ConsoleColors.PURPLE_BOLD
+                Ansi.PURPLE_BOLD
                         + "============================= ✨ Welcome to Parade! ✨"
                         + " =============================="
-                        + ConsoleColors.RESET);
+                        + Ansi.RESET);
     }
 
     /**
@@ -76,11 +74,11 @@ public class BasicLocalClientRenderer implements ClientRenderer {
 
         if (menuText != null) {
             System.out.println(
-                    ConsoleColors.PURPLE_BOLD
+                    Ansi.PURPLE_BOLD
                             + "============================= Welcome to Parade!"
                             + " =============================="
-                            + ConsoleColors.RESET);
-            System.out.println(ConsoleColors.PURPLE + menuText + ConsoleColors.RESET);
+                            + Ansi.RESET);
+            System.out.println(Ansi.PURPLE + menuText + Ansi.RESET);
         }
     }
 
@@ -165,7 +163,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     public void renderCardList(String label, List<Card> cards) {
         if (cards == null || cards.isEmpty()) {
             System.out.println();
-            System.out.println("╔" + ConsoleColors.purple(label) + "═".repeat(40) + "╗");
+            System.out.println("╔" + Ansi.purple(label) + "═".repeat(40) + "╗");
             System.out.println("║ No cards to display." + " ".repeat(39) + "║");
             System.out.println("╚" + "═".repeat(60) + "╝");
             return;
@@ -189,7 +187,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
 
         String topBorder =
                 "╔"
-                        + ConsoleColors.purple(label)
+                        + Ansi.purple(label)
                         + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
                         + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
@@ -228,12 +226,12 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      */
     public String colorPrinter(String colour, String text) {
         return switch (colour) {
-            case "RED" -> ConsoleColors.redBackground(text);
-            case "BLUE" -> ConsoleColors.brightBlueBackground(text);
-            case "GREEN" -> ConsoleColors.brightGreenBackground(text);
-            case "YELLOW" -> ConsoleColors.brightYellowBackground(text);
-            case "PURPLE" -> ConsoleColors.purpleBackground(text);
-            default -> ConsoleColors.blackBackground(text);
+            case "RED" -> Ansi.redBackground(text);
+            case "BLUE" -> Ansi.brightBlueBackground(text);
+            case "GREEN" -> Ansi.brightGreenBackground(text);
+            case "YELLOW" -> Ansi.brightYellowBackground(text);
+            case "PURPLE" -> Ansi.purpleBackground(text);
+            default -> Ansi.blackBackground(text);
         };
     }
 
@@ -294,7 +292,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(ConsoleColors.purple(line));
+                    System.out.println(Ansi.purple(line));
                 }
                 Thread.sleep(100);
             }
@@ -313,7 +311,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                 };
 
                 for (String line : asciiArt) {
-                    System.out.println(ConsoleColors.purple(line));
+                    System.out.println(Ansi.purple(line));
                 }
             }
 
@@ -402,7 +400,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * animation.
      */
     private void clearConsole() {
-        System.out.print(ConsoleColors.CLEAR);
+        System.out.print(Ansi.CLEAR);
         System.out.flush();
     }
 
