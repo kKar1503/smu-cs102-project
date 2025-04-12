@@ -2,6 +2,7 @@ package parade.renderer.local;
 
 import parade.card.Card;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 
 import java.util.List;
@@ -84,8 +85,10 @@ public interface ClientRenderer {
      *
      * @param playerScores a map of players and their scores
      */
-    void renderEndGame(Map<Player, Integer> playerScores);
+    void renderEndGame(Map<AbstractPlayerController, Integer> playerScores);
 
     /** Bye bye buddy. */
     void renderBye();
+
+    void renderRoll(int diceRoll1, int diceRoll2);
 }

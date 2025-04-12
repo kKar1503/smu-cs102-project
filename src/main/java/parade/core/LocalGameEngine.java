@@ -228,8 +228,9 @@ public class LocalGameEngine extends AbstractGameEngine {
         // "Roll" a dice to decide who starts first
         // Generate a number from 0 to 6
         Random dice = new Random();
-        int diceRoll1 = dice.nextInt(7);
-        int diceRoll2 = dice.nextInt(7);
+        int diceRoll1 = dice.nextInt(6) + 1;
+        int diceRoll2 = dice.nextInt(6) + 1;
+        clientRenderer.renderRoll(diceRoll1, diceRoll2);
         // Sets the current player based on the dice roll
         playerControllerManager.setCurrentPlayerIdx(diceRoll1 + diceRoll2);
         Player startingPlayer = playerControllerManager.peek().getPlayer();
@@ -310,6 +311,7 @@ public class LocalGameEngine extends AbstractGameEngine {
 
         logger.log("Tabulating scores");
         Map<AbstractPlayerController, Integer> playerScores = tabulateScores();
+        clientRenderer.renderEndGame(playerScores);
 
         // Declare the final results
         clientRenderer.renderln("Game Over! Final Scores:");

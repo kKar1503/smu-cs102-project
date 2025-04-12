@@ -2,6 +2,7 @@ package parade.renderer.local.impl;
 
 import parade.card.Card;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
@@ -317,7 +318,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * @param playerScores final score map of all players
      */
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
@@ -373,10 +374,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                             "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
             System.out.println(header);
 
-            for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+            for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
                 System.out.printf(
                         "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
-                        entry.getKey().getName(),
+                        entry.getKey().getPlayer().getName(),
                         entry.getValue());
             }
 
@@ -396,7 +397,8 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * Renders an animated dice-rolling block with shaking effect. This is purely visual and does
      * not determine any game outcome.
      */
-    public void renderRoll() {
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2) {
         String[] block = {
             "╔══════════╗",
             "║          ║",
@@ -420,6 +422,74 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             }
 
             clearConsole(); // Clear console to simulate motion
+        }
+        printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
+    }
+
+    private String[] returnDice(int num) {
+        // Define each possible dice face
+        String[] dice1 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice2 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice3 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice4 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice5 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice6 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        return switch (num) {
+            case 1 -> dice1;
+            case 2 -> dice2;
+            case 3 -> dice3;
+            case 4 -> dice4;
+            case 5 -> dice5;
+            case 6 -> dice6;
+            default -> throw new IllegalArgumentException("Dice number should be between 1-6");
+        };
+    }
+
+    private void printDicesHorizontally(String[] dice1, String[] dice2) {
+        for (int i = 0; i < dice1.length; i++) {
+            System.out.println(dice1[i] + " ".repeat(5) + dice2[i]);
         }
     }
 
