@@ -89,14 +89,13 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Displays the list of current players in the lobby and presents menu options
-     * for lobby management. This includes the ability to add human or computer players,
-     * remove existing players, and start the game if conditions are met.
+     * Displays the list of current players in the lobby and presents menu options for lobby
+     * management. This includes the ability to add human or computer players, remove existing
+     * players, and start the game if conditions are met.
      *
-     * Menu options are context-sensitive:
-     * - If the lobby is full (6 players), add options are visually disabled.
-     * - If the lobby is empty, remove option is disabled.
-     * - If fewer than 2 players are present, the start option is disabled.
+     * <p>Menu options are context-sensitive: - If the lobby is full (6 players), add options are
+     * visually disabled. - If the lobby is empty, remove option is disabled. - If fewer than 2
+     * players are present, the start option is disabled.
      *
      * @param lobby List of players currently in the lobby.
      */
@@ -111,15 +110,16 @@ public class AdvancedClientRenderer implements ClientRenderer {
         // Render context-aware menu options based on lobby state
         System.out.println("1. Add Player" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
         System.out.println("2. Add Computer" + (lobby.size() == 6 ? " (Lobby is full)" : ""));
-        System.out.println("3. Remove player/computer" + (lobby.isEmpty() ? " (Lobby is empty)" : ""));
+        System.out.println(
+                "3. Remove player/computer" + (lobby.isEmpty() ? " (Lobby is empty)" : ""));
         System.out.println("4. Start Game" + (lobby.size() < 2 ? " (Not enough players)" : ""));
         System.out.print("Please select an option: ");
     }
 
     /**
-     * Prompts the user to choose a difficulty level for a newly added computer player.
-     * This method ensures consistency in user experience between renderers and is 
-     * critical to correctly initializing AI behavior.
+     * Prompts the user to choose a difficulty level for a newly added computer player. This method
+     * ensures consistency in user experience between renderers and is critical to correctly
+     * initializing AI behavior.
      */
     @Override
     public void renderComputerDifficulty() {
@@ -170,11 +170,11 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
         // Display the player's hand
         System.out.println(
-            System.lineSeparator()
-                    + System.lineSeparator()
-                    + "Your hand"
-                    + System.lineSeparator()
-                    + "==========================================================================");
+                System.lineSeparator()
+                        + System.lineSeparator()
+                        + "Your hand"
+                        + System.lineSeparator()
+                        + "==========================================================================");
         printCardsHorizontally(player.getHand(), true);
 
         // Prompt player for input
@@ -188,23 +188,25 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders a row of cards horizontally for either the parade or the player's hand.
-     * Each card is represented using a simplified ASCII-style layout with top, middle, and bottom sections.
-     * If rendering the player's hand, index labels will also be shown to assist with card selection.
+     * Renders a row of cards horizontally for either the parade or the player's hand. Each card is
+     * represented using a simplified ASCII-style layout with top, middle, and bottom sections. If
+     * rendering the player's hand, index labels will also be shown to assist with card selection.
      *
-     * @param board   List of cards to render (either the parade or the player's hand)
-     * @param options If true, displays index labels above each card (for selection); 
-     *                if false, renders the parade without indices
+     * @param board List of cards to render (either the parade or the player's hand)
+     * @param options If true, displays index labels above each card (for selection); if false,
+     *     renders the parade without indices
      */
     public void printCardsHorizontally(List<Card> board, boolean options) {
-        int padding = 3;  // Horizontal spacing around each card
-        int width = 5;    // Width of each card's internal content area
+        int padding = 3; // Horizontal spacing around each card
+        int width = 5; // Width of each card's internal content area
 
         // Buffers to hold the different parts of the rendered card rows
-        StringBuilder sbIndices = new StringBuilder();  // Row for index labels (only used for hand)
-        StringBuilder sbTop = new StringBuilder();      // Top part of each card
-        StringBuilder sbMiddle = new StringBuilder();   // Middle part (typically holds symbol)
-        StringBuilder sbBottom = new StringBuilder();   // Bottom border of each card
+        StringBuilder sbIndices =
+                new StringBuilder(); // Row for index labels (only used for hand - so when boolean
+        // is set to true, this sb is printed.)
+        StringBuilder sbTop = new StringBuilder(); // Top part of each card
+        StringBuilder sbMiddle = new StringBuilder(); // Middle part
+        StringBuilder sbBottom = new StringBuilder(); // Bottom border of each card
 
         // Defensive copy of the card list to avoid mutating external references
         List<Card> sortedBoard = new ArrayList<>(board);
@@ -212,18 +214,21 @@ public class AdvancedClientRenderer implements ClientRenderer {
         // Sort cards by color (alphabetically) and then by number using comparator
         sortedBoard.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
 
+        System.out.println("board:" + board.size());
+
         // Loop through all cards and build their visual components
         for (int i = 0; i < sortedBoard.size(); i++) {
             Card card = sortedBoard.get(i);
 
             // If enabled, generate a color-coded index label above each card (e.g., [1], [2], ...)
             if (options) {
-                sbIndices.append(" ".repeat(padding + (width / 2)));  // Position index roughly center
+                sbIndices.append(
+                        " ".repeat(padding + (width / 2))); // Position index roughly center
                 sbIndices.append(
                         printConsoleColour(
                                 String.valueOf(card.getColour()).toLowerCase(),
                                 String.format("[%d]", i + 1)));
-                sbIndices.append(" ".repeat(2));  // Space between index labels
+                sbIndices.append(" ".repeat(2)); // Space between index labels
             }
 
             // Construct each line of the card by appending ASCII segments
@@ -328,10 +333,21 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String cardColour = "" + card.getColour();
         String lowerCardColour = cardColour.toLowerCase();
 
-        int width = 5; // t.getWidth() * 0.2;
+        int width = 5;
 
-        // Top border with rounded corners
-        String halfCard = (" ".repeat(gaps) + "╭" + card.getNumber() + "─".repeat(width - 2) + "╮");
+        int cardNumber = card.getNumber();
+
+        String halfCard = null;
+
+        // check if there is a double number.
+        if (String.valueOf(cardNumber).length() == 2) {
+            // Top border with rounded corners
+            halfCard = (" ".repeat(gaps) + "╭" + card.getNumber() + "─".repeat(width - 3) + "╮");
+
+        } else {
+            // Top border with rounded corners
+            halfCard = (" ".repeat(gaps) + "╭" + card.getNumber() + "─".repeat(width - 2) + "╮");
+        }
 
         return printConsoleColour(lowerCardColour, halfCard); // should print error?
     }
@@ -349,7 +365,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String emoji =
                 switch (card.getColour()) {
                     case Colour.BLACK -> "🐇"; // rabbit
-                    case Colour.BLUE -> "🧍‍♀️"; // alice
+                    case Colour.BLUE -> "👧🏼"; // alice
                     case Colour.GREEN -> "🥚"; // egg
                     case Colour.RED -> "🎩"; // mad hatter
                     case Colour.YELLOW -> "🦤"; // dodo
