@@ -41,10 +41,6 @@ public enum Ansi {
         this.code = code;
     }
 
-    public String getCode() {
-        return code;
-    }
-
     public String apply(String s) {
         return code + s + RESET.code;
     }
@@ -52,9 +48,9 @@ public enum Ansi {
     public static String apply(String s, Ansi... ansis) {
         StringBuilder sb = new StringBuilder();
         for (Ansi ansi : ansis) {
-            sb.append(ansi.getCode());
+            sb.append(ansi.code);
         }
-        sb.append(s).append(RESET.getCode());
+        sb.append(s).append(RESET.code);
         return sb.toString();
     }
 }
