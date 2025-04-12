@@ -87,9 +87,10 @@ public class DebugMenuManager extends AbstractMenuManager {
     }
 
     @Override
-    public void renderRoll(int diceRoll1, int diceRoll2) {
+    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
         System.out.println("Rolling dice..");
         System.out.println("Dice roll 1: " + diceRoll1);
         System.out.println("Dice roll 2: " + diceRoll2);
+        super.renderRoll(diceRoll1, diceRoll2, players);
     }
 }

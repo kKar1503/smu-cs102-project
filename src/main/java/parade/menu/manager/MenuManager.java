@@ -33,5 +33,5 @@ public interface MenuManager {
 
     void renderBye();
 
-    void renderRoll(int diceRoll1, int diceRoll2);
+    void renderRoll(int diceRoll1, int diceRoll2, List<Player> players);
 }

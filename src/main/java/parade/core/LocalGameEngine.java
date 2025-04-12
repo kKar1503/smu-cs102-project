@@ -1,5 +1,7 @@
 package parade.core;
 
+import static parade.constants.GameEngineValues.INITIAL_CARDS_PER_PLAYER;
+
 import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.core.result.*;
@@ -91,6 +93,42 @@ public class LocalGameEngine extends AbstractGameEngine {
         }
     }
 
+    private void rollDice() {
+        // "Roll" a die to decide who starts first
+        // Generate a number from 0 to 6
+        Random dice = new Random();
+        int diceRoll1 = dice.nextInt(6) + 1;
+        int diceRoll2 = dice.nextInt(6) + 1;
+        menuManager.renderRoll(diceRoll1, diceRoll2, playerControllerManager.getPlayers());
+        // Sets the current player based on the dice roll
+        playerControllerManager.setCurrentPlayerIdx(diceRoll1 + diceRoll2);
+        Player startingPlayer = playerControllerManager.peek().getPlayer();
+        logger.logf(
+                "Dice roll = %d, Starting player: %s",
+                diceRoll1 + diceRoll2, startingPlayer.getName());
+    }
+
+    private void distributeCards() {
+        // Gives out card to everyone
+        int numCardsToDraw = INITIAL_CARDS_PER_PLAYER * playerControllerManager.size();
+        logger.logf(
+                "Dealing %d cards to %d players", numCardsToDraw, playerControllerManager.size());
+        List<Card> drawnCards = deck.pop(numCardsToDraw); // Draw all the cards first
+        logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+
+        // Dish out the cards one by one, like real life you know? Like not getting the
+        // direct next
+        // card but alternating between players
+        for (int i = 0; i < playerControllerManager.size(); i++) {
+            AbstractPlayerController controller = playerControllerManager.next();
+            for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
+                Card drawnCard = drawnCards.get(i + playerControllerManager.size() * j);
+                controller.draw(drawnCard);
+                logger.logf("%s drew: %s", controller.getPlayer().getName(), drawnCard);
+            }
+        }
+    }
+
     /**
      * Starts the game loop and manages game progression.
      *
@@ -120,41 +158,9 @@ public class LocalGameEngine extends AbstractGameEngine {
 
             logger.logf("Starting game with %d players", playerControllerManager.size());
 
-            // Gives out card to everyone
-            int numCardsToDraw = INITIAL_CARDS_PER_PLAYER * playerControllerManager.size();
-            logger.logf(
-                    "Dealing %d cards to %d players",
-                    numCardsToDraw, playerControllerManager.size());
-            List<Card> drawnCards = deck.pop(numCardsToDraw); // Draw all the cards first
-            logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
+            rollDice();
 
-            // "Roll" a dice to decide who starts first
-            // Generate a number from 0 to 6
-            Random dice = new Random();
-            int diceRoll1 = dice.nextInt(6) + 1;
-            int diceRoll2 = dice.nextInt(6) + 1;
-            menuManager.renderRoll(diceRoll1, diceRoll2);
-            // Sets the current player based on the dice roll
-            playerControllerManager.setCurrentPlayerIdx(diceRoll1 + diceRoll2);
-            Player startingPlayer = playerControllerManager.peek().getPlayer();
-            logger.logf(
-                    "Dice roll = %d, Starting player: %s",
-                    diceRoll1 + diceRoll2, startingPlayer.getName());
-            System.out.printf(
-                    "Dice roll: %d, %s will be starting first!%n",
-                    diceRoll1 + diceRoll2, startingPlayer.getName());
-
-            // Dish out the cards one by one, like real life you know? Like not getting the
-            // direct next
-            // card but alternating between players
-            for (int i = 0; i < playerControllerManager.size(); i++) {
-                AbstractPlayerController controller = playerControllerManager.next();
-                for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
-                    Card drawnCard = drawnCards.get(i + playerControllerManager.size() * j);
-                    controller.draw(drawnCard);
-                    logger.logf("%s drew: %s", controller.getPlayer().getName(), drawnCard);
-                }
-            }
+            distributeCards();
 
             // Game loop continues until the deck is empty or an end condition is met
             logger.log("Game loop starting");

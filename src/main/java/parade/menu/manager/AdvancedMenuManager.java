@@ -385,7 +385,7 @@ public class AdvancedMenuManager extends AbstractMenuManager {
     }
 
     @Override
-    public void renderRoll(int diceRoll1, int diceRoll2) {
+    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
         String[] block = {
             "╔══════════╗",
             "║          ║",
@@ -411,6 +411,7 @@ public class AdvancedMenuManager extends AbstractMenuManager {
             clearConsole();
         }
         printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
+        super.renderRoll(diceRoll1, diceRoll2, players);
     }
 
     private void printBlockWithOffset(String[] block, int offset) {

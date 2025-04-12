@@ -320,7 +320,7 @@ public class BasicMenuManager extends AbstractMenuManager {
      * not determine any game outcome.
      */
     @Override
-    public void renderRoll(int diceRoll1, int diceRoll2) {
+    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
         String[] block = {
             "╔══════════╗",
             "║          ║",
@@ -346,6 +346,7 @@ public class BasicMenuManager extends AbstractMenuManager {
             clearConsole(); // Clear console to simulate motion
         }
         printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
+        super.renderRoll(diceRoll1, diceRoll2, players);
     }
 
     private String[] returnDice(int num) {

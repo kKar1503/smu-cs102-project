@@ -39,4 +39,11 @@ abstract class AbstractMenuManager implements MenuManager {
     public String humanNameMenu() {
         return new HumanNameMenu().start();
     }
+
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
+        String playerName = players.get((diceRoll1 + diceRoll2) % players.size()).getName();
+        System.out.printf(
+                "Dice roll: %d, %s will be starting first!%n", diceRoll1 + diceRoll2, playerName);
+    }
 }
