@@ -150,7 +150,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
         // Render Parade (stacked)
         System.out.println(System.lineSeparator() + "Parade");
-        printStackedCards(playCardData.getParade().getCards());
+        printCardsHorizontally(playCardData.getParade().getCards(), false);
 
         // Render Scoring Board (stacked)
         System.out.println(System.lineSeparator() + "Your board");
@@ -163,7 +163,6 @@ public class AdvancedClientRenderer implements ClientRenderer {
         System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
 
-
     /** Displays a farewell message when the game ends. */
     @Override
     public void renderBye() {
@@ -171,74 +170,112 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders a row of cards horizontally with a surrounding box.
-     * This is used primarily for displaying cards in hand, where selection is needed.
-     * Cards are rendered with consistent spacing, and optionally with indexed labels for user input.
+     * Renders a row of cards horizontally with a surrounding box. This is used primarily for
+     * displaying cards in hand, where selection is needed. Cards are rendered with consistent
+     * spacing, and optionally with indexed labels for user input.
      *
      * @param board List of cards to render (either the parade or player's hand)
      * @param showIndices If true, index labels are shown above cards (used for hand selection)
      */
     public void printCardsHorizontally(List<Card> board, boolean showIndices) {
-        if (board == null || board.isEmpty()) {
-            // Print an empty box layout if no cards are present
-            System.out.println("╔════════════════════════╗");
-            System.out.println("║ No cards to display.   ║");
-            System.out.println("╚════════════════════════╝");
-            return;
-        }
 
         int padding = 3;
-        int width = 5;
-        int totalCardWidth = padding * 2 + width;
+        int width = 5; // card width
+        int leftIndexPadding = (padding + width / 2) - 1;
+        int totalCardWidth = padding + width + 2;
+        int rightIndexPadding;
+
+        String verticalBorder = "║";
+        String rightTopCornerBorder = "╗";
+        String leftTopCornerBorder = "╔";
+        String rightBottomCornerBorder = "╝";
+        String leftBottomCornerBorder = "╚";
+        String horizontalBorder = "═";
+        String emptySpace = " ";
+        String emptyBoxDisplay = "No cards to display.";
+        String index;
 
         // StringBuilders for different card parts
         StringBuilder sbIndices = new StringBuilder();
         StringBuilder sbTop = new StringBuilder();
         StringBuilder sbMiddle = new StringBuilder();
         StringBuilder sbBottom = new StringBuilder();
+        StringBuilder sbEmptyBox = new StringBuilder();
+
+        if (board == null || board.isEmpty()) {
+            // if no board, should return error!
+            sbEmptyBox.append(
+                    leftTopCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightTopCornerBorder
+                            + "\n");
+            sbEmptyBox.append(
+                    verticalBorder
+                            + emptySpace.repeat(padding)
+                            + emptyBoxDisplay
+                            + emptySpace.repeat(padding)
+                            + verticalBorder
+                            + "\n");
+
+            sbEmptyBox.append(
+                    leftBottomCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightBottomCornerBorder
+                            + "\n");
+
+            System.out.println(sbEmptyBox);
+            return;
+        }
 
         // Sort cards consistently by color and number
         List<Card> sortedBoard = new ArrayList<>(board);
         sortedBoard.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
 
         // Render top border of the box
-        System.out.println("╔" + "═".repeat(sortedBoard.size() * (totalCardWidth + 1) - 1) + "╗");
+        System.out.println(
+                leftTopCornerBorder
+                        + horizontalBorder.repeat(sortedBoard.size() * totalCardWidth + padding)
+                        + rightTopCornerBorder);
 
         // Render index labels if requested
         if (showIndices) {
-            sbIndices.append("║");
+            sbIndices.append(verticalBorder);
             for (int i = 0; i < sortedBoard.size(); i++) {
-                String index = String.format("[%d]", i + 1);
-                int offset = (totalCardWidth - index.length()) / 2;
-                int leftPad = offset;
-                int rightPad = totalCardWidth - leftPad - index.length();
+                index = String.format("[%d]", i + 1);
+                rightIndexPadding = totalCardWidth - index.length() - leftIndexPadding;
 
-                sbIndices.append(" ".repeat(leftPad))
-                        .append(printConsoleColour(
-                                sortedBoard.get(i).getColour().toString().toLowerCase(), index))
-                        .append(" ".repeat(rightPad))
-                        .append(" ");
+                sbIndices
+                        .append(emptySpace.repeat(leftIndexPadding))
+                        .append(
+                                printConsoleColour(
+                                        sortedBoard.get(i).getColour().toString().toLowerCase(),
+                                        index))
+                        .append(emptySpace.repeat(rightIndexPadding));
             }
             // Close the index row with a box edge
-            sbIndices.setCharAt(sbIndices.length() - 1, '║');
+            sbIndices.append(emptySpace.repeat(padding) + verticalBorder);
             System.out.println(sbIndices);
         }
 
         // Build each card row line by line
-        sbTop.append("║");
-        sbMiddle.append("║");
-        sbBottom.append("║");
+        sbTop.append(verticalBorder);
+        sbMiddle.append(verticalBorder);
+        sbBottom.append(verticalBorder);
 
         for (Card card : sortedBoard) {
-            sbTop.append(renderTopHalfCard(card, padding)).append(" ");
-            sbMiddle.append(renderMiddleCard(card, padding)).append(" ");
-            sbBottom.append(renderBottomHalfCard(card, padding)).append(" ");
+            sbTop.append(renderTopHalfCard(card, padding)).append(emptySpace);
+            sbMiddle.append(renderMiddleCard(card, padding)).append(emptySpace);
+            sbBottom.append(renderBottomHalfCard(card, padding)).append(emptySpace);
         }
 
         // Close the content rows
-        sbTop.setCharAt(sbTop.length() - 1, '║');
-        sbMiddle.setCharAt(sbMiddle.length() - 1, '║');
-        sbBottom.setCharAt(sbBottom.length() - 1, '║');
+        sbTop.append(emptySpace.repeat(padding) + verticalBorder);
+        sbMiddle.append(emptySpace.repeat(padding) + verticalBorder);
+        sbBottom.append(emptySpace.repeat(padding) + verticalBorder);
 
         // Print all rows
         System.out.println(sbTop);
@@ -246,27 +283,66 @@ public class AdvancedClientRenderer implements ClientRenderer {
         System.out.println(sbBottom);
 
         // Render bottom border of the box
-        System.out.println("╚" + "═".repeat(sortedBoard.size() * (totalCardWidth + 1) - 1) + "╝");
+        System.out.println(
+                leftBottomCornerBorder
+                        + horizontalBorder.repeat(sortedBoard.size() * totalCardWidth + padding)
+                        + rightBottomCornerBorder);
     }
 
     /**
-     * Renders a stack of cards in vertical columns by color, aligned with padding and boxed borders.
-     * Used for parade and scoring zones (player boards).
+     * Renders a stack of cards in vertical columns by color, aligned with padding and boxed
+     * borders. Used for parade and scoring zones (player boards).
      *
-     * Cards are stacked column-wise for each color, from top to bottom.
+     * <p>Cards are stacked column-wise for each color, from top to bottom.
      *
      * @param board List of cards to render in columns.
      */
     public void printStackedCards(List<Card> board) {
         int padding = 3;
-        int width = 5;
-        int totalCardWidth = width + padding * 2 + 1; // +1 for spacing between columns
+        int width = 5; // card width
+        int leftIndexPadding = (padding + width / 2) - 1;
+        int totalCardWidth = padding + width + 2;
+        int rightIndexPadding;
+
+        String verticalBorder = "║";
+        String rightTopCornerBorder = "╗";
+        String leftTopCornerBorder = "╔";
+        String rightBottomCornerBorder = "╝";
+        String leftBottomCornerBorder = "╚";
+        String horizontalBorder = "═";
+        String emptySpace = " ";
+        String emptyBoxDisplay = "No cards to display";
+
+        // StringBuilders for different card parts
+        StringBuilder sbEmptyBox = new StringBuilder();
 
         if (board == null || board.isEmpty()) {
-            // Show message box for empty boards
-            System.out.println("╔════════════════════════╗");
-            System.out.println("║ No cards to display.   ║");
-            System.out.println("╚════════════════════════╝");
+            // Print an empty box layout if no cards are present
+
+            sbEmptyBox.append(
+                    leftTopCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightTopCornerBorder
+                            + "\n");
+            sbEmptyBox.append(
+                    verticalBorder
+                            + emptySpace.repeat(padding)
+                            + emptyBoxDisplay
+                            + emptySpace.repeat(padding)
+                            + verticalBorder
+                            + "\n");
+
+            sbEmptyBox.append(
+                    leftBottomCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightBottomCornerBorder
+                            + "\n");
+
+            System.out.println(sbEmptyBox);
             return;
         }
 
@@ -285,17 +361,17 @@ public class AdvancedClientRenderer implements ClientRenderer {
         int boxWidth = colourCardMap.size() * totalCardWidth;
 
         // Print top border
-        System.out.println("╔" + "═".repeat(boxWidth) + "╗");
+        System.out.println(
+                leftTopCornerBorder + horizontalBorder.repeat(boxWidth) + rightTopCornerBorder);
 
         // Print each visual row of stacked cards
         for (int row = 0; row < maxHeight + 2; row++) {
-            StringBuilder line = new StringBuilder("║");
+            StringBuilder line = new StringBuilder(verticalBorder);
 
             for (List<Card> cards : colourCardMap.values()) {
                 int count = cards.size();
                 String part;
 
-                // Determine which portion of the card to render for this row
                 if (row < count) {
                     part = renderTopHalfCard(cards.get(row), padding);
                 } else if (row == count) {
@@ -303,24 +379,28 @@ public class AdvancedClientRenderer implements ClientRenderer {
                 } else if (row == count + 1) {
                     part = renderBottomHalfCard(cards.get(count - 1), padding);
                 } else {
-                    part = " ".repeat(totalCardWidth);
+                    part = emptySpace.repeat(totalCardWidth - 1);
                 }
 
                 line.append(part);
+                line.append(emptySpace);
             }
 
             // Close row with box edge
-            line.append("║");
+            line.append(verticalBorder);
             System.out.println(line);
         }
 
         // Print bottom border
-        System.out.println("╚" + "═".repeat(boxWidth) + "╝");
+        System.out.println(
+                leftBottomCornerBorder
+                        + horizontalBorder.repeat(boxWidth)
+                        + rightBottomCornerBorder);
     }
 
     /**
-     * Renders a full single card (3 rows: top, middle, bottom) as a string.
-     * This is mostly used when displaying a standalone card (e.g., drawn card).
+     * Renders a full single card (3 rows: top, middle, bottom) as a string. This is mostly used
+     * when displaying a standalone card (e.g., drawn card).
      *
      * @param card The card to render.
      * @param gaps The number of spaces to pad on the left and right of the card's content.
@@ -336,8 +416,8 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders the top visual row of the card, showing the number and top border.
-     * The format looks like: ╭3───╮
+     * Renders the top visual row of the card, showing the number and top border. The format looks
+     * like: ╭3───╮
      *
      * @param card The card to render.
      * @param gaps Left and right spacing before the card begins (for alignment).
@@ -347,15 +427,13 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String num = String.valueOf(card.getNumber());
 
         // "5" is the fixed internal width of the card. Subtract 1 for number, and rest are dashes.
-        String top = " ".repeat(gaps)
-                    + "╭" + num + "─".repeat(5 - 1 - num.length()) + "╮";
+        String top = " ".repeat(gaps) + "╭" + num + "─".repeat(5 - 1 - num.length()) + "╮";
 
         return printConsoleColour(card.getColour().toString().toLowerCase(), top);
     }
 
     /**
-     * Renders the middle row of the card containing a themed emoji.
-     * The format looks like: | 🐇 |
+     * Renders the middle row of the card containing a themed emoji. The format looks like: | 🐇 |
      *
      * @param card The card to render.
      * @param gaps Left and right spacing before the card begins (for alignment).
@@ -368,7 +446,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String emoji =
                 switch (card.getColour()) {
                     case Colour.BLACK -> "🐇"; // rabbit
-                    case Colour.BLUE -> "🚶"; // alice
+                    case Colour.BLUE -> "👧"; // alice
                     case Colour.GREEN -> "🥚"; // egg
                     case Colour.RED -> "🎩"; // mad hatter
                     case Colour.YELLOW -> "🦤"; // dodo
@@ -381,8 +459,8 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders the bottom visual row of the card, forming the card’s lower border.
-     * The format looks like: ╰────╯
+     * Renders the bottom visual row of the card, forming the card’s lower border. The format looks
+     * like: ╰────╯
      *
      * @param card The card to render.
      * @param gaps Left and right spacing before the card begins (for alignment).
@@ -392,7 +470,6 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String bottom = " ".repeat(gaps) + "╰" + "─".repeat(5 - 1) + "╯";
         return printConsoleColour(card.getColour().toString().toLowerCase(), bottom);
     }
-
 
     /**
      * Helper function to print a String into a certain colour
