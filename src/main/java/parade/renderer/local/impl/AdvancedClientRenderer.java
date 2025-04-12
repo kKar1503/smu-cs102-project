@@ -140,46 +140,29 @@ public class AdvancedClientRenderer implements ClientRenderer {
     @Override
     public void renderPlayerTurn(
             Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard) {
-        // print player's name and drawn card
+
         System.out.println(System.lineSeparator() + player.getName() + "'s turn.");
 
-        // Show the card that was drawn
+        // Show newly drawn card
         if (newlyDrawnCard != null) {
             System.out.println("You drew:" + renderSingleCard(newlyDrawnCard, 4));
         }
 
-        // Display the parade line
-        System.out.println(
-                System.lineSeparator()
-                        + "Parade"
-                        + System.lineSeparator()
-                        + "======================================================================");
-        printCardsHorizontally(playCardData.getParade().getCards(), false);
+        // Render Parade (stacked)
+        System.out.println(System.lineSeparator() + "Parade");
+        printStackedCards(playCardData.getParade().getCards());
 
-        // Display the player's board, sorted by color and number
-        List<Card> board = player.getBoard();
-        board = new ArrayList<>(board);
-        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        System.out.println(
-                System.lineSeparator()
-                        + System.lineSeparator()
-                        + "Your board"
-                        + System.lineSeparator()
-                        + "===========================================================================");
-        printStackedCards(board);
+        // Render Scoring Board (stacked)
+        System.out.println(System.lineSeparator() + "Your board");
+        printStackedCards(player.getBoard());
 
-        // Display the player's hand
-        System.out.println(
-                System.lineSeparator()
-                        + System.lineSeparator()
-                        + "Your hand"
-                        + System.lineSeparator()
-                        + "==========================================================================");
+        // Render Hand (horizontal with selection)
+        System.out.println(System.lineSeparator() + "Your hand");
         printCardsHorizontally(player.getHand(), true);
 
-        // Prompt player for input
         System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
+
 
     /** Displays a farewell message when the game ends. */
     @Override
@@ -188,131 +171,160 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders a row of cards horizontally for either the parade or the player's hand. Each card is
-     * represented using a simplified ASCII-style layout with top, middle, and bottom sections. If
-     * rendering the player's hand, index labels will also be shown to assist with card selection.
+     * Renders a row of cards horizontally with a surrounding box.
+     * This is used primarily for displaying cards in hand, where selection is needed.
+     * Cards are rendered with consistent spacing, and optionally with indexed labels for user input.
      *
-     * @param board List of cards to render (either the parade or the player's hand)
-     * @param options If true, displays index labels above each card (for selection); if false,
-     *     renders the parade without indices
+     * @param board List of cards to render (either the parade or player's hand)
+     * @param showIndices If true, index labels are shown above cards (used for hand selection)
      */
-    public void printCardsHorizontally(List<Card> board, boolean options) {
-        int padding = 3; // Horizontal spacing around each card
-        int width = 5; // Width of each card's internal content area
+    public void printCardsHorizontally(List<Card> board, boolean showIndices) {
+        if (board == null || board.isEmpty()) {
+            // Print an empty box layout if no cards are present
+            System.out.println("╔════════════════════════╗");
+            System.out.println("║ No cards to display.   ║");
+            System.out.println("╚════════════════════════╝");
+            return;
+        }
 
-        // Buffers to hold the different parts of the rendered card rows
-        StringBuilder sbIndices =
-                new StringBuilder(); // Row for index labels (only used for hand - so when boolean
-        // is set to true, this sb is printed.)
-        StringBuilder sbTop = new StringBuilder(); // Top part of each card
-        StringBuilder sbMiddle = new StringBuilder(); // Middle part
-        StringBuilder sbBottom = new StringBuilder(); // Bottom border of each card
+        int padding = 3;
+        int width = 5;
+        int totalCardWidth = padding * 2 + width;
 
-        // Defensive copy of the card list to avoid mutating external references
+        // StringBuilders for different card parts
+        StringBuilder sbIndices = new StringBuilder();
+        StringBuilder sbTop = new StringBuilder();
+        StringBuilder sbMiddle = new StringBuilder();
+        StringBuilder sbBottom = new StringBuilder();
+
+        // Sort cards consistently by color and number
         List<Card> sortedBoard = new ArrayList<>(board);
-
-        // Sort cards by color (alphabetically) and then by number using comparator
         sortedBoard.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
 
-        System.out.println("board:" + board.size());
+        // Render top border of the box
+        System.out.println("╔" + "═".repeat(sortedBoard.size() * (totalCardWidth + 1) - 1) + "╗");
 
-        // Loop through all cards and build their visual components
-        for (int i = 0; i < sortedBoard.size(); i++) {
-            Card card = sortedBoard.get(i);
+        // Render index labels if requested
+        if (showIndices) {
+            sbIndices.append("║");
+            for (int i = 0; i < sortedBoard.size(); i++) {
+                String index = String.format("[%d]", i + 1);
+                int offset = (totalCardWidth - index.length()) / 2;
+                int leftPad = offset;
+                int rightPad = totalCardWidth - leftPad - index.length();
 
-            // If enabled, generate a color-coded index label above each card (e.g., [1], [2], ...)
-            if (options) {
-                sbIndices.append(
-                        " ".repeat(padding + (width / 2))); // Position index roughly center
-                sbIndices.append(
-                        printConsoleColour(
-                                String.valueOf(card.getColour()).toLowerCase(),
-                                String.format("[%d]", i + 1)));
-                sbIndices.append(" ".repeat(2)); // Space between index labels
+                sbIndices.append(" ".repeat(leftPad))
+                        .append(printConsoleColour(
+                                sortedBoard.get(i).getColour().toString().toLowerCase(), index))
+                        .append(" ".repeat(rightPad))
+                        .append(" ");
             }
+            // Close the index row with a box edge
+            sbIndices.setCharAt(sbIndices.length() - 1, '║');
+            System.out.println(sbIndices);
+        }
 
-            // Construct each line of the card by appending ASCII segments
+        // Build each card row line by line
+        sbTop.append("║");
+        sbMiddle.append("║");
+        sbBottom.append("║");
+
+        for (Card card : sortedBoard) {
             sbTop.append(renderTopHalfCard(card, padding)).append(" ");
             sbMiddle.append(renderMiddleCard(card, padding)).append(" ");
             sbBottom.append(renderBottomHalfCard(card, padding)).append(" ");
         }
 
-        // Display index row only if this is the player's hand
-        if (options) {
-            System.out.println(sbIndices);
-        }
+        // Close the content rows
+        sbTop.setCharAt(sbTop.length() - 1, '║');
+        sbMiddle.setCharAt(sbMiddle.length() - 1, '║');
+        sbBottom.setCharAt(sbBottom.length() - 1, '║');
 
-        // Output all parts of the card row
+        // Print all rows
         System.out.println(sbTop);
         System.out.println(sbMiddle);
         System.out.println(sbBottom);
+
+        // Render bottom border of the box
+        System.out.println("╚" + "═".repeat(sortedBoard.size() * (totalCardWidth + 1) - 1) + "╝");
     }
 
     /**
-     * Renders the player's scoring zone
+     * Renders a stack of cards in vertical columns by color, aligned with padding and boxed borders.
+     * Used for parade and scoring zones (player boards).
      *
-     * @param board List of cards to take in to render the player's scoring zone.
+     * Cards are stacked column-wise for each color, from top to bottom.
+     *
+     * @param board List of cards to render in columns.
      */
     public void printStackedCards(List<Card> board) {
         int padding = 3;
         int width = 5;
-        board = new ArrayList<Card>(board);
-        board.sort(Comparator.comparing(Card::getColour));
+        int totalCardWidth = width + padding * 2 + 1; // +1 for spacing between columns
 
+        if (board == null || board.isEmpty()) {
+            // Show message box for empty boards
+            System.out.println("╔════════════════════════╗");
+            System.out.println("║ No cards to display.   ║");
+            System.out.println("╚════════════════════════╝");
+            return;
+        }
+
+        // Sort cards for consistent stacking order
+        board = new ArrayList<>(board);
+        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
+
+        // Group cards by colour
         Map<Colour, List<Card>> colourCardMap = new LinkedHashMap<>();
-
-        // finds the last card to display
-        for (Card w : board) {
-            colourCardMap.computeIfAbsent(w.getColour(), k -> new ArrayList<>()).add(w);
+        for (Card card : board) {
+            colourCardMap.computeIfAbsent(card.getColour(), k -> new ArrayList<>()).add(card);
         }
 
-        int max = 0;
+        // Get height of tallest stack
+        int maxHeight = colourCardMap.values().stream().mapToInt(List::size).max().orElse(0);
+        int boxWidth = colourCardMap.size() * totalCardWidth;
 
-        for (Colour c1 : colourCardMap.keySet()) {
-            int numRows = colourCardMap.get(c1).size();
-            if (numRows > max) {
-                max = numRows;
-            }
-        }
+        // Print top border
+        System.out.println("╔" + "═".repeat(boxWidth) + "╗");
 
-        for (int i = 0; i < max + 2; i++) { // i refers to row number
-            StringBuffer sb = new StringBuffer();
+        // Print each visual row of stacked cards
+        for (int row = 0; row < maxHeight + 2; row++) {
+            StringBuilder line = new StringBuilder("║");
 
-            for (Colour c : colourCardMap.keySet()) {
-                List<Card> cardList = colourCardMap.get(c);
+            for (List<Card> cards : colourCardMap.values()) {
+                int count = cards.size();
+                String part;
 
-                // check if have any cards for this row.
-                int colourCount = colourCardMap.get(c).size() - 1; // indexs
-
-                if (colourCount >= i) {
-                    // Not the last card, render top half
-                    sb.append(renderTopHalfCard(cardList.get(i), padding));
-
+                // Determine which portion of the card to render for this row
+                if (row < count) {
+                    part = renderTopHalfCard(cards.get(row), padding);
+                } else if (row == count) {
+                    part = renderMiddleCard(cards.get(count - 1), padding);
+                } else if (row == count + 1) {
+                    part = renderBottomHalfCard(cards.get(count - 1), padding);
                 } else {
-                    if (colourCount + 1 == i) {
-                        // This is the last card for this color, render bottom half
-                        sb.append(renderMiddleCard(cardList.get(colourCount), padding));
-                    } else if (colourCount + 2 == i) {
-                        sb.append(renderBottomHalfCard(cardList.get(colourCount), padding));
-                    } else {
-                        // No card for this row and color, add empty space
-                        // Calculate width of a card with padding
-
-                        sb.append(" ".repeat(width));
-                        sb.append(" ".repeat(padding + 1)); // add one due to the characters
-                    }
+                    part = " ".repeat(totalCardWidth);
                 }
+
+                line.append(part);
             }
 
-            System.out.println(sb);
+            // Close row with box edge
+            line.append("║");
+            System.out.println(line);
         }
+
+        // Print bottom border
+        System.out.println("╚" + "═".repeat(boxWidth) + "╝");
     }
 
     /**
-     * Renders a single card
+     * Renders a full single card (3 rows: top, middle, bottom) as a string.
+     * This is mostly used when displaying a standalone card (e.g., drawn card).
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps The number of spaces to pad on the left and right of the card's content.
+     * @return A full multiline string representing the card.
      */
     public String renderSingleCard(Card card, int gaps) {
         return System.lineSeparator()
@@ -324,39 +336,30 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders the top portion of the card
+     * Renders the top visual row of the card, showing the number and top border.
+     * The format looks like: ╭3───╮
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps Left and right spacing before the card begins (for alignment).
+     * @return A colored string representing the top of the card.
      */
     public String renderTopHalfCard(Card card, int gaps) {
-        String cardColour = "" + card.getColour();
-        String lowerCardColour = cardColour.toLowerCase();
+        String num = String.valueOf(card.getNumber());
 
-        int width = 5;
+        // "5" is the fixed internal width of the card. Subtract 1 for number, and rest are dashes.
+        String top = " ".repeat(gaps)
+                    + "╭" + num + "─".repeat(5 - 1 - num.length()) + "╮";
 
-        int cardNumber = card.getNumber();
-
-        String halfCard = null;
-
-        // check if there is a double number.
-        if (String.valueOf(cardNumber).length() == 2) {
-            // Top border with rounded corners
-            halfCard = (" ".repeat(gaps) + "╭" + card.getNumber() + "─".repeat(width - 3) + "╮");
-
-        } else {
-            // Top border with rounded corners
-            halfCard = (" ".repeat(gaps) + "╭" + card.getNumber() + "─".repeat(width - 2) + "╮");
-        }
-
-        return printConsoleColour(lowerCardColour, halfCard); // should print error?
+        return printConsoleColour(card.getColour().toString().toLowerCase(), top);
     }
 
     /**
-     * Renders the middle portion of the card
+     * Renders the middle row of the card containing a themed emoji.
+     * The format looks like: | 🐇 |
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps Left and right spacing before the card begins (for alignment).
+     * @return A colored string representing the middle of the card with an emoji.
      */
     public String renderMiddleCard(Card card, int gaps) {
         int width = 5;
@@ -365,35 +368,31 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String emoji =
                 switch (card.getColour()) {
                     case Colour.BLACK -> "🐇"; // rabbit
-                    case Colour.BLUE -> "👧🏼"; // alice
+                    case Colour.BLUE -> "🚶"; // alice
                     case Colour.GREEN -> "🥚"; // egg
                     case Colour.RED -> "🎩"; // mad hatter
                     case Colour.YELLOW -> "🦤"; // dodo
                     case Colour.PURPLE -> "🐈"; // cat
                 };
 
-        String middleCard = " ".repeat(gaps) + "|" + " ".repeat(1) + emoji + " ".repeat(1) + "|";
+        String middle = " ".repeat(gaps) + "|" + " " + emoji + " " + "|";
 
-        return printConsoleColour(lowerCardColour, middleCard); // should print error?
+        return printConsoleColour(card.getColour().toString().toLowerCase(), middle);
     }
 
     /**
-     * Renders the bottom portion of the card
+     * Renders the bottom visual row of the card, forming the card’s lower border.
+     * The format looks like: ╰────╯
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps Left and right spacing before the card begins (for alignment).
+     * @return A colored string representing the bottom of the card.
      */
     public String renderBottomHalfCard(Card card, int gaps) {
-        String cardColour = "" + card.getColour();
-        String lowerCardColour = cardColour.toLowerCase();
-
-        int width = 5; // t.getWidth() * 0.2;
-
-        // Top border with rounded corners
-        String halfCard = " ".repeat(gaps) + "╰" + "─".repeat(width - 1) + "╯";
-
-        return printConsoleColour(lowerCardColour, halfCard);
+        String bottom = " ".repeat(gaps) + "╰" + "─".repeat(5 - 1) + "╯";
+        return printConsoleColour(card.getColour().toString().toLowerCase(), bottom);
     }
+
 
     /**
      * Helper function to print a String into a certain colour
