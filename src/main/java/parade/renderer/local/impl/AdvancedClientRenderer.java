@@ -300,9 +300,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
     public void printStackedCards(List<Card> board) {
         int padding = 3;
         int width = 5; // card width
-        int leftIndexPadding = (padding + width / 2) - 1;
         int totalCardWidth = padding + width + 2;
-        int rightIndexPadding;
 
         String verticalBorder = "║";
         String rightTopCornerBorder = "╗";
@@ -362,7 +360,9 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
         // Print top border
         System.out.println(
-                leftTopCornerBorder + horizontalBorder.repeat(boxWidth) + rightTopCornerBorder);
+                leftTopCornerBorder
+                        + horizontalBorder.repeat(boxWidth + padding)
+                        + rightTopCornerBorder);
 
         // Print each visual row of stacked cards
         for (int row = 0; row < maxHeight + 2; row++) {
@@ -383,10 +383,10 @@ public class AdvancedClientRenderer implements ClientRenderer {
                 }
 
                 line.append(part);
-                line.append(emptySpace);
             }
 
             // Close row with box edge
+            line.append(emptySpace.repeat(padding + colourCardMap.size()));
             line.append(verticalBorder);
             System.out.println(line);
         }
@@ -394,7 +394,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
         // Print bottom border
         System.out.println(
                 leftBottomCornerBorder
-                        + horizontalBorder.repeat(boxWidth)
+                        + horizontalBorder.repeat(boxWidth + padding)
                         + rightBottomCornerBorder);
     }
 
@@ -449,7 +449,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
                     case Colour.BLUE -> "👧"; // alice
                     case Colour.GREEN -> "🥚"; // egg
                     case Colour.RED -> "🎩"; // mad hatter
-                    case Colour.YELLOW -> "🦤"; // dodo
+                    case Colour.YELLOW -> "🦆"; // dodo -> duck
                     case Colour.PURPLE -> "🐈"; // cat
                 };
 
