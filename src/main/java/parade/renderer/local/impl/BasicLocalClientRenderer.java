@@ -180,7 +180,6 @@ public class BasicLocalClientRenderer implements ClientRenderer {
 
         int linesPerCard = renderedCards.get(0).length;
 
-        // Enforce minimum of 4-card width, unless totalCards exceeds that naturally
         int maxCardsInRow = Math.max(4, Math.min(cardsPerRow, totalCards));
         int contentWidth = maxCardsInRow * cardWidth + (maxCardsInRow - 1) * spacing;
 
@@ -197,6 +196,27 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             int end = Math.min(start + cardsPerRow, totalCards);
             int actualCardsInRow = end - start;
 
+            // Print index row (only for hand)
+            if (label.trim().equals("Cards in your hand")) {
+                System.out.print("║ ");
+                for (int j = start; j < end; j++) {
+                    String index = "(" + (j + 1) + ")";
+                    int padLeft = (cardWidth - index.length()) / 2;
+                    int padRight = cardWidth - index.length() - padLeft;
+                    System.out.print(" ".repeat(padLeft) + index + " ".repeat(padRight));
+                    if (j < end - 1) System.out.print(" ");
+                }
+
+                int padCards = maxCardsInRow - actualCardsInRow;
+                if (padCards > 0) {
+                    int pad = padCards * (cardWidth + spacing);
+                    System.out.print(" ".repeat(pad));
+                }
+
+                System.out.println(" ║");
+            }
+
+            // Render card ASCII art
             for (int line = 0; line < linesPerCard; line++) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
@@ -204,7 +224,6 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                     if (j < end - 1) System.out.print(" ");
                 }
 
-                // Pad if current row has fewer cards than the calculated max
                 int padCards = maxCardsInRow - actualCardsInRow;
                 if (padCards > 0) {
                     int pad = padCards * (cardWidth + spacing);
