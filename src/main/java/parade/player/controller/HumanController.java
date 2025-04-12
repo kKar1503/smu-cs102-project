@@ -35,22 +35,24 @@ public class HumanController extends AbstractPlayerController {
         Scanner sc = new Scanner(System.in);
         int input;
         menuManager.renderPlayerTurn(player, latestDrawnCard, playCardData, false);
-
         while (true) {
             try {
                 input = sc.nextInt();
                 if (input < 1 || input > player.getHand().size()) {
                     throw new IndexOutOfBoundsException();
                 }
-                break;
+                break; // Valid input received
             } catch (InputMismatchException e) {
-                System.out.print("Invalid input. Please try again");
+                System.out.println(
+                        System.lineSeparator() + "Invalid input. Please enter a number.");
             } catch (IndexOutOfBoundsException e) {
-                System.out.print("Invalid choice. Please select a valid index");
+                System.out.println(
+                        System.lineSeparator() + "Invalid choice. Please select a valid index.");
             }
-            System.out.print("Select a card to play:");
+            System.out.println("Select a card to play:");
             sc.nextLine();
         }
+
         latestDrawnCard = null;
         return player.removeFromHand(input - 1);
     }
@@ -60,22 +62,25 @@ public class HumanController extends AbstractPlayerController {
         Scanner sc = new Scanner(System.in);
         int input;
         menuManager.renderPlayerTurn(player, null, playCardData, true);
-
         while (true) {
             try {
                 input = sc.nextInt();
+
                 if (input < 1 || input > player.getHand().size()) {
                     throw new IndexOutOfBoundsException();
                 }
-                break;
+                break; // Valid input
             } catch (InputMismatchException e) {
-                System.out.print("Invalid input. Please try again");
+                System.out.println(
+                        System.lineSeparator() + "Invalid input. Please enter a number.");
             } catch (IndexOutOfBoundsException e) {
-                System.out.print("Invalid choice. Please select a valid index");
+                System.out.println(
+                        System.lineSeparator() + "Invalid choice. Please select a valid index.");
             }
-            System.out.print("Select a card to discard:");
+            System.out.print("Select a card to discard:" + System.lineSeparator());
             sc.nextLine();
         }
+
         return player.removeFromHand(input - 1);
     }
 }

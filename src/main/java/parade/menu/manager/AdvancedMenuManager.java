@@ -7,6 +7,7 @@ import parade.menu.menu.*;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
@@ -33,8 +34,13 @@ public class AdvancedMenuManager implements MenuManager {
     }
 
     /**
-     * Displays the current players in the lobby and menu options. Indicates whether the lobby is
-     * full or not ready.
+     * Displays the list of current players in the lobby and presents menu options for lobby
+     * management. This includes the ability to add human or computer players, remove existing
+     * players, and start the game if conditions are met.
+     *
+     * <p>Menu options are context-sensitive: - If the lobby is full (6 players), add options are
+     * visually disabled. - If the lobby is empty, remove option is disabled. - If fewer than 2
+     * players are present, the start option is disabled.
      *
      * @param lobby List of players currently in the lobby.
      */
@@ -43,7 +49,11 @@ public class AdvancedMenuManager implements MenuManager {
         return new LobbyMenu(lobby).start();
     }
 
-    /** Displays a prompt related to selecting computer difficulty. (Currently not implemented.) */
+    /**
+     * Prompts the user to choose a difficulty level for a newly added computer player. This method
+     * ensures consistency in user experience between renderers and is critical to correctly
+     * initializing AI behavior.
+     */
     @Override
     public ComputerController newComputerMenu() {
         return new NewComputerMenu().start();
@@ -60,44 +70,26 @@ public class AdvancedMenuManager implements MenuManager {
     @Override
     public void renderPlayerTurn(
             Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard) {
-        // print player's name and drawn card
+
         System.out.println(System.lineSeparator() + player.getName() + "'s turn.");
 
-        // Show the card that was drawn
+        // Show newly drawn card
         if (newlyDrawnCard != null) {
             System.out.println("You drew:" + renderSingleCard(newlyDrawnCard, 4));
         }
 
-        // Display the parade line
-        System.out.println(
-                System.lineSeparator()
-                        + "Parade"
-                        + System.lineSeparator()
-                        + "======================================================================");
+        // Render Parade (stacked)
+        System.out.println(System.lineSeparator() + "Parade");
         printCardsHorizontally(playCardData.getParade().getCards(), false);
 
-        // Display the player's board, sorted by color and number
-        List<Card> board = player.getBoard();
-        board = new ArrayList<>(board);
-        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        System.out.println(
-                System.lineSeparator()
-                        + System.lineSeparator()
-                        + "Your board"
-                        + System.lineSeparator()
-                        + "===========================================================================");
-        printStackedCards(board);
+        // Render Scoring Board (stacked)
+        System.out.println(System.lineSeparator() + "Your board");
+        printStackedCards(player.getBoard());
 
-        // Display the player's hand
-        System.out.println(
-                System.lineSeparator()
-                        + System.lineSeparator()
-                        + "Your hand"
-                        + System.lineSeparator()
-                        + "==========================================================================");
-        printCardsHorizontally(playCardData.getParade().getCards(), true);
+        // Render Hand (horizontal with selection)
+        System.out.println(System.lineSeparator() + "Your hand");
+        printCardsHorizontally(player.getHand(), true);
 
-        // Prompt player for input
         System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
 
@@ -108,120 +100,240 @@ public class AdvancedMenuManager implements MenuManager {
     }
 
     /**
-     * Render the parade or the player hand, depending on the boolean set
+     * Renders a row of cards horizontally with a surrounding box. This is used primarily for
+     * displaying cards in hand, where selection is needed. Cards are rendered with consistent
+     * spacing, and optionally with indexed labels for user input.
      *
-     * @param board List of cards to take in, depending on use, is either the parade, or the
-     *     player's hand
-     * @param options True - enables indices printing. False - prints parade only
+     * @param board List of cards to render (either the parade or player's hand)
+     * @param showIndices If true, index labels are shown above cards (used for hand selection)
      */
-    public void printCardsHorizontally(List<Card> board, boolean options) {
+    public void printCardsHorizontally(List<Card> board, boolean showIndices) {
+
         int padding = 3;
-        int width = 5;
+        int width = 5; // card width
+        int leftIndexPadding = (padding + width / 2) - 1;
+        int totalCardWidth = padding + width + 2;
+        int rightIndexPadding;
 
+        String verticalBorder = "║";
+        String rightTopCornerBorder = "╗";
+        String leftTopCornerBorder = "╔";
+        String rightBottomCornerBorder = "╝";
+        String leftBottomCornerBorder = "╚";
+        String horizontalBorder = "═";
+        String emptySpace = " ";
+        String emptyBoxDisplay = "No cards to display.";
+        String index;
+
+        // StringBuilders for different card parts
         StringBuilder sbIndices = new StringBuilder();
-
-        // To store the card parts (top, middle, and bottom)
         StringBuilder sbTop = new StringBuilder();
         StringBuilder sbMiddle = new StringBuilder();
         StringBuilder sbBottom = new StringBuilder();
+        StringBuilder sbEmptyBox = new StringBuilder();
 
-        // For each card in the board, generate the index and the card's parts
-        for (int i = 0; i < board.size(); i++) {
+        if (board == null || board.isEmpty()) {
+            // if no board, should return error!
+            sbEmptyBox.append(
+                    leftTopCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightTopCornerBorder
+                            + "\n");
+            sbEmptyBox.append(
+                    verticalBorder
+                            + emptySpace.repeat(padding)
+                            + emptyBoxDisplay
+                            + emptySpace.repeat(padding)
+                            + verticalBorder
+                            + "\n");
 
-            Card card = board.get(i);
+            sbEmptyBox.append(
+                    leftBottomCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightBottomCornerBorder
+                            + "\n");
 
-            if (options) {
-                sbIndices.append(" ".repeat(padding + (width / 2)));
-                sbIndices.append(
-                        printConsoleColour(
-                                String.valueOf(card.getColour()).toLowerCase(),
-                                String.format("[%d]", i + 1)));
-
-                sbIndices.append(" ".repeat(2)); // Add index above each card
-            }
-
-            // Render the top half, middle, and bottom parts of the card
-            sbTop.append(renderTopHalfCard(card, padding)).append(" ");
-            sbMiddle.append(renderMiddleCard(card, padding)).append(" ");
-            sbBottom.append(renderBottomHalfCard(card, padding)).append(" ");
+            System.out.println(sbEmptyBox);
+            return;
         }
 
-        // Print the indices row above the cards
-        if (options) {
+        // Sort cards consistently by color and number
+        List<Card> sortedBoard = new ArrayList<>(board);
+
+        // Render top border of the box
+        System.out.println(
+                leftTopCornerBorder
+                        + horizontalBorder.repeat(sortedBoard.size() * totalCardWidth + padding)
+                        + rightTopCornerBorder);
+
+        // Render index labels if requested
+        if (showIndices) {
+            sbIndices.append(verticalBorder);
+            for (int i = 0; i < sortedBoard.size(); i++) {
+                index = String.format("[%d]", i + 1);
+                rightIndexPadding = totalCardWidth - index.length() - leftIndexPadding;
+
+                sbIndices
+                        .append(emptySpace.repeat(leftIndexPadding))
+                        .append(
+                                printConsoleColour(
+                                        sortedBoard.get(i).getColour().toString().toLowerCase(),
+                                        index))
+                        .append(emptySpace.repeat(rightIndexPadding));
+            }
+            // Close the index row with a box edge
+            sbIndices.append(emptySpace.repeat(padding) + verticalBorder);
             System.out.println(sbIndices);
         }
 
-        // Print the card rows (top, middle, and bottom)
+        // Build each card row line by line
+        sbTop.append(verticalBorder);
+        sbMiddle.append(verticalBorder);
+        sbBottom.append(verticalBorder);
+
+        for (Card card : sortedBoard) {
+            sbTop.append(renderTopHalfCard(card, padding)).append(emptySpace);
+            sbMiddle.append(renderMiddleCard(card, padding)).append(emptySpace);
+            sbBottom.append(renderBottomHalfCard(card, padding)).append(emptySpace);
+        }
+
+        // Close the content rows
+        sbTop.append(emptySpace.repeat(padding) + verticalBorder);
+        sbMiddle.append(emptySpace.repeat(padding) + verticalBorder);
+        sbBottom.append(emptySpace.repeat(padding) + verticalBorder);
+
+        // Print all rows
         System.out.println(sbTop);
         System.out.println(sbMiddle);
         System.out.println(sbBottom);
+
+        // Render bottom border of the box
+        System.out.println(
+                leftBottomCornerBorder
+                        + horizontalBorder.repeat(sortedBoard.size() * totalCardWidth + padding)
+                        + rightBottomCornerBorder);
     }
 
     /**
-     * Renders the player's scoring zone
+     * Renders a stack of cards in vertical columns by color, aligned with padding and boxed
+     * borders. Used for parade and scoring zones (player boards).
      *
-     * @param board List of cards to take in to render the player's scoring zone.
+     * <p>Cards are stacked column-wise for each color, from top to bottom.
+     *
+     * @param board List of cards to render in columns.
      */
     public void printStackedCards(List<Card> board) {
         int padding = 3;
-        int width = 5;
-        board = new ArrayList<Card>(board);
-        board.sort(Comparator.comparing(Card::getColour));
+        int width = 5; // card width
+        int totalCardWidth = padding + width + 2;
 
+        String verticalBorder = "║";
+        String rightTopCornerBorder = "╗";
+        String leftTopCornerBorder = "╔";
+        String rightBottomCornerBorder = "╝";
+        String leftBottomCornerBorder = "╚";
+        String horizontalBorder = "═";
+        String emptySpace = " ";
+        String emptyBoxDisplay = "No cards to display";
+
+        // StringBuilders for different card parts
+        StringBuilder sbEmptyBox = new StringBuilder();
+
+        if (board == null || board.isEmpty()) {
+            // Print an empty box layout if no cards are present
+
+            sbEmptyBox.append(
+                    leftTopCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightTopCornerBorder
+                            + "\n");
+            sbEmptyBox.append(
+                    verticalBorder
+                            + emptySpace.repeat(padding)
+                            + emptyBoxDisplay
+                            + emptySpace.repeat(padding)
+                            + verticalBorder
+                            + "\n");
+
+            sbEmptyBox.append(
+                    leftBottomCornerBorder
+                            + horizontalBorder.repeat(padding)
+                            + horizontalBorder.repeat(emptyBoxDisplay.length())
+                            + horizontalBorder.repeat(padding)
+                            + rightBottomCornerBorder
+                            + "\n");
+
+            System.out.println(sbEmptyBox);
+            return;
+        }
+
+        // Sort cards for consistent stacking order
+        board = new ArrayList<>(board);
+        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
+
+        // Group cards by colour
         Map<Colour, List<Card>> colourCardMap = new LinkedHashMap<>();
-
-        // finds the last card to display
-        for (Card w : board) {
-            colourCardMap.computeIfAbsent(w.getColour(), k -> new ArrayList<>()).add(w);
+        for (Card card : board) {
+            colourCardMap.computeIfAbsent(card.getColour(), k -> new ArrayList<>()).add(card);
         }
 
-        int max = 0;
+        // Get height of tallest stack
+        int maxHeight = colourCardMap.values().stream().mapToInt(List::size).max().orElse(0);
+        int boxWidth = colourCardMap.size() * totalCardWidth;
 
-        for (Colour c1 : colourCardMap.keySet()) {
-            int numRows = colourCardMap.get(c1).size();
-            if (numRows > max) {
-                max = numRows;
-            }
-        }
+        // Print top border
+        System.out.println(
+                leftTopCornerBorder
+                        + horizontalBorder.repeat(boxWidth + padding)
+                        + rightTopCornerBorder);
 
-        for (int i = 0; i < max + 2; i++) { // i refers to row number
-            StringBuffer sb = new StringBuffer();
+        // Print each visual row of stacked cards
+        for (int row = 0; row < maxHeight + 2; row++) {
+            StringBuilder line = new StringBuilder(verticalBorder);
 
-            for (Colour c : colourCardMap.keySet()) {
-                List<Card> cardList = colourCardMap.get(c);
+            for (List<Card> cards : colourCardMap.values()) {
+                int count = cards.size();
+                String part;
 
-                // check if have any cards for this row.
-                int colourCount = colourCardMap.get(c).size() - 1; // indexs
-
-                if (colourCount >= i) {
-                    // Not the last card, render top half
-                    sb.append(renderTopHalfCard(cardList.get(i), padding));
-
+                if (row < count) {
+                    part = renderTopHalfCard(cards.get(row), padding);
+                } else if (row == count) {
+                    part = renderMiddleCard(cards.get(count - 1), padding);
+                } else if (row == count + 1) {
+                    part = renderBottomHalfCard(cards.get(count - 1), padding);
                 } else {
-                    if (colourCount + 1 == i) {
-                        // This is the last card for this color, render bottom half
-                        sb.append(renderMiddleCard(cardList.get(colourCount), padding));
-                    } else if (colourCount + 2 == i) {
-                        sb.append(renderBottomHalfCard(cardList.get(colourCount), padding));
-                    } else {
-                        // No card for this row and color, add empty space
-                        // Calculate width of a card with padding
-
-                        sb.append(" ".repeat(width));
-                        sb.append(" ".repeat(padding + 1)); // add one due to the characters
-                    }
+                    part = emptySpace.repeat(totalCardWidth - 1);
                 }
+
+                line.append(part);
             }
 
-            System.out.println(sb);
+            // Close row with box edge
+            line.append(emptySpace.repeat(padding + colourCardMap.size()));
+            line.append(verticalBorder);
+            System.out.println(line);
         }
+
+        // Print bottom border
+        System.out.println(
+                leftBottomCornerBorder
+                        + horizontalBorder.repeat(boxWidth + padding)
+                        + rightBottomCornerBorder);
     }
 
     /**
-     * Renders a single card
+     * Renders a full single card (3 rows: top, middle, bottom) as a string. This is mostly used
+     * when displaying a standalone card (e.g., drawn card).
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps The number of spaces to pad on the left and right of the card's content.
+     * @return A full multiline string representing the card.
      */
     public String renderSingleCard(Card card, int gaps) {
         return System.lineSeparator()
@@ -233,28 +345,28 @@ public class AdvancedMenuManager implements MenuManager {
     }
 
     /**
-     * Renders the top portion of the card
+     * Renders the top visual row of the card, showing the number and top border. The format looks
+     * like: ╭3───╮
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps Left and right spacing before the card begins (for alignment).
+     * @return A colored string representing the top of the card.
      */
     public String renderTopHalfCard(Card card, int gaps) {
-        String cardColour = "" + card.getColour();
-        String lowerCardColour = cardColour.toLowerCase();
+        String num = String.valueOf(card.getNumber());
 
-        int width = 5; // t.getWidth() * 0.2;
+        // "5" is the fixed internal width of the card. Subtract 1 for number, and rest are dashes.
+        String top = " ".repeat(gaps) + "╭" + num + "─".repeat(5 - 1 - num.length()) + "╮";
 
-        // Top border with rounded corners
-        String halfCard = (" ".repeat(gaps) + "╭" + card.getNumber() + "─".repeat(width - 2) + "╮");
-
-        return printConsoleColour(lowerCardColour, halfCard); // should print error?
+        return printConsoleColour(card.getColour().toString().toLowerCase(), top);
     }
 
     /**
-     * Renders the middle portion of the card
+     * Renders the middle row of the card containing a themed emoji. The format looks like: | 🐇 |
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps Left and right spacing before the card begins (for alignment).
+     * @return A colored string representing the middle of the card with an emoji.
      */
     public String renderMiddleCard(Card card, int gaps) {
         int width = 5;
@@ -263,34 +375,29 @@ public class AdvancedMenuManager implements MenuManager {
         String emoji =
                 switch (card.getColour()) {
                     case Colour.BLACK -> "🐇"; // rabbit
-                    case Colour.BLUE -> "🧍‍♀️"; // alice
+                    case Colour.BLUE -> "👧"; // alice
                     case Colour.GREEN -> "🥚"; // egg
                     case Colour.RED -> "🎩"; // mad hatter
-                    case Colour.YELLOW -> "🦤"; // dodo
+                    case Colour.YELLOW -> "🦆"; // dodo -> duck
                     case Colour.PURPLE -> "🐈"; // cat
                 };
 
-        String middleCard = " ".repeat(gaps) + "|" + " ".repeat(1) + emoji + " ".repeat(1) + "|";
+        String middle = " ".repeat(gaps) + "|" + " " + emoji + " " + "|";
 
-        return printConsoleColour(lowerCardColour, middleCard); // should print error?
+        return printConsoleColour(card.getColour().toString().toLowerCase(), middle);
     }
 
     /**
-     * Renders the bottom portion of the card
+     * Renders the bottom visual row of the card, forming the card’s lower border. The format looks
+     * like: ╰────╯
      *
-     * @param card Card to be rendered
-     * @param gaps Left-Right Padding surrounding the card
+     * @param card The card to render.
+     * @param gaps Left and right spacing before the card begins (for alignment).
+     * @return A colored string representing the bottom of the card.
      */
     public String renderBottomHalfCard(Card card, int gaps) {
-        String cardColour = "" + card.getColour();
-        String lowerCardColour = cardColour.toLowerCase();
-
-        int width = 5; // t.getWidth() * 0.2;
-
-        // Top border with rounded corners
-        String halfCard = " ".repeat(gaps) + "╰" + "─".repeat(width - 1) + "╯";
-
-        return printConsoleColour(lowerCardColour, halfCard);
+        String bottom = " ".repeat(gaps) + "╰" + "─".repeat(5 - 1) + "╯";
+        return printConsoleColour(card.getColour().toString().toLowerCase(), bottom);
     }
 
     /**
@@ -311,7 +418,8 @@ public class AdvancedMenuManager implements MenuManager {
         };
     }
 
-    public void renderRoll() {
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2) {
         String[] block = {
             "╔══════════╗",
             "║          ║",
@@ -336,6 +444,7 @@ public class AdvancedMenuManager implements MenuManager {
 
             clearConsole();
         }
+        printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
     }
 
     private void printBlockWithOffset(String[] block, int offset) {
@@ -418,13 +527,19 @@ public class AdvancedMenuManager implements MenuManager {
         };
     }
 
+    private void printDicesHorizontally(String[] dice1, String[] dice2) {
+        for (int i = 0; i < dice1.length; i++) {
+            System.out.println(dice1[i] + " ".repeat(5) + dice2[i]);
+        }
+    }
+
     /**
      * Renders the game ending screen with animation and final scores.
      *
      * @param playerScores final score map of all players
      */
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
@@ -480,10 +595,10 @@ public class AdvancedMenuManager implements MenuManager {
                             "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
             System.out.println(header);
 
-            for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+            for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
                 System.out.printf(
                         "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
-                        entry.getKey().getName(),
+                        entry.getKey().getPlayer().getName(),
                         entry.getValue());
             }
 

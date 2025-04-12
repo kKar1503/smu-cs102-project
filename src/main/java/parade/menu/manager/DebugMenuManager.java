@@ -6,6 +6,7 @@ import parade.menu.menu.*;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
@@ -87,10 +88,10 @@ public class DebugMenuManager implements MenuManager {
     }
 
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         System.out.println("Game Over!");
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
-            System.out.println(entry.getKey().getName() + ": " + entry.getValue());
+        for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
+            System.out.println(entry.getKey().getPlayer().getName() + ": " + entry.getValue());
         }
     }
 
@@ -101,5 +102,12 @@ public class DebugMenuManager implements MenuManager {
 
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
+    }
+
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2) {
+        System.out.println("Rolling dice..");
+        System.out.println("Dice roll 1: " + diceRoll1);
+        System.out.println("Dice roll 2: " + diceRoll2);
     }
 }
