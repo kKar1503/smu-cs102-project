@@ -169,10 +169,9 @@ public class AdvancedClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Render the parade or the player hand, depending on the boolean set
+     * Render the parade or the player hand, depending on the boolean set.
      *
-     * @param board List of cards to take in, depending on use, is either the parade, or the
-     *     player's hand
+     * @param board List of cards to take in, depending on use, is either the parade, or the player's hand
      * @param options True - enables indices printing. False - prints parade only
      */
     public void printCardsHorizontally(List<Card> board, boolean options) {
@@ -180,16 +179,18 @@ public class AdvancedClientRenderer implements ClientRenderer {
         int width = 5;
 
         StringBuilder sbIndices = new StringBuilder();
-
-        // To store the card parts (top, middle, and bottom)
         StringBuilder sbTop = new StringBuilder();
         StringBuilder sbMiddle = new StringBuilder();
         StringBuilder sbBottom = new StringBuilder();
 
-        // For each card in the board, generate the index and the card's parts
-        for (int i = 0; i < board.size(); i++) {
+        // Defensive copy to avoid UnsupportedOperationException
+        List<Card> sortedBoard = new ArrayList<>(board);
 
-            Card card = board.get(i);
+        // Sort the cards by Colour (alphabetically) and then Number
+        sortedBoard.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
+
+        for (int i = 0; i < sortedBoard.size(); i++) {
+            Card card = sortedBoard.get(i);
 
             if (options) {
                 sbIndices.append(" ".repeat(padding + (width / 2)));
@@ -198,25 +199,23 @@ public class AdvancedClientRenderer implements ClientRenderer {
                                 String.valueOf(card.getColour()).toLowerCase(),
                                 String.format("[%d]", i + 1)));
 
-                sbIndices.append(" ".repeat(2)); // Add index above each card
+                sbIndices.append(" ".repeat(2));
             }
 
-            // Render the top half, middle, and bottom parts of the card
             sbTop.append(renderTopHalfCard(card, padding)).append(" ");
             sbMiddle.append(renderMiddleCard(card, padding)).append(" ");
             sbBottom.append(renderBottomHalfCard(card, padding)).append(" ");
         }
 
-        // Print the indices row above the cards
         if (options) {
             System.out.println(sbIndices);
         }
 
-        // Print the card rows (top, middle, and bottom)
         System.out.println(sbTop);
         System.out.println(sbMiddle);
         System.out.println(sbBottom);
     }
+
 
     /**
      * Renders the player's scoring zone
