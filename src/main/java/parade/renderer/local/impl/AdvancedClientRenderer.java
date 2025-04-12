@@ -233,7 +233,6 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
         // Sort cards consistently by color and number
         List<Card> sortedBoard = new ArrayList<>(board);
-        sortedBoard.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
 
         // Render top border of the box
         System.out.println(
