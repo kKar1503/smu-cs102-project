@@ -4,11 +4,8 @@ import parade.card.Card;
 import parade.card.Colour;
 import parade.menu.display.AsciiWelcome;
 import parade.menu.menu.*;
-import parade.menu.option.LobbyMenuOption;
-import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
-import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
@@ -18,7 +15,7 @@ import java.util.*;
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
  * styled game content to the console.
  */
-public class AdvancedMenuManager implements MenuManager {
+public class AdvancedMenuManager extends AbstractMenuManager {
     /**
      * Renders a stylized welcome message from an ASCII art file. Throws an exception if the file
      * cannot be found. Also displays a sample Parade card.
@@ -26,37 +23,6 @@ public class AdvancedMenuManager implements MenuManager {
     @Override
     public void welcomeDisplay() throws IllegalStateException {
         new AsciiWelcome().display();
-    }
-
-    @Override
-    public MainMenuOption mainMenu() {
-        return new MainMenu().start();
-    }
-
-    /**
-     * Displays the list of current players in the lobby and presents menu options for lobby
-     * management. This includes the ability to add human or computer players, remove existing
-     * players, and start the game if conditions are met.
-     *
-     * <p>Menu options are context-sensitive: - If the lobby is full (6 players), add options are
-     * visually disabled. - If the lobby is empty, remove option is disabled. - If fewer than 2
-     * players are present, the start option is disabled.
-     *
-     * @param lobby List of players currently in the lobby.
-     */
-    @Override
-    public LobbyMenuOption lobbyMenu(List<Player> lobby) {
-        return new LobbyMenu(lobby).start();
-    }
-
-    /**
-     * Prompts the user to choose a difficulty level for a newly added computer player. This method
-     * ensures consistency in user experience between renderers and is critical to correctly
-     * initializing AI behavior.
-     */
-    @Override
-    public ComputerController newComputerMenu() {
-        return new NewComputerMenu().start();
     }
 
     /**

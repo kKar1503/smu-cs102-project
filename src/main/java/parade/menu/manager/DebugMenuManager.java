@@ -3,11 +3,8 @@ package parade.menu.manager;
 import parade.card.Card;
 import parade.menu.display.DynamicSeparator;
 import parade.menu.menu.*;
-import parade.menu.option.LobbyMenuOption;
-import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
-import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
@@ -17,25 +14,10 @@ import java.util.*;
  * A debug text-based implementation of the client renderer for development. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class DebugMenuManager implements MenuManager {
+public class DebugMenuManager extends AbstractMenuManager {
     @Override
     public void welcomeDisplay() throws IllegalStateException {
         new DynamicSeparator("Welcome to Parade!", Ansi.PURPLE::apply).display();
-    }
-
-    @Override
-    public MainMenuOption mainMenu() {
-        return new MainMenu().start();
-    }
-
-    @Override
-    public LobbyMenuOption lobbyMenu(List<Player> players) {
-        return new LobbyMenu(players).start();
-    }
-
-    @Override
-    public ComputerController newComputerMenu() {
-        return new NewComputerMenu().start();
     }
 
     @Override

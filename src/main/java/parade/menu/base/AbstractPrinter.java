@@ -10,7 +10,7 @@ import parade.utils.Ansi;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-class AbstractPrinter {
+abstract class AbstractPrinter {
     private static final PrintWriter out = new PrintWriter(System.out, false);
     private static final AbstractLogger LOGGER = LoggerProvider.getInstance();
 

@@ -3,11 +3,9 @@ package parade.menu.manager;
 import parade.card.Card;
 import parade.menu.display.DynamicSeparator;
 import parade.menu.menu.*;
-import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
-import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
@@ -17,7 +15,7 @@ import java.util.*;
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class BasicMenuManager implements MenuManager {
+public class BasicMenuManager extends AbstractMenuManager {
     /**
      * Renders the welcome banner for the game. Throws an exception if file is missing.
      *
@@ -31,17 +29,6 @@ public class BasicMenuManager implements MenuManager {
     @Override
     public MainMenuOption mainMenu() {
         return new AsciiMainMenu().start();
-    }
-
-    @Override
-    public LobbyMenuOption lobbyMenu(List<Player> lobby) {
-        return new LobbyMenu(lobby).start();
-    }
-
-    /** Renders the computer difficulty selection menu. */
-    @Override
-    public ComputerController newComputerMenu() {
-        return new NewComputerMenu().start();
     }
 
     /**

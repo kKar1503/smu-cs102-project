@@ -20,6 +20,8 @@ public interface MenuManager {
 
     ComputerController newComputerMenu();
 
+    AbstractPlayerController removePlayerMenu(List<AbstractPlayerController> controllers);
+
     void renderPlayerTurn(
             Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard);
 

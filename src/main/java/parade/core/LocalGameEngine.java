@@ -21,12 +21,10 @@ import java.util.*;
 public class LocalGameEngine extends AbstractGameEngine {
     private final AbstractLogger logger;
     private final MenuManager menuManager;
-    private final Scanner scanner;
 
     /** Initializes the game server with a deck. */
     public LocalGameEngine() {
         logger = LoggerProvider.getInstance();
-        scanner = new Scanner(System.in);
         menuManager = setupMenuProvider();
     }
 
@@ -35,37 +33,11 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Player %s added to the game", player.getPlayer().getName());
     }
 
-    private AbstractPlayerController removePlayerController(int index) {
-        AbstractPlayerController playerController = playerControllerManager.remove(index);
-        logger.logf("Player %s removed from the game", playerController.getPlayer().getName());
-        return playerController;
-    }
-
-    private void removePlayerDisplay() {
-        while (true) {
-            int count = 1;
-            System.out.println("Select a player to remove.");
-            for (AbstractPlayerController player : playerControllerManager.getPlayerControllers()) {
-                System.out.println(count++ + ". " + player.getPlayer().getName());
-            }
-            System.out.println(count + ". Return back to main menu");
-            try {
-                int input = scanner.nextInt();
-                if (input < 1 || input > playerControllerManager.size() + 1) {
-                    throw new NoSuchElementException("Out of range: " + input);
-                }
-                if (input == count) {
-                    return;
-                }
-                removePlayerController(input - 1);
-                return;
-            } catch (NoSuchElementException e) {
-                logger.log("User entered invalid input", e);
-                System.out.println("Invalid input, please try again");
-            } finally {
-                scanner.nextLine();
-            }
-        }
+    private void removePlayerController(AbstractPlayerController controller) {
+        boolean isRemoved = playerControllerManager.remove(controller);
+        logger.logf(
+                "Player %s %s removed from the game",
+                controller.getPlayer().getName(), isRemoved ? "successfully" : "not");
     }
 
     private void waitForPlayersLobby() {
@@ -94,17 +66,23 @@ public class LocalGameEngine extends AbstractGameEngine {
                 }
                 case ADD_COMPUTER -> {
                     logger.log("Adding a new computer");
-                    ComputerController computerController = menuManager.newComputerMenu();
-                    if (computerController == null) {
+                    try {
+                        ComputerController computerController = menuManager.newComputerMenu();
+                        addPlayerController(computerController);
+                    } catch (MenuCancelledException e) {
                         logger.log("User cancelled adding a computer");
-                        continue;
                     }
-
-                    addPlayerController(computerController);
                 }
                 case REMOVE_PLAYER -> {
                     logger.log("Removing a player from lobby");
-                    removePlayerDisplay();
+                    try {
+                        AbstractPlayerController removedPlayer =
+                                menuManager.removePlayerMenu(
+                                        playerControllerManager.getPlayerControllers());
+                        removePlayerController(removedPlayer);
+                    } catch (MenuCancelledException e) {
+                        logger.log("User cancelled removing a player");
+                    }
                 }
                 case START_GAME -> {
                     logger.log("User requested to start the game");
