@@ -77,11 +77,6 @@ public class DebugMenuManager extends AbstractMenuManager {
         }
     }
 
-    @Override
-    public void renderBye() {
-        System.out.println("Bye bye buddy.");
-    }
-
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
     }

@@ -46,4 +46,9 @@ abstract class AbstractMenuManager implements MenuManager {
         System.out.printf(
                 "Dice roll: %d, %s will be starting first!%n", diceRoll1 + diceRoll2, playerName);
     }
+
+    @Override
+    public void renderBye() {
+        System.out.println("Bye bye buddy.");
+    }
 }

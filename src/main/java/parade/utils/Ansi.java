@@ -53,4 +53,9 @@ public enum Ansi {
         sb.append(s).append(RESET.code);
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return code;
+    }
 }

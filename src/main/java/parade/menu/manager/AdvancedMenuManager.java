@@ -2,7 +2,9 @@ package parade.menu.manager;
 
 import parade.card.Card;
 import parade.card.Colour;
+import parade.menu.base.MenuResource;
 import parade.menu.display.AsciiWelcome;
+import parade.menu.display.Dice;
 import parade.menu.menu.*;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
@@ -386,39 +388,8 @@ public class AdvancedMenuManager extends AbstractMenuManager {
 
     @Override
     public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
-        String[] block = {
-            "╔══════════╗",
-            "║          ║",
-            "║ ROLLING  ║",
-            "║ DICE :)  ║",
-            "║          ║",
-            "╚══════════╝"
-        };
-
-        System.out.println("Shaking block...");
-        System.out.println();
-
-        for (int i = 0; i < 15; i++) {
-            int offset = (int) (Math.random() * 6); // random indent 0–5
-            printBlockWithOffset(block, offset);
-
-            try {
-                Thread.sleep(100); // short delay for shaking effect
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            clearConsole();
-        }
-        printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
+        new Dice(diceRoll1, diceRoll2).display();
         super.renderRoll(diceRoll1, diceRoll2, players);
-    }
-
-    private void printBlockWithOffset(String[] block, int offset) {
-        String space = " ".repeat(offset);
-        for (String line : block) {
-            System.out.println(space + line);
-        }
     }
 
     // This just prints many new lines to "clear" the screen for shaking effect
@@ -428,121 +399,23 @@ public class AdvancedMenuManager extends AbstractMenuManager {
     }
 
     /**
-     * Renders the dice with the given number.
-     *
-     * @param num The number on the dice (1-6).
-     * @throws IllegalArgumentException if the number is not between 1 and 6.
-     */
-    private String[] returnDice(int num) {
-        // Define each possible dice face
-        String[] dice1 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice2 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o       ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║       o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice3 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o       ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║       o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice4 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice5 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice6 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        return switch (num) {
-            case 1 -> dice1;
-            case 2 -> dice2;
-            case 3 -> dice3;
-            case 4 -> dice4;
-            case 5 -> dice5;
-            case 6 -> dice6;
-            default -> throw new IllegalArgumentException("Dice number should be between 1-6");
-        };
-    }
-
-    private void printDicesHorizontally(String[] dice1, String[] dice2) {
-        for (int i = 0; i < dice1.length; i++) {
-            System.out.println(dice1[i] + " ".repeat(5) + dice2[i]);
-        }
-    }
-
-    /**
      * Renders the game ending screen with animation and final scores.
      *
      * @param playerScores final score map of all players
      */
     @Override
     public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
+        String asciiFinal = MenuResource.get(MenuResource.MenuResourceType.ASCII_FINAL);
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
-                String[] asciiArt = {
-                    "  ______ _____ _   _          _      ",
-                    " |  ____|_   _| \\ | |   /\\   | |     ",
-                    " | |__    | | |  \\| |  /  \\  | |     ",
-                    " |  __|   | | | . ` | / /\\ \\ | |     ",
-                    " | |     _| |_| |\\  |/ ____ \\| |____ ",
-                    " |_|    |_____|_| \\_/_/    \\_\\______|",
-                    "                                      ",
-                    "                                      "
-                };
-
-                for (String line : asciiArt) {
-                    System.out.println(Ansi.PURPLE.apply(line));
-                }
+                System.out.println(Ansi.PURPLE.apply(asciiFinal));
                 Thread.sleep(100);
             }
 
             for (int i = 0; i < 6; i++) {
                 clearConsole();
-                String[] asciiArt = {
-                    "  ______ _____ _   _          _      ",
-                    " |  ____|_   _| \\ | |   /\\   | |     ",
-                    " | |__    | | |  \\| |  /  \\  | |     ",
-                    " |  __|   | | | . ` | / /\\ \\ | |     ",
-                    " | |     _| |_| |\\  |/ ____ \\| |____ ",
-                    " |_|    |_____|_| \\_/_/    \\_\\______|",
-                    "                                      ",
-                    "                                      "
-                };
-
-                for (String line : asciiArt) {
-                    System.out.println(Ansi.PURPLE.apply(line));
-                }
+                System.out.println(Ansi.PURPLE.apply(asciiFinal));
             }
 
             int playerColWidth = 32;

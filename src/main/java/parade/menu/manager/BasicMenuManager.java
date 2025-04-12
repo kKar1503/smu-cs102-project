@@ -1,6 +1,9 @@
 package parade.menu.manager;
 
 import parade.card.Card;
+import parade.menu.base.MenuResource;
+import parade.menu.base.MenuResource.MenuResourceType;
+import parade.menu.display.Dice;
 import parade.menu.display.DynamicSeparator;
 import parade.menu.menu.*;
 import parade.menu.option.MainMenuOption;
@@ -241,42 +244,17 @@ public class BasicMenuManager extends AbstractMenuManager {
      */
     @Override
     public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
+        String asciiFinal = MenuResource.get(MenuResourceType.ASCII_FINAL);
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
-                String[] asciiArt = {
-                    "  ______ _____ _   _          _      ",
-                    " |  ____|_   _| \\ | |   /\\   | |     ",
-                    " | |__    | | |  \\| |  /  \\  | |     ",
-                    " |  __|   | | | . ` | / /\\ \\ | |     ",
-                    " | |     _| |_| |\\  |/ ____ \\| |____ ",
-                    " |_|    |_____|_| \\_/_/    \\_\\______|",
-                    "                                      ",
-                    "                                      "
-                };
-
-                for (String line : asciiArt) {
-                    System.out.println(Ansi.PURPLE.apply(line));
-                }
+                System.out.println(Ansi.PURPLE.apply(asciiFinal));
                 Thread.sleep(100);
             }
 
             for (int i = 0; i < 6; i++) {
                 clearConsole();
-                String[] asciiArt = {
-                    "  ______ _____ _   _          _      ",
-                    " |  ____|_   _| \\ | |   /\\   | |     ",
-                    " | |__    | | |  \\| |  /  \\  | |     ",
-                    " |  __|   | | | . ` | / /\\ \\ | |     ",
-                    " | |     _| |_| |\\  |/ ____ \\| |____ ",
-                    " |_|    |_____|_| \\_/_/    \\_\\______|",
-                    "                                      ",
-                    "                                      "
-                };
-
-                for (String line : asciiArt) {
-                    System.out.println(Ansi.PURPLE.apply(line));
-                }
+                System.out.println(Ansi.PURPLE.apply(asciiFinal));
             }
 
             int playerColWidth = 32;
@@ -321,112 +299,8 @@ public class BasicMenuManager extends AbstractMenuManager {
      */
     @Override
     public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
-        String[] block = {
-            "╔══════════╗",
-            "║          ║",
-            "║ ROLLING  ║",
-            "║ DICE :)  ║",
-            "║          ║",
-            "╚══════════╝"
-        };
-
-        System.out.println("Shaking block...");
-
-        // Simulate shaking animation by redrawing the block with random offsets
-        for (int i = 0; i < 15; i++) {
-            int offset = (int) (Math.random() * 6); // random indent between 0–5
-            printBlockWithOffset(block, offset);
-
-            try {
-                Thread.sleep(100); // brief pause between shakes
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Restore interrupted status
-            }
-
-            clearConsole(); // Clear console to simulate motion
-        }
-        printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
+        new Dice(diceRoll1, diceRoll2).display();
         super.renderRoll(diceRoll1, diceRoll2, players);
-    }
-
-    private String[] returnDice(int num) {
-        // Define each possible dice face
-        String[] dice1 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice2 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o       ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║       o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice3 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o       ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║       o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice4 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║         ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice5 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║    o    ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        String[] dice6 = {
-            Ansi.apply("╔═════════╗", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("║ o     o ║", Ansi.BLACK, Ansi.WHITE_BACKGROUND),
-            Ansi.apply("╚═════════╝", Ansi.BLACK, Ansi.WHITE_BACKGROUND)
-        };
-
-        return switch (num) {
-            case 1 -> dice1;
-            case 2 -> dice2;
-            case 3 -> dice3;
-            case 4 -> dice4;
-            case 5 -> dice5;
-            case 6 -> dice6;
-            default -> throw new IllegalArgumentException("Dice number should be between 1-6");
-        };
-    }
-
-    private void printDicesHorizontally(String[] dice1, String[] dice2) {
-        for (int i = 0; i < dice1.length; i++) {
-            System.out.println(dice1[i] + " ".repeat(5) + dice2[i]);
-        }
-    }
-
-    /**
-     * Prints each line of a text block with a specified left offset (indent).
-     *
-     * @param block the text block to print (as array of lines)
-     * @param offset number of spaces to pad each line with
-     */
-    private void printBlockWithOffset(String[] block, int offset) {
-        String space = " ".repeat(offset);
-        for (String line : block) {
-            System.out.println(space + line);
-        }
     }
 
     /**

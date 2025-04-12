@@ -81,4 +81,12 @@ abstract class AbstractPrinter {
         out.print(Ansi.CLEAR);
         out.flush();
     }
+
+    protected void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            LOGGER.log("Error while sleeping", e);
+        }
+    }
 }
