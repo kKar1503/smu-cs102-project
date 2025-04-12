@@ -2,6 +2,7 @@ package parade.renderer.local.impl;
 
 import parade.card.Card;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
@@ -117,10 +118,10 @@ public class DebugClientRenderer implements ClientRenderer {
     }
 
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         System.out.println("Game Over!");
-        for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
-            System.out.println(entry.getKey().getName() + ": " + entry.getValue());
+        for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
+            System.out.println(entry.getKey().getPlayer().getName() + ": " + entry.getValue());
         }
     }
 
@@ -131,5 +132,12 @@ public class DebugClientRenderer implements ClientRenderer {
 
     public String printCards(Card card) {
         return "[" + card.getNumber() + " " + card.getColour() + "]";
+    }
+
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2) {
+        System.out.println("Rolling dice..");
+        System.out.println("Dice roll 1: " + diceRoll1);
+        System.out.println("Dice roll 2: " + diceRoll2);
     }
 }

@@ -10,6 +10,8 @@ import parade.utils.ConsoleColors;
 import java.io.InputStream;
 import java.util.*;
 
+import parade.player.controller.AbstractPlayerController;
+
 /**
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
  * styled game content to the console.
@@ -372,7 +374,8 @@ public class AdvancedClientRenderer implements ClientRenderer {
         };
     }
 
-    public void renderRoll() {
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2) {
         String[] block = {
             "╔══════════╗",
             "║          ║",
@@ -397,6 +400,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
             clearConsole();
         }
+        printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
     }
 
     private void printBlockWithOffset(String[] block, int offset) {
@@ -479,13 +483,19 @@ public class AdvancedClientRenderer implements ClientRenderer {
         };
     }
 
+    private void printDicesHorizontally(String[] dice1, String[] dice2) {
+        for (int i = 0; i < dice1.length; i++) {
+            System.out.println(dice1[i] + " ".repeat(5) + dice2[i]);
+        }
+    }
+
     /**
      * Renders the game ending screen with animation and final scores.
      *
      * @param playerScores final score map of all players
      */
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
@@ -541,10 +551,10 @@ public class AdvancedClientRenderer implements ClientRenderer {
                             "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
             System.out.println(header);
 
-            for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+            for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
                 System.out.printf(
                         "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
-                        entry.getKey().getName(),
+                        entry.getKey().getPlayer().getName(),
                         entry.getValue());
             }
 
