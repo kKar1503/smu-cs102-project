@@ -6,7 +6,7 @@ abstract class AbstractNumericPrompt<T> extends AbstractPrompt<T> {
     private final String displayText;
     private final int optionCount;
 
-    AbstractNumericPrompt(String[] options) {
+    AbstractNumericPrompt(String... options) {
         if (options == null || options.length == 0) {
             throw new IllegalArgumentException("Options cannot be null or empty");
         }
