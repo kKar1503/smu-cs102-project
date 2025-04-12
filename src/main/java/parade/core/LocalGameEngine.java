@@ -1,6 +1,7 @@
 package parade.core;
 
 import parade.card.Card;
+import parade.computer.ComputerEngine;
 import parade.core.result.*;
 import parade.exceptions.MenuCancelledException;
 import parade.logger.AbstractLogger;
@@ -42,32 +43,30 @@ public class LocalGameEngine extends AbstractGameEngine {
 
     private void waitForPlayersLobby() {
         logger.logf("Waiting for players to join lobby");
-        Scanner scanner = new Scanner(System.in);
         while (true) {
             LobbyMenuOption lobbyMenuOption =
                     menuManager.lobbyMenu(playerControllerManager.getPlayers());
             switch (lobbyMenuOption) {
                 case ADD_PLAYER -> {
-                    while (true) {
-                        System.out.print("Enter player name: ");
-                        String name = scanner.nextLine().trim();
-
-                        if (name.isEmpty()) {
-                            System.out.println("Name cannot be empty. Please enter a valid name.");
-                            continue;
-                        }
-
+                    logger.log("Adding a new human player");
+                    try {
+                        String name = menuManager.humanNameMenu();
                         HumanController humanController =
                                 new HumanController(
                                         PlayerNameRegistry.getUniqueName(name), menuManager);
                         addPlayerController(humanController);
-                        break;
+                    } catch (MenuCancelledException e) {
+                        logger.log("User cancelled adding a human player");
                     }
                 }
                 case ADD_COMPUTER -> {
                     logger.log("Adding a new computer");
                     try {
-                        ComputerController computerController = menuManager.newComputerMenu();
+                        String name = menuManager.computerNameMenu();
+                        ComputerEngine engine = menuManager.computerDifficultyMenu();
+                        ComputerController computerController =
+                                new ComputerController(
+                                        PlayerNameRegistry.getUniqueName(name), engine);
                         addPlayerController(computerController);
                     } catch (MenuCancelledException e) {
                         logger.log("User cancelled adding a computer");

@@ -1,11 +1,11 @@
 package parade.menu.manager;
 
 import parade.card.Card;
+import parade.computer.ComputerEngine;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
-import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 
 import java.util.List;
@@ -18,7 +18,11 @@ public interface MenuManager {
 
     LobbyMenuOption lobbyMenu(List<Player> lobby);
 
-    ComputerController newComputerMenu();
+    String computerNameMenu();
+
+    ComputerEngine computerDifficultyMenu();
+
+    String humanNameMenu();
 
     AbstractPlayerController removePlayerMenu(List<AbstractPlayerController> controllers);
 
