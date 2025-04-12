@@ -179,8 +179,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
         }
 
         int linesPerCard = renderedCards.get(0).length;
-        int cardsInFirstRow = Math.min(cardsPerRow, totalCards);
-        int contentWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * spacing;
+
+        // Enforce minimum of 4-card width, unless totalCards exceeds that naturally
+        int maxCardsInRow = Math.max(4, Math.min(cardsPerRow, totalCards));
+        int contentWidth = maxCardsInRow * cardWidth + (maxCardsInRow - 1) * spacing;
 
         String topBorder =
                 "╔"
@@ -193,6 +195,8 @@ public class BasicLocalClientRenderer implements ClientRenderer {
 
         for (int start = 0; start < totalCards; start += cardsPerRow) {
             int end = Math.min(start + cardsPerRow, totalCards);
+            int actualCardsInRow = end - start;
+
             for (int line = 0; line < linesPerCard; line++) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
@@ -200,10 +204,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                     if (j < end - 1) System.out.print(" ");
                 }
 
-                int actualCards = end - start;
-                if (actualCards < cardsPerRow) {
-                    int missing = cardsPerRow - actualCards;
-                    int pad = missing * (cardWidth + spacing);
+                // Pad if current row has fewer cards than the calculated max
+                int padCards = maxCardsInRow - actualCardsInRow;
+                if (padCards > 0) {
+                    int pad = padCards * (cardWidth + spacing);
                     System.out.print(" ".repeat(pad));
                 }
 
