@@ -2,8 +2,14 @@ package parade.computer;
 
 import parade.card.*;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
+import parade.player.controller.PlayCardData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
@@ -18,141 +24,214 @@ import java.util.*;
  * much it can force the opponent to lose.
  */
 public class HardComputerEngine implements ComputerEngine {
-    @Override
-    public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
-        Card bestCard = null;
-        int bestScore = Integer.MAX_VALUE; // Lower is better
 
-        for (Card card : player.getHand()) {
-            int selfLoss = simulateLoss(card, parade); // Cards AI will take
-            int colorPenalty = countColourMatches(card, parade); // Colour match risk
-            int simulatedImpact =
-                    simulateWorstOpponentLoss(
-                            player, card, parade); // How many cards next player might take
+    public Card process(Player player, PlayCardData playCardData) {
+        Card bestCard = player.getHand().get(0);
+        double bestDelta = Double.MAX_VALUE;
 
-            // Heuristic weight scoring:
-            // - Self loss is weighted most heavily
-            // - Colour penalty moderately
-            // - Opponent impact is desirable (so subtracted)
-            int score = (selfLoss * 4) + (colorPenalty * 2) - (simulatedImpact * 3);
+        List<Card> hand = new ArrayList<>(player.getHand());
 
-            if (score < bestScore) {
-                bestScore = score;
-                bestCard = card;
+        for (Card candidateCard : hand) {
+            Parade paradeCopy1 = new Parade(playCardData.getParade()); // Copy of parade
+            List<Card> tempBoard = new ArrayList<>(player.getBoard()); // Copy of player’s board
+
+            List<Card> takenCards =
+                    simulateParadeRemoval(
+                            paradeCopy1.getCards(), candidateCard); // List of removed cards
+            tempBoard.addAll(takenCards); // added removed cards to temp board
+            List<Player> currentPlayers = new ArrayList<>();
+            for (AbstractPlayerController token : playCardData.getOtherPlayers()) {
+                currentPlayers.add(token.getPlayer());
+            }
+            currentPlayers.add(player);
+            // why just one colour, list of majority colours
+            List<Colour> majorityColours =
+                    decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
+            int currentScore = calculateScore(tempBoard, majorityColours);
+
+            List<Double> playerBestDeltas = new ArrayList<>();
+            for (Player otherPlayer : currentPlayers) {
+                double bestOpponentScore = 0;
+                if (player.equals(otherPlayer)) {
+                    continue;
+                }
+                for (Card opponentCard : otherPlayer.getHand()) {
+                    Parade paradeCopy2 = new Parade(playCardData.getParade());
+                    List<Card> tempOppBoard = new ArrayList<>(otherPlayer.getBoard());
+
+                    List<Card> oppTaken =
+                            simulateParadeRemoval(paradeCopy2.getCards(), opponentCard);
+                    tempOppBoard.addAll(oppTaken);
+
+                    Map<Player, List<Card>> currentBoardMap = getPlayerBoardMaps(currentPlayers);
+                    currentBoardMap.put(player, tempBoard);
+
+                    List<Colour> oppColours = decideMajority(otherPlayer, currentPlayers, currentBoardMap);
+                    int opponentScore = calculateScore(tempOppBoard, oppColours);
+                    bestOpponentScore = Math.min(bestOpponentScore, opponentScore);
+                }
+
+                double delta = bestOpponentScore - currentScore;
+                playerBestDeltas.add(delta);
+            }
+
+            double avgDelta = 0.0;
+
+            for (double result : playerBestDeltas) {
+                avgDelta += result;
+            }
+
+            avgDelta /= playerBestDeltas.size() - 1;
+
+            if (avgDelta < bestDelta) {
+                bestDelta = avgDelta;
+                bestCard = candidateCard;
             }
         }
-
+        System.out.println("MY HAND!: " + player.getHand());
+        System.out.println("I AM FUCKING PLAYING THIS: " + bestCard);
         return bestCard;
     }
 
     /**
-     * Discards a card based on a "risk score" that combines: - High value (number) of the card, -
-     * Frequency of the card's colour already present on the board.
-     *
-     * <p>This aims to remove cards that are likely to contribute negatively to scoring.
-     *
-     * @param parade The current parade lineup (not used in this heuristic).
-     * @return The discarded card.
+     * Simulates playing a card and collecting the appropriate cards from the parade. Modifies the
+     * parade by removing collected cards.
      */
+    public List<Card> simulateParadeRemoval(List<Card> cards, Card placeCard) {
+
+        List<Card> removedCards = new ArrayList<>();
+
+        if (cards.size() > placeCard.getNumber()) {
+            int removeZoneCardIndex = cards.size() - placeCard.getNumber();
+
+            for (int i = 0; i < removeZoneCardIndex; i++) {
+                Card cardAtIndex = cards.get(i);
+                if (cardAtIndex.getNumber() <= placeCard.getNumber()
+                        || cardAtIndex.getColour() == placeCard.getColour()) {
+                    removedCards.add(cardAtIndex);
+                }
+            }
+        }
+
+        return removedCards;
+    }
+
+    /** Calculates the score of a board based on the card majority rules. */
+    private int calculateScore(List<Card> board, List<Colour> majorityColour) {
+        int score = 0;
+        for (Card card : board) {
+            if (majorityColour.contains(card.getColour())) {
+                score += 1;
+            } else {
+                score += card.getNumber();
+            }
+        }
+        return score;
+    }
+
+    /** Counts the number of each colour in the list of cards. */
+    private Map<Colour, Integer> countColours(List<Card> cards) {
+        Map<Colour, Integer> colourCount = new HashMap<>();
+
+        if (cards == null) {
+            throw new IllegalArgumentException("Card list cannot be null.");
+        }
+
+        for (Card card : cards) {
+            if (card == null || card.getColour() == null) {
+                throw new IllegalArgumentException("Card or card colour cannot be null.");
+            }
+            Colour colour = card.getColour();
+            colourCount.put(colour, colourCount.getOrDefault(colour, 0) + 1);
+        }
+        return colourCount;
+    }
+
+    /** Determines the majority colour(s) for a given player. */
+    private List<Colour> decideMajority(
+            Player targetPlayer, List<Player> allPlayers, Map<Player, List<Card>> playerCards) {
+        if (playerCards == null || targetPlayer == null) {
+            throw new IllegalArgumentException("Player cards and target player cannot be null.");
+        }
+
+        if (!playerCards.containsKey(targetPlayer)) {
+            throw new IllegalArgumentException("Target player is not present in player cards.");
+        }
+
+        List<Colour> targetMajorityColours = new ArrayList<>();
+        Map<Colour, Integer> targetColourCounts = countColours(playerCards.get(targetPlayer));
+
+        for (Map.Entry<Colour, Integer> colourEntry : targetColourCounts.entrySet()) {
+            Colour colour = colourEntry.getKey();
+            int targetCount = colourEntry.getValue();
+
+            boolean isMajority = true;
+
+            for (Player otherPlayer : allPlayers) {
+                if (!otherPlayer.equals(targetPlayer)) {
+                    int otherCount =
+                            countColours(playerCards.getOrDefault(otherPlayer, List.of()))
+                                    .getOrDefault(colour, 0);
+                    if ((allPlayers.size() == 2 && otherCount > targetCount - 2)
+                            || (allPlayers.size() > 2 && otherCount > targetCount)) {
+                        isMajority = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isMajority) {
+                targetMajorityColours.add(colour);
+            }
+        }
+
+        return targetMajorityColours;
+    }
+
+    private Map<Player, List<Card>> getPlayerBoardMaps(List<Player> players) {
+        if (players == null) {
+            throw new IllegalArgumentException("Players cannot be null");
+        }
+
+        Map<Player, List<Card>> result = new HashMap<>();
+        for (Player player : players) {
+            result.put(player, player.getBoard());
+        }
+        return result;
+    }
+
     @Override
-    public Card discardCard(Player player, Parade parade) {
-        Map<Colour, Integer> boardColourCount = countColourOnBoard(player);
-
-        return player.getHand().stream()
-                .max(
-                        (a, b) -> {
-                            // Score = card number + 5×frequency of card's colour on board
-                            int scoreA =
-                                    a.getNumber()
-                                            + boardColourCount.getOrDefault(a.getColour(), 0) * 5;
-                            int scoreB =
-                                    b.getNumber()
-                                            + boardColourCount.getOrDefault(b.getColour(), 0) * 5;
-                            return Integer.compare(scoreA, scoreB);
-                        })
-                .get();
-    }
-
-    /**
-     * Calculates how many cards of each colour are currently on the AI's board. Used for
-     * determining potential majority colour threats.
-     *
-     * @return A map of Colour to frequency on the board.
-     */
-    private Map<Colour, Integer> countColourOnBoard(Player player) {
-        Map<Colour, Integer> map = new HashMap<>();
-        for (Card card : player.getBoard()) {
-            map.put(card.getColour(), map.getOrDefault(card.getColour(), 0) + 1);
+    public Card discardCard(Player player, PlayCardData playCardData) {
+        Card worstCard = player.getHand().get(0);
+        List<Card> tempBoard = new ArrayList<>(player.getBoard());
+        List<Player> currentPlayers = new ArrayList<>();
+        for (AbstractPlayerController token : playCardData.getOtherPlayers()) {
+            currentPlayers.add(token.getPlayer());
         }
-        return map;
-    }
-
-    /**
-     * Simulates the number of parade cards the AI would be forced to take if it played the given
-     * card. This is based on Parade rules: - Cards are taken if they match in colour, - Or if their
-     * number is less than or equal to the played card's number.
-     *
-     * @param card The card being considered for play.
-     * @param parade The current state of the parade.
-     * @return The estimated number of cards that would be collected.
-     */
-    private int simulateLoss(Card card, Parade parade) {
-        int loss = 0;
-        List<Card> cards = parade.getCards();
-        int position = cards.size() - card.getNumber();
-
-        for (int i = Math.max(0, position); i < cards.size(); i++) {
-            Card paradeCard = cards.get(i);
-            if (paradeCard.getNumber() <= card.getNumber()
-                    || paradeCard.getColour().equals(card.getColour())) {
-                loss++;
+        currentPlayers.add(player);
+        Map<Player, List<Card>> currentBoardMap = getPlayerBoardMaps(currentPlayers);
+        currentBoardMap.put(player, tempBoard);
+        int lowestScore = Integer.MAX_VALUE;
+        for (Card candidateCard : player.getHand()) {
+            List<Card> toAdd = new ArrayList<>();
+            for (Card nestedCard : player.getHand()) {
+                if (nestedCard.equals(candidateCard)) {
+                    continue;
+                }
+                toAdd.add(nestedCard);
+            }
+            for (Card card : toAdd) {
+                tempBoard.add(card);
+            }
+            List<Colour> majorityColours =
+            decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
+            int currentScore = calculateScore(tempBoard, majorityColours);
+            if (currentScore < lowestScore) {
+                worstCard = candidateCard;
+                lowestScore = currentScore;
             }
         }
-        return loss;
-    }
-
-    /**
-     * Counts how many cards in the parade have the same colour as the given card. This helps
-     * evaluate risk of collecting more of that colour (toward majority).
-     *
-     * @param card The card being evaluated.
-     * @param parade The current parade lineup.
-     * @return Number of matching colour cards in the parade.
-     */
-    private int countColourMatches(Card card, Parade parade) {
-        int matches = 0;
-        for (Card paradeCard : parade.getCards()) {
-            if (paradeCard.getColour().equals(card.getColour())) {
-                matches++;
-            }
-        }
-        return matches;
-    }
-
-    /**
-     * Simulates the worst-case scenario for the next player after this AI plays a card. It assumes
-     * the next player could play any of this AI's current cards.
-     *
-     * <p>This method estimates how many cards the next player might be forced to take, to influence
-     * card choice for offensive value.
-     *
-     * @param playedCard The card the AI is considering playing.
-     * @param parade The current parade lineup.
-     * @return The worst-case number of cards the next player may collect.
-     */
-    private int simulateWorstOpponentLoss(Player player, Card playedCard, Parade parade) {
-        Parade simulatedParade = new Parade(parade);
-        parade.placeCard(playedCard);
-
-        int maxLoss = 0;
-        for (Card opponentCard :
-                player.getHand()) { // Simulate the next player using each card in our hand
-            int loss = simulateLoss(opponentCard, simulatedParade);
-            if (loss > maxLoss) {
-                maxLoss = loss;
-            }
-        }
-        return maxLoss;
+        return worstCard;
     }
 
     @Override
