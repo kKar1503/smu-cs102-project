@@ -170,12 +170,12 @@ public class AdvancedClientRenderer implements ClientRenderer {
 
         // Display the player's hand
         System.out.println(
-                System.lineSeparator()
-                        + System.lineSeparator()
-                        + "Your hand"
-                        + System.lineSeparator()
-                        + "==========================================================================");
-        printCardsHorizontally(playCardData.getParade().getCards(), true);
+            System.lineSeparator()
+                    + System.lineSeparator()
+                    + "Your hand"
+                    + System.lineSeparator()
+                    + "==========================================================================");
+        printCardsHorizontally(player.getHand(), true);
 
         // Prompt player for input
         System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
