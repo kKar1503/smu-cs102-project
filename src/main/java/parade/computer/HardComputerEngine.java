@@ -2,6 +2,8 @@ package parade.computer;
 
 import parade.card.*;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
+import parade.player.controller.PlayCardData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,37 +25,48 @@ import java.util.Random;
  */
 public class HardComputerEngine implements ComputerEngine {
 
-    public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
+    public Card process(Player player, PlayCardData playCardData) {
         Card bestCard = player.getHand().get(0);
         double bestDelta = Double.MAX_VALUE;
 
         List<Card> hand = new ArrayList<>(player.getHand());
 
         for (Card candidateCard : hand) {
-            Parade paradeCopy1 = new Parade(parade); // Copy of parade
+            Parade paradeCopy1 = new Parade(playCardData.getParade()); // Copy of parade
             List<Card> tempBoard = new ArrayList<>(player.getBoard()); // Copy of player’s board
 
-            List<Card> takenCards = simulateParadeRemoval(paradeCopy1.getCards(), candidateCard); // List of removed cards
+            List<Card> takenCards =
+                    simulateParadeRemoval(
+                            paradeCopy1.getCards(), candidateCard); // List of removed cards
             tempBoard.addAll(takenCards); // added removed cards to temp board
-
+            List<Player> currentPlayers = new ArrayList<>();
+            for (AbstractPlayerController token : playCardData.getOtherPlayers()) {
+                currentPlayers.add(token.getPlayer());
+            }
+            currentPlayers.add(player);
             // why just one colour, list of majority colours
-            List<Colour> majorityColours = decideMajority(player, players, getPlayerBoardMaps(players));
+            List<Colour> majorityColours =
+                    decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
             int currentScore = calculateScore(tempBoard, majorityColours);
 
             List<Double> playerBestDeltas = new ArrayList<>();
-            for (Player otherPlayer : players) {
+            for (Player otherPlayer : currentPlayers) {
                 double bestOpponentScore = 0;
-                if (!player.equals(otherPlayer)) {
+                if (player.equals(otherPlayer)) {
                     continue;
                 }
                 for (Card opponentCard : otherPlayer.getHand()) {
-                    Parade paradeCopy2 = new Parade(parade);
+                    Parade paradeCopy2 = new Parade(playCardData.getParade());
                     List<Card> tempOppBoard = new ArrayList<>(otherPlayer.getBoard());
 
-                    List<Card> oppTaken = simulateParadeRemoval(paradeCopy2.getCards(), opponentCard);
+                    List<Card> oppTaken =
+                            simulateParadeRemoval(paradeCopy2.getCards(), opponentCard);
                     tempOppBoard.addAll(oppTaken);
 
-                    List<Colour> oppColours = decideMajority(otherPlayer, players, getPlayerBoardMaps(players));
+                    Map<Player, List<Card>> currentBoardMap = getPlayerBoardMaps(currentPlayers);
+                    currentBoardMap.put(player, tempBoard);
+
+                    List<Colour> oppColours = decideMajority(otherPlayer, currentPlayers, currentBoardMap);
                     int opponentScore = calculateScore(tempOppBoard, oppColours);
                     bestOpponentScore = Math.min(bestOpponentScore, opponentScore);
                 }
@@ -63,7 +76,7 @@ public class HardComputerEngine implements ComputerEngine {
             }
 
             double avgDelta = 0.0;
-            
+
             for (double result : playerBestDeltas) {
                 avgDelta += result;
             }
@@ -75,7 +88,8 @@ public class HardComputerEngine implements ComputerEngine {
                 bestCard = candidateCard;
             }
         }
-
+        System.out.println("MY HAND!: " + player.getHand());
+        System.out.println("I AM FUCKING PLAYING THIS: " + bestCard);
         return bestCard;
     }
 
@@ -86,10 +100,10 @@ public class HardComputerEngine implements ComputerEngine {
     public List<Card> simulateParadeRemoval(List<Card> cards, Card placeCard) {
 
         List<Card> removedCards = new ArrayList<>();
-    
+
         if (cards.size() > placeCard.getNumber()) {
             int removeZoneCardIndex = cards.size() - placeCard.getNumber();
-    
+
             for (int i = 0; i < removeZoneCardIndex; i++) {
                 Card cardAtIndex = cards.get(i);
                 if (cardAtIndex.getNumber() <= placeCard.getNumber()
@@ -98,10 +112,9 @@ public class HardComputerEngine implements ComputerEngine {
                 }
             }
         }
-    
+
         return removedCards;
     }
-    
 
     /** Calculates the score of a board based on the card majority rules. */
     private int calculateScore(List<Card> board, List<Colour> majorityColour) {
@@ -116,8 +129,7 @@ public class HardComputerEngine implements ComputerEngine {
         return score;
     }
 
-    /* Counts the number of each colour in the list of cards.
-    */
+    /** Counts the number of each colour in the list of cards. */
     private Map<Colour, Integer> countColours(List<Card> cards) {
         Map<Colour, Integer> colourCount = new HashMap<>();
 
@@ -135,11 +147,9 @@ public class HardComputerEngine implements ComputerEngine {
         return colourCount;
     }
 
-    /**
-     * Determines the majority colour(s) for a given player.
-     */
-    private List<Colour> decideMajority(Player targetPlayer, List<Player> allPlayers, 
-                                        Map<Player, List<Card>> playerCards) {
+    /** Determines the majority colour(s) for a given player. */
+    private List<Colour> decideMajority(
+            Player targetPlayer, List<Player> allPlayers, Map<Player, List<Card>> playerCards) {
         if (playerCards == null || targetPlayer == null) {
             throw new IllegalArgumentException("Player cards and target player cannot be null.");
         }
@@ -159,7 +169,8 @@ public class HardComputerEngine implements ComputerEngine {
 
             for (Player otherPlayer : allPlayers) {
                 if (!otherPlayer.equals(targetPlayer)) {
-                    int otherCount = countColours(playerCards.getOrDefault(otherPlayer, List.of()))
+                    int otherCount =
+                            countColours(playerCards.getOrDefault(otherPlayer, List.of()))
                                     .getOrDefault(colour, 0);
                     if ((allPlayers.size() == 2 && otherCount > targetCount - 2)
                             || (allPlayers.size() > 2 && otherCount > targetCount)) {
@@ -179,7 +190,7 @@ public class HardComputerEngine implements ComputerEngine {
 
     private Map<Player, List<Card>> getPlayerBoardMaps(List<Player> players) {
         if (players == null) {
-            throw new IllegalArgumentException ("Players cannot be null");
+            throw new IllegalArgumentException("Players cannot be null");
         }
 
         Map<Player, List<Card>> result = new HashMap<>();
@@ -190,10 +201,37 @@ public class HardComputerEngine implements ComputerEngine {
     }
 
     @Override
-    public Card discardCard(Player player, Parade parade) {
-        // Randomly picks any card from the hand.
-        int randIdx = new Random().nextInt(player.getHand().size());
-        return player.getHand().get(randIdx);
+    public Card discardCard(Player player, PlayCardData playCardData) {
+        Card worstCard = player.getHand().get(0);
+        List<Card> tempBoard = new ArrayList<>(player.getBoard());
+        List<Player> currentPlayers = new ArrayList<>();
+        for (AbstractPlayerController token : playCardData.getOtherPlayers()) {
+            currentPlayers.add(token.getPlayer());
+        }
+        currentPlayers.add(player);
+        Map<Player, List<Card>> currentBoardMap = getPlayerBoardMaps(currentPlayers);
+        currentBoardMap.put(player, tempBoard);
+        int lowestScore = Integer.MAX_VALUE;
+        for (Card candidateCard : player.getHand()) {
+            List<Card> toAdd = new ArrayList<>();
+            for (Card nestedCard : player.getHand()) {
+                if (nestedCard.equals(candidateCard)) {
+                    continue;
+                }
+                toAdd.add(nestedCard);
+            }
+            for (Card card : toAdd) {
+                tempBoard.add(card);
+            }
+            List<Colour> majorityColours =
+            decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
+            int currentScore = calculateScore(tempBoard, majorityColours);
+            if (currentScore < lowestScore) {
+                worstCard = candidateCard;
+                lowestScore = currentScore;
+            }
+        }
+        return worstCard;
     }
 
     @Override

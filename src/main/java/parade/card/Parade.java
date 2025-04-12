@@ -45,11 +45,8 @@ public class Parade {
 
             // Remove from the cards
             cards.removeAll(removedCards);
-
-            // Add placeCard
-            cards.add(placeCard);
         }
-
+        cards.add(placeCard);
         return removedCards;
     }
 

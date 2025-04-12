@@ -2,6 +2,7 @@ package parade.renderer.local.impl;
 
 import parade.card.Card;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
@@ -152,12 +153,16 @@ public class BasicLocalClientRenderer implements ClientRenderer {
     }
 
     /**
-     * Renders a list of cards horizontally in a bordered box with optional line wrapping.
+     * Renders a list of cards horizontally within a styled bordered box.
+     * Cards are rendered using their ASCII representation, with automatic line wrapping
+     * and optional index labeling for card selection. The cards are sorted using their
+     * natural order as defined by the Comparable implementation.
      *
-     * @param label the section label
-     * @param cards the list of cards to display
+     * @param label the section label to be displayed as the header of the box
+     * @param cards the list of cards to render
      */
     public void renderCardList(String label, List<Card> cards) {
+        // Handle null or empty card list by rendering a placeholder box
         if (cards == null || cards.isEmpty()) {
             System.out.println();
             System.out.println("╔" + ConsoleColors.purple(label) + "═".repeat(40) + "╗");
@@ -166,33 +171,71 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             return;
         }
 
-        final int cardWidth = 20;
-        final int spacing = 1;
-        final int maxWidth = 100;
+        // Defensive copy to avoid modifying unmodifiable lists
+        List<Card> sortedCards = new ArrayList<>(cards);
 
+        // Sort cards using their natural order (by color then number)
+        Collections.sort(sortedCards);
+
+        // Layout constants
+        final int cardWidth = 20;      // Width of each individual card (in characters)
+        final int spacing = 1;         // Spacing between cards
+        final int maxWidth = 100;      // Maximum content width before wrapping
+
+        // Determine how many cards can fit on a row given spacing constraints
         int cardsPerRow = Math.max(1, (maxWidth + spacing) / (cardWidth + spacing));
-        int totalCards = cards.size();
+        int totalCards = sortedCards.size();
 
+        // Pre-render all card ASCII lines to optimize row-based printing
         List<String[]> renderedCards = new ArrayList<>();
-        for (Card card : cards) {
+        for (Card card : sortedCards) {
             renderedCards.add(rendersSingleCard(card));
         }
 
+        // Each card is rendered over a fixed number of lines
         int linesPerCard = renderedCards.get(0).length;
-        int cardsInFirstRow = Math.min(cardsPerRow, totalCards);
-        int contentWidth = cardsInFirstRow * cardWidth + (cardsInFirstRow - 1) * spacing;
 
+        // Force at least 4 cards per row to maintain layout consistency for small hands
+        int maxCardsInRow = Math.max(4, Math.min(cardsPerRow, totalCards));
+        int contentWidth = maxCardsInRow * cardWidth + (maxCardsInRow - 1) * spacing;
+
+        // Construct top and bottom borders dynamically based on label and width
         String topBorder =
-                "╔"
-                        + ConsoleColors.purple(label)
-                        + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
-                        + "╗";
+                "╔" + ConsoleColors.purple(label)
+                + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
+                + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
 
+        // Print the top border with the section label
         System.out.println(System.lineSeparator() + topBorder);
 
+        // Render cards row by row
         for (int start = 0; start < totalCards; start += cardsPerRow) {
             int end = Math.min(start + cardsPerRow, totalCards);
+            int actualCardsInRow = end - start;
+
+            // Render index labels only for the player's hand to allow selection
+            if (label.trim().equals("Cards in your hand")) {
+                System.out.print("║ ");
+                for (int j = start; j < end; j++) {
+                    String index = "(" + (j + 1) + ")";
+                    int padLeft = (cardWidth - index.length()) / 2;
+                    int padRight = cardWidth - index.length() - padLeft;
+                    System.out.print(" ".repeat(padLeft) + index + " ".repeat(padRight));
+                    if (j < end - 1) System.out.print(" ");
+                }
+
+                // Pad the line if there are fewer than the expected number of cards
+                int padCards = maxCardsInRow - actualCardsInRow;
+                if (padCards > 0) {
+                    int pad = padCards * (cardWidth + spacing);
+                    System.out.print(" ".repeat(pad));
+                }
+
+                System.out.println(" ║");
+            }
+
+            // Render each line of the card's ASCII representation
             for (int line = 0; line < linesPerCard; line++) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
@@ -200,10 +243,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                     if (j < end - 1) System.out.print(" ");
                 }
 
-                int actualCards = end - start;
-                if (actualCards < cardsPerRow) {
-                    int missing = cardsPerRow - actualCards;
-                    int pad = missing * (cardWidth + spacing);
+                // Pad any extra space if the current row has fewer cards than the max
+                int padCards = maxCardsInRow - actualCardsInRow;
+                if (padCards > 0) {
+                    int pad = padCards * (cardWidth + spacing);
                     System.out.print(" ".repeat(pad));
                 }
 
@@ -211,8 +254,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             }
         }
 
+        // Print the bottom border to close the card box
         System.out.println(bottomBorder);
     }
+
 
     /**
      * Colors a string with background based on the given color name.
@@ -273,7 +318,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * @param playerScores final score map of all players
      */
     @Override
-    public void renderEndGame(Map<Player, Integer> playerScores) {
+    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         try {
             for (int i = 0; i < 30; i++) {
                 clearConsole();
@@ -329,10 +374,10 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                             "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
             System.out.println(header);
 
-            for (Map.Entry<Player, Integer> entry : playerScores.entrySet()) {
+            for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
                 System.out.printf(
                         "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
-                        entry.getKey().getName(),
+                        entry.getKey().getPlayer().getName(),
                         entry.getValue());
             }
 
@@ -352,7 +397,8 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * Renders an animated dice-rolling block with shaking effect. This is purely visual and does
      * not determine any game outcome.
      */
-    public void renderRoll() {
+    @Override
+    public void renderRoll(int diceRoll1, int diceRoll2) {
         String[] block = {
             "╔══════════╗",
             "║          ║",
@@ -376,6 +422,74 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             }
 
             clearConsole(); // Clear console to simulate motion
+        }
+        printDicesHorizontally(returnDice(diceRoll1), returnDice(diceRoll2));
+    }
+
+    private String[] returnDice(int num) {
+        // Define each possible dice face
+        String[] dice1 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice2 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice3 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o       ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║       o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice4 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║         ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice5 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║    o    ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        String[] dice6 = {
+            ConsoleColors.whiteBgBlackText("╔═════════╗"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("║ o     o ║"),
+            ConsoleColors.whiteBgBlackText("╚═════════╝")
+        };
+
+        return switch (num) {
+            case 1 -> dice1;
+            case 2 -> dice2;
+            case 3 -> dice3;
+            case 4 -> dice4;
+            case 5 -> dice5;
+            case 6 -> dice6;
+            default -> throw new IllegalArgumentException("Dice number should be between 1-6");
+        };
+    }
+
+    private void printDicesHorizontally(String[] dice1, String[] dice2) {
+        for (int i = 0; i < dice1.length; i++) {
+            System.out.println(dice1[i] + " ".repeat(5) + dice2[i]);
         }
     }
 
