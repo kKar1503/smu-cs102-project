@@ -1,10 +1,13 @@
-package parade.display;
+package parade.menu.manager;
 
 import parade.card.Card;
 import parade.card.Colour;
-import parade.display.option.LobbyMenuOption;
-import parade.display.option.MainMenuOption;
+import parade.menu.display.AsciiWelcome;
+import parade.menu.menu.*;
+import parade.menu.option.LobbyMenuOption;
+import parade.menu.option.MainMenuOption;
 import parade.player.Player;
+import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
@@ -14,20 +17,19 @@ import java.util.*;
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
  * styled game content to the console.
  */
-public class AdvancedMenuProvider implements MenuProvider {
+public class AdvancedMenuManager implements MenuManager {
     /**
      * Renders a stylized welcome message from an ASCII art file. Throws an exception if the file
      * cannot be found. Also displays a sample Parade card.
      */
     @Override
-    public void renderWelcome() throws IllegalStateException {
-        new AsciiWelcomeScreen().display();
+    public void welcomeDisplay() throws IllegalStateException {
+        new AsciiWelcome().display();
     }
 
     @Override
-    public MainMenuOption mainMenuPrompt() {
-        MainMenu welcomeMenu = new MainMenu();
-        return welcomeMenu.prompt();
+    public MainMenuOption mainMenu() {
+        return new MainMenu().start();
     }
 
     /**
@@ -37,13 +39,15 @@ public class AdvancedMenuProvider implements MenuProvider {
      * @param lobby List of players currently in the lobby.
      */
     @Override
-    public LobbyMenuOption renderPlayersLobby(List<Player> lobby) {
-        return new LobbyMenu(lobby).prompt();
+    public LobbyMenuOption lobbyMenu(List<Player> lobby) {
+        return new LobbyMenu(lobby).start();
     }
 
     /** Displays a prompt related to selecting computer difficulty. (Currently not implemented.) */
     @Override
-    public void renderComputerDifficulty() {}
+    public ComputerController newComputerMenu() {
+        return new NewComputerMenu().start();
+    }
 
     /**
      * Displays the current state of a player's turn, including: - Drawn card (if any) - Parade line

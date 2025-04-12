@@ -1,9 +1,12 @@
-package parade.display;
+package parade.menu.manager;
 
 import parade.card.Card;
-import parade.display.option.LobbyMenuOption;
-import parade.display.option.MainMenuOption;
+import parade.menu.display.DynamicSeparator;
+import parade.menu.menu.*;
+import parade.menu.option.LobbyMenuOption;
+import parade.menu.option.MainMenuOption;
 import parade.player.Player;
+import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
@@ -13,39 +16,31 @@ import java.util.*;
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class BasicMenuProvider implements MenuProvider {
+public class BasicMenuManager implements MenuManager {
     /**
      * Renders the welcome banner for the game. Throws an exception if file is missing.
      *
      * @throws IllegalStateException if the resource file cannot be found
      */
     @Override
-    public void renderWelcome() throws IllegalStateException {
+    public void welcomeDisplay() throws IllegalStateException {
         new DynamicSeparator("✨ Welcome to Parade! ✨", Ansi.PURPLE::apply);
     }
 
     @Override
-    public MainMenuOption mainMenuPrompt() {
-        return new AsciiMainMenu().prompt();
+    public MainMenuOption mainMenu() {
+        return new AsciiMainMenu().start();
     }
 
-    /**
-     * Displays the list of players in the lobby and available actions.
-     *
-     * @param lobby list of players currently in the lobby
-     */
     @Override
-    public LobbyMenuOption renderPlayersLobby(List<Player> lobby) {
-        return new LobbyMenu(lobby).prompt();
+    public LobbyMenuOption lobbyMenu(List<Player> lobby) {
+        return new LobbyMenu(lobby).start();
     }
 
     /** Renders the computer difficulty selection menu. */
     @Override
-    public void renderComputerDifficulty() {
-        System.out.println("Choose computer player's difficulty");
-        System.out.println("1. Easy");
-        System.out.println("2. Normal");
-        System.out.println("3. Hard");
+    public ComputerController newComputerMenu() {
+        return new NewComputerMenu().start();
     }
 
     /**

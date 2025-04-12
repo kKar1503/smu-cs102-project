@@ -1,22 +1,23 @@
-package parade.display;
+package parade.menu.manager;
 
 import parade.card.Card;
-import parade.display.option.LobbyMenuOption;
-import parade.display.option.MainMenuOption;
+import parade.menu.option.LobbyMenuOption;
+import parade.menu.option.MainMenuOption;
 import parade.player.Player;
+import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 
 import java.util.List;
 import java.util.Map;
 
-public interface MenuProvider {
-    void renderWelcome();
+public interface MenuManager {
+    void welcomeDisplay();
 
-    MainMenuOption mainMenuPrompt();
+    MainMenuOption mainMenu();
 
-    LobbyMenuOption renderPlayersLobby(List<Player> lobby);
+    LobbyMenuOption lobbyMenu(List<Player> lobby);
 
-    void renderComputerDifficulty();
+    ComputerController newComputerMenu();
 
     void renderPlayerTurn(
             Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard);

@@ -1,12 +1,13 @@
-package parade.display;
+package parade.menu.display;
+
+import parade.menu.base.AbstractDisplay;
 
 import java.util.function.Function;
 
-public class DynamicSeparator extends AbstractDynamicDisplay {
+public class DynamicSeparator extends AbstractDisplay {
     private static final String SEPARATOR = "=";
 
-    private final String text;
-    private final Function<String, String> apply;
+    private final String separator;
 
     public DynamicSeparator() {
         this(null, null);
@@ -21,12 +22,6 @@ public class DynamicSeparator extends AbstractDynamicDisplay {
     }
 
     public DynamicSeparator(String text, Function<String, String> apply) {
-        this.text = text;
-        this.apply = apply;
-    }
-
-    @Override
-    public void display() {
         int textSize = text != null ? text.length() + 2 : 0;
         int leftSeparatorSize = (terminalWidth - textSize) / 2;
         int rightSeparatorSize = terminalWidth - textSize - leftSeparatorSize;
@@ -39,6 +34,16 @@ public class DynamicSeparator extends AbstractDynamicDisplay {
         if (apply != null) {
             separator = apply.apply(separator);
         }
+        this.separator = separator;
+    }
+
+    @Override
+    public void display() {
         printlnFlush(separator);
+    }
+
+    @Override
+    public String toString() {
+        return separator;
     }
 }

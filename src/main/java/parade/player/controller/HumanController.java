@@ -1,7 +1,7 @@
 package parade.player.controller;
 
 import parade.card.Card;
-import parade.display.MenuRendererProvider;
+import parade.menu.manager.MenuManager;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -12,14 +12,16 @@ import java.util.Scanner;
  */
 public class HumanController extends AbstractPlayerController {
     private Card latestDrawnCard;
+    private final MenuManager menuManager;
 
     /**
      * Constructs a human player with a given name and initial hand.
      *
      * @param name The name for the human player.
      */
-    public HumanController(String name) {
+    public HumanController(String name, MenuManager menuManager) {
         super(name);
+        this.menuManager = menuManager;
     }
 
     /**
@@ -32,8 +34,7 @@ public class HumanController extends AbstractPlayerController {
     public Card playCard(PlayCardData playCardData) {
         Scanner sc = new Scanner(System.in);
         int input;
-        MenuRendererProvider.getInstance()
-                .renderPlayerTurn(player, latestDrawnCard, playCardData, false);
+        menuManager.renderPlayerTurn(player, latestDrawnCard, playCardData, false);
 
         while (true) {
             try {
@@ -58,7 +59,7 @@ public class HumanController extends AbstractPlayerController {
     public Card discardCard(PlayCardData playCardData) {
         Scanner sc = new Scanner(System.in);
         int input;
-        MenuRendererProvider.getInstance().renderPlayerTurn(player, null, playCardData, true);
+        menuManager.renderPlayerTurn(player, null, playCardData, true);
 
         while (true) {
             try {

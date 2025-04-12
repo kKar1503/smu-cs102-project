@@ -1,11 +1,11 @@
-package parade.display;
+package parade.menu.base;
 
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
 
-class MenuResource {
-    static enum MenuResourceType {
+public class MenuResource {
+    public enum MenuResourceType {
         ADVANCED_WELCOME_SCREEN("advanced_welcome_screen.txt"),
         BASIC_WELCOME_MENU("basic_welcome_menu.txt");
 
@@ -20,9 +20,9 @@ class MenuResource {
         }
     }
 
-    static Map<MenuResourceType, String> menuResources = null;
+    public static Map<MenuResourceType, String> menuResources = null;
 
-    static String get(MenuResourceType menuResourceType) {
+    public static String get(MenuResourceType menuResourceType) {
         if (menuResources == null) {
             menuResources = new HashMap<>();
             for (MenuResourceType type : MenuResourceType.values()) {

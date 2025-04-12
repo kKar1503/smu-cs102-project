@@ -1,9 +1,12 @@
-package parade.display;
+package parade.menu.manager;
 
 import parade.card.Card;
-import parade.display.option.LobbyMenuOption;
-import parade.display.option.MainMenuOption;
+import parade.menu.display.DynamicSeparator;
+import parade.menu.menu.*;
+import parade.menu.option.LobbyMenuOption;
+import parade.menu.option.MainMenuOption;
 import parade.player.Player;
+import parade.player.controller.ComputerController;
 import parade.player.controller.PlayCardData;
 import parade.utils.Ansi;
 
@@ -13,28 +16,25 @@ import java.util.*;
  * A debug text-based implementation of the client renderer for development. Responsible for
  * displaying game state and prompting the user via console.
  */
-public class DebugMenuProvider implements MenuProvider {
+public class DebugMenuManager implements MenuManager {
     @Override
-    public void renderWelcome() throws IllegalStateException {
+    public void welcomeDisplay() throws IllegalStateException {
         new DynamicSeparator("Welcome to Parade!", Ansi.PURPLE::apply).display();
     }
 
     @Override
-    public MainMenuOption mainMenuPrompt() {
-        return new MainMenu().prompt();
+    public MainMenuOption mainMenu() {
+        return new MainMenu().start();
     }
 
     @Override
-    public LobbyMenuOption renderPlayersLobby(List<Player> players) {
-        return new LobbyMenu(players).prompt();
+    public LobbyMenuOption lobbyMenu(List<Player> players) {
+        return new LobbyMenu(players).start();
     }
 
     @Override
-    public void renderComputerDifficulty() {
-        System.out.println("Choose computer player's difficulty");
-        System.out.println("1. Easy");
-        System.out.println("2. Normal");
-        System.out.println("3. Hard");
+    public ComputerController newComputerMenu() {
+        return new NewComputerMenu().start();
     }
 
     @Override

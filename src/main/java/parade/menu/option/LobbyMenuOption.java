@@ -1,4 +1,4 @@
-package parade.display.option;
+package parade.menu.option;
 
 public enum LobbyMenuOption {
     ADD_PLAYER,
