@@ -41,4 +41,10 @@ public class ComputerController extends AbstractPlayerController {
     public Card discardCard(PlayCardData playCardData) {
         return computerEngine.discardCard(player, playCardData.getParade());
     }
+
+    @Override
+    public String toString() {
+        return "ComputerController [player=" + player + ", computerEngine=" + computerEngine + "]";
+    }
+
 }
