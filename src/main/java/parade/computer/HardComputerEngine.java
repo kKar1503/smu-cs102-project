@@ -88,8 +88,6 @@ public class HardComputerEngine implements ComputerEngine {
                 bestCard = candidateCard;
             }
         }
-        System.out.println("MY HAND!: " + player.getHand());
-        System.out.println("I AM FUCKING PLAYING THIS: " + bestCard);
         return bestCard;
     }
 
