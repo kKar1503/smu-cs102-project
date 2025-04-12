@@ -1,10 +1,9 @@
 package parade.computer;
 
 import parade.card.Card;
-import parade.card.Parade;
 import parade.player.Player;
+import parade.player.controller.PlayCardData;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -14,14 +13,14 @@ import java.util.Random;
  */
 public class EasyComputerEngine implements ComputerEngine {
     @Override
-    public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
+    public Card process(Player player, PlayCardData playCardData) {
         // Randomly picks any card from the hand.
         int randIdx = new Random().nextInt(player.getHand().size());
         return player.getHand().get(randIdx);
     }
 
     @Override
-    public Card discardCard(Player player, Parade parade) {
+    public Card discardCard(Player player, PlayCardData playCardData) {
         // Randomly picks any card from the hand.
         int randIdx = new Random().nextInt(player.getHand().size());
         return player.getHand().get(randIdx);
