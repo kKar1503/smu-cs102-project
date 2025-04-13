@@ -37,7 +37,9 @@ public class Player {
 
     public boolean addToHand(Card... cards) {
         verifyCards(cards);
-        return hand.addAll(List.of(cards));
+        boolean added = hand.addAll(List.of(cards));
+        hand.sort((Comparator.comparing(Card::getColour).thenComparing(Card::getNumber)));
+        return added;
     }
 
     public boolean removeFromHand(Card card) {
