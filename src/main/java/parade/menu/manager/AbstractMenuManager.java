@@ -20,8 +20,8 @@ abstract class AbstractMenuManager extends AbstractPrinter implements MenuManage
     }
 
     @Override
-    public LobbyMenuOption lobbyMenu(List<Player> players) {
-        return new LobbyMenu(players).start();
+    public LobbyMenuOption lobbyMenu(List<Player> players, int minPlayers, int maxPlayers) {
+        return new LobbyMenu(players, minPlayers, maxPlayers).start();
     }
 
     @Override

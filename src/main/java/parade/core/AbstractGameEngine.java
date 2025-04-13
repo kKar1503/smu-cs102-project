@@ -1,7 +1,5 @@
 package parade.core;
 
-import static parade.constants.GameEngineValues.PARADE_SIZE;
-
 import parade.card.*;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
@@ -9,6 +7,11 @@ import parade.player.controller.AbstractPlayerController;
 import java.util.*;
 
 abstract class AbstractGameEngine {
+    static final int INITIAL_CARDS_PER_PLAYER = 5;
+    static final int PARADE_SIZE = 6;
+    static final int MAX_PLAYERS = 6;
+    static final int MIN_PLAYERS = 2;
+
     final Deck deck = new Deck(); // The deck of cards used in the game
     final PlayerControllerManager playerControllerManager;
     final Parade parade; // The list of cards currently in the parade

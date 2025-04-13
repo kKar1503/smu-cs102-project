@@ -1,7 +1,5 @@
 package parade.core;
 
-import static parade.constants.GameEngineValues.INITIAL_CARDS_PER_PLAYER;
-
 import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.core.result.*;
@@ -48,7 +46,8 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf("Waiting for players to join lobby");
         while (true) {
             LobbyMenuOption lobbyMenuOption =
-                    menuManager.lobbyMenu(playerControllerManager.getPlayers());
+                    menuManager.lobbyMenu(
+                            playerControllerManager.getPlayers(), MIN_PLAYERS, MAX_PLAYERS);
             switch (lobbyMenuOption) {
                 case ADD_PLAYER -> {
                     logger.log("Adding a new human player");

@@ -16,7 +16,7 @@ public interface MenuManager {
 
     MainMenuOption mainMenu();
 
-    LobbyMenuOption lobbyMenu(List<Player> lobby);
+    LobbyMenuOption lobbyMenu(List<Player> lobby, int minPlayers, int maxPlayers);
 
     void renderRoll(int diceRoll1, int diceRoll2, List<Player> players);
 
