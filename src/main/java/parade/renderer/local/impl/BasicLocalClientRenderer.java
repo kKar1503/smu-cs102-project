@@ -132,12 +132,12 @@ public class BasicLocalClientRenderer implements ClientRenderer {
 
         renderCardList(
                 " Parade (read left to right, top to bottom!) ",
-                playCardData.getParade().getCards());
+                playCardData.getParade().getCards(), false);
 
         List<Card> board = new ArrayList<>(player.getBoard());
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        renderCardList(" Your scoring board ", board);
-        renderCardList(" Cards in your hand ", player.getHand());
+        renderCardList(" Your scoring board ", board, false);
+        renderCardList(" Cards in your hand ", player.getHand(), true);
 
         System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
@@ -161,8 +161,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * @param label the section label to be displayed as the header of the box
      * @param cards the list of cards to render
      */
-    public void renderCardList(String label, List<Card> cards) {
-        // Handle null or empty card list by rendering a placeholder box
+    public void renderCardList(String label, List<Card> cards, boolean showIndices) {
         if (cards == null || cards.isEmpty()) {
             System.out.println();
             System.out.println("╔" + ConsoleColors.purple(label) + "═".repeat(40) + "╗");
@@ -170,52 +169,39 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             System.out.println("╚" + "═".repeat(60) + "╝");
             return;
         }
-
-        // Defensive copy to avoid modifying unmodifiable lists
-        List<Card> sortedCards = new ArrayList<>(cards);
-
-        // Sort cards using their natural order (by color then number)
-        Collections.sort(sortedCards);
-
-        // Layout constants
-        final int cardWidth = 20;      // Width of each individual card (in characters)
-        final int spacing = 1;         // Spacing between cards
-        final int maxWidth = 100;      // Maximum content width before wrapping
-
-        // Determine how many cards can fit on a row given spacing constraints
+    
+        List<Card> displayCards = new ArrayList<>(cards);
+        if (showIndices) {
+            displayCards.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
+        }
+    
+        final int cardWidth = 20;
+        final int spacing = 1;
+        final int maxWidth = 100;
+    
         int cardsPerRow = Math.max(1, (maxWidth + spacing) / (cardWidth + spacing));
-        int totalCards = sortedCards.size();
-
-        // Pre-render all card ASCII lines to optimize row-based printing
+        int totalCards = displayCards.size();
+    
         List<String[]> renderedCards = new ArrayList<>();
-        for (Card card : sortedCards) {
+        for (Card card : displayCards) {
             renderedCards.add(rendersSingleCard(card));
         }
-
-        // Each card is rendered over a fixed number of lines
+    
         int linesPerCard = renderedCards.get(0).length;
-
-        // Force at least 4 cards per row to maintain layout consistency for small hands
         int maxCardsInRow = Math.max(4, Math.min(cardsPerRow, totalCards));
         int contentWidth = maxCardsInRow * cardWidth + (maxCardsInRow - 1) * spacing;
-
-        // Construct top and bottom borders dynamically based on label and width
-        String topBorder =
-                "╔" + ConsoleColors.purple(label)
-                + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
-                + "╗";
+    
+        String topBorder = "╔" + ConsoleColors.purple(label)
+                + "═".repeat(Math.max(0, contentWidth - label.trim().length())) + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
-
-        // Print the top border with the section label
+    
         System.out.println(System.lineSeparator() + topBorder);
-
-        // Render cards row by row
+    
         for (int start = 0; start < totalCards; start += cardsPerRow) {
             int end = Math.min(start + cardsPerRow, totalCards);
             int actualCardsInRow = end - start;
-
-            // Render index labels only for the player's hand to allow selection
-            if (label.trim().equals("Cards in your hand")) {
+    
+            if (showIndices) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
                     String index = "(" + (j + 1) + ")";
@@ -224,37 +210,29 @@ public class BasicLocalClientRenderer implements ClientRenderer {
                     System.out.print(" ".repeat(padLeft) + index + " ".repeat(padRight));
                     if (j < end - 1) System.out.print(" ");
                 }
-
-                // Pad the line if there are fewer than the expected number of cards
                 int padCards = maxCardsInRow - actualCardsInRow;
                 if (padCards > 0) {
                     int pad = padCards * (cardWidth + spacing);
                     System.out.print(" ".repeat(pad));
                 }
-
                 System.out.println(" ║");
             }
-
-            // Render each line of the card's ASCII representation
+    
             for (int line = 0; line < linesPerCard; line++) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
                     System.out.print(renderedCards.get(j)[line]);
                     if (j < end - 1) System.out.print(" ");
                 }
-
-                // Pad any extra space if the current row has fewer cards than the max
                 int padCards = maxCardsInRow - actualCardsInRow;
                 if (padCards > 0) {
                     int pad = padCards * (cardWidth + spacing);
                     System.out.print(" ".repeat(pad));
                 }
-
                 System.out.println(" ║");
             }
         }
-
-        // Print the bottom border to close the card box
+    
         System.out.println(bottomBorder);
     }
 
