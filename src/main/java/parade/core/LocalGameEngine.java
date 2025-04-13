@@ -140,7 +140,7 @@ public class LocalGameEngine extends AbstractGameEngine {
      */
     @Override
     public void start() throws IllegalStateException {
-        System.out.println(Ansi.HIDE_CURSOR); // hide cursor for the game, stop blinking top corner
+        hideCursor();
         try {
             menuManager.welcomeDisplay();
             logger.log("Prompting user to start game in menu");
@@ -268,8 +268,19 @@ public class LocalGameEngine extends AbstractGameEngine {
             logger.log("Unexpected error", e);
         } finally {
             menuManager.renderBye();
-            System.out.println(Ansi.SHOW_CURSOR);
         }
+    }
+
+    private void hideCursor() {
+        System.out.println(Ansi.HIDE_CURSOR); // hide cursor for the game, stop blinking top corner
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread(
+                                () -> {
+                                    System.out.println(
+                                            Ansi.SHOW_CURSOR); // show cursor when game ends
+                                    System.out.println(System.lineSeparator() + "Game ended.");
+                                }));
     }
 
     private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
