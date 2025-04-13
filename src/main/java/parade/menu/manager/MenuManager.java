@@ -2,6 +2,7 @@ package parade.menu.manager;
 
 import parade.card.Card;
 import parade.computer.ComputerEngine;
+import parade.core.result.GameResult;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
@@ -18,7 +19,7 @@ public interface MenuManager {
 
     LobbyMenuOption lobbyMenu(List<Player> lobby, int minPlayers, int maxPlayers);
 
-    void renderRoll(int diceRoll1, int diceRoll2, List<Player> players);
+    void diceRollDisplay(int diceRoll1, int diceRoll2, List<Player> players);
 
     String computerNameMenu();
 
@@ -28,13 +29,13 @@ public interface MenuManager {
 
     AbstractPlayerController removePlayerMenu(List<AbstractPlayerController> controllers);
 
-    int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard);
+    int playerTurnMenu(Player player, PlayCardData playCardData, boolean toDiscard);
 
     void playerMoveDisplay(Player player, Card playedCard, List<Card> cardsFromParade);
 
     void finalRoundDisplay();
 
-    void renderEndGame(Map<AbstractPlayerController, Integer> playerScores);
+    void endGameDisplay(Map<AbstractPlayerController, Integer> playerScores, GameResult result);
 
-    void renderBye();
+    void byeByeDisplay();
 }

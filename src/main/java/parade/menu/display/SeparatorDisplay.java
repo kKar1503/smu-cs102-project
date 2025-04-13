@@ -4,24 +4,24 @@ import parade.menu.base.AbstractDisplay;
 
 import java.util.function.Function;
 
-public class DynamicSeparator extends AbstractDisplay {
+public class SeparatorDisplay extends AbstractDisplay {
     private static final String SEPARATOR = "=";
 
     private final String separator;
 
-    public DynamicSeparator() {
+    public SeparatorDisplay() {
         this(null, null);
     }
 
-    public DynamicSeparator(Function<String, String> apply) {
+    public SeparatorDisplay(Function<String, String> apply) {
         this(null, apply);
     }
 
-    public DynamicSeparator(String text) {
+    public SeparatorDisplay(String text) {
         this(text, null);
     }
 
-    public DynamicSeparator(String text, Function<String, String> apply) {
+    public SeparatorDisplay(String text, Function<String, String> apply) {
         int textSize = text != null ? text.length() + 2 : 0;
         int leftSeparatorSize = (terminalWidth - textSize) / 2;
         int rightSeparatorSize = terminalWidth - textSize - leftSeparatorSize;

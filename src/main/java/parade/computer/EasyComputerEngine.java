@@ -14,14 +14,12 @@ import java.util.Random;
 public class EasyComputerEngine implements ComputerEngine {
     @Override
     public Card process(Player player, PlayCardData playCardData) {
-        // Randomly picks any card from the hand.
         int randIdx = new Random().nextInt(player.getHand().size());
         return player.getHand().get(randIdx);
     }
 
     @Override
     public Card discardCard(Player player, PlayCardData playCardData) {
-        // Randomly picks any card from the hand.
         int randIdx = new Random().nextInt(player.getHand().size());
         return player.getHand().get(randIdx);
     }

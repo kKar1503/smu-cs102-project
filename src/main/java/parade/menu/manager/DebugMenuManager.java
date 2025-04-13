@@ -1,6 +1,7 @@
 package parade.menu.manager;
 
-import parade.menu.display.DynamicSeparator;
+import parade.core.result.GameResult;
+import parade.menu.display.SeparatorDisplay;
 import parade.menu.menu.*;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
@@ -16,16 +17,26 @@ import java.util.*;
 public class DebugMenuManager extends AbstractMenuManager {
     @Override
     public void welcomeDisplay() throws IllegalStateException {
-        new DynamicSeparator("Welcome to Parade!", Ansi.PURPLE::apply).display();
+        new SeparatorDisplay("Welcome to Parade!", Ansi.PURPLE::apply).display();
     }
 
     @Override
-    public int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard) {
+    public void diceRollDisplay(int diceRoll1, int diceRoll2, List<Player> players) {
+        println("Rolling dice..");
+        println("Dice roll 1: " + diceRoll1);
+        println("Dice roll 2: " + diceRoll2);
+        flush();
+        super.diceRollDisplay(diceRoll1, diceRoll2, players);
+    }
+
+    @Override
+    public int playerTurnMenu(Player player, PlayCardData playCardData, boolean toDiscard) {
         return new DebugPlayerTurnMenu(player, playCardData, toDiscard).start();
     }
 
     @Override
-    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
+    public void endGameDisplay(
+            Map<AbstractPlayerController, Integer> playerScores, GameResult result) {
         println("Game Over!");
         for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
             println(entry.getKey().getPlayer().getName() + ": " + entry.getValue());
@@ -34,11 +45,7 @@ public class DebugMenuManager extends AbstractMenuManager {
     }
 
     @Override
-    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
-        println("Rolling dice..");
-        println("Dice roll 1: " + diceRoll1);
-        println("Dice roll 2: " + diceRoll2);
-        flush();
-        super.renderRoll(diceRoll1, diceRoll2, players);
+    public void byeByeDisplay() {
+        printlnFlush("Bye bye buddy.");
     }
 }

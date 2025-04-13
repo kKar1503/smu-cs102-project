@@ -28,13 +28,13 @@ public class HumanController extends AbstractPlayerController {
      */
     @Override
     public Card playCard(PlayCardData playCardData) {
-        int cardIndexToPlay = menuManager.renderPlayerTurn(player, playCardData, false);
+        int cardIndexToPlay = menuManager.playerTurnMenu(player, playCardData, false);
         return player.removeFromHand(cardIndexToPlay);
     }
 
     @Override
     public Card discardCard(PlayCardData playCardData) {
-        int cardIndexToRemove = menuManager.renderPlayerTurn(player, playCardData, true);
+        int cardIndexToRemove = menuManager.playerTurnMenu(player, playCardData, true);
         return player.removeFromHand(cardIndexToRemove);
     }
 }

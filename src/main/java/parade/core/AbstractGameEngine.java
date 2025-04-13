@@ -12,9 +12,9 @@ abstract class AbstractGameEngine {
     static final int MAX_PLAYERS = 6;
     static final int MIN_PLAYERS = 2;
 
-    final Deck deck = new Deck(); // The deck of cards used in the game
+    final Deck deck = new Deck();
     final PlayerControllerManager playerControllerManager;
-    final Parade parade; // The list of cards currently in the parade
+    final Parade parade;
 
     AbstractGameEngine() {
         playerControllerManager = new PlayerControllerManager();

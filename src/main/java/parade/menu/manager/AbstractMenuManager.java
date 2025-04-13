@@ -3,7 +3,7 @@ package parade.menu.manager;
 import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.menu.base.AbstractPrinter;
-import parade.menu.display.BoxedText;
+import parade.menu.display.BoxedTextDisplay;
 import parade.menu.display.FinalRoundDisplay;
 import parade.menu.menu.*;
 import parade.menu.option.LobbyMenuOption;
@@ -49,7 +49,7 @@ abstract class AbstractMenuManager extends AbstractPrinter implements MenuManage
     }
 
     @Override
-    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
+    public void diceRollDisplay(int diceRoll1, int diceRoll2, List<Player> players) {
         printfFlush(
                 "Dice roll: %d, %s will be starting first!%n",
                 diceRoll1 + diceRoll2, getChosenPlayerFromDice(diceRoll1 + diceRoll2, players));
@@ -61,16 +61,11 @@ abstract class AbstractMenuManager extends AbstractPrinter implements MenuManage
                 String.format(
                         "%s played: %s%n" + "and received: %n%s",
                         player.getName(), playedCard, cardsFromParade);
-        new BoxedText(displayText).display();
+        new BoxedTextDisplay(displayText).display();
     }
 
     @Override
     public void finalRoundDisplay() {
         new FinalRoundDisplay().display();
-    }
-
-    @Override
-    public void renderBye() {
-        printlnFlush("Bye bye buddy.");
     }
 }

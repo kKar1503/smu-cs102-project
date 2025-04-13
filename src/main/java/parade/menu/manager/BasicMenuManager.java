@@ -1,12 +1,12 @@
 package parade.menu.manager;
 
+import parade.core.result.GameResult;
 import parade.menu.display.*;
 import parade.menu.menu.*;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
-import parade.utils.Ansi;
 
 import java.util.*;
 
@@ -15,56 +15,23 @@ import java.util.*;
  * displaying game state and prompting the user via console.
  */
 public class BasicMenuManager extends AbstractMenuManager {
-    /**
-     * Renders the welcome banner for the game. Throws an exception if file is missing.
-     *
-     * @throws IllegalStateException if the resource file cannot be found
-     */
     @Override
     public void welcomeDisplay() throws IllegalStateException {
-        new DynamicSeparator("✨ Welcome to Parade! ✨", Ansi.PURPLE::apply);
+        new BasicWelcomeDisplay().display();
     }
 
     @Override
     public MainMenuOption mainMenu() {
-        return new AsciiMainMenu().start();
+        return new BasicMainMenu().start();
     }
 
-    /**
-     * Displays the turn information for a player including hand, board, and parade.
-     *
-     * @param player the current player
-     * @param playCardData the data for the current turn
-     * @param toDiscard indicates if the player should discard a card
-     */
     @Override
-    public int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard) {
+    public void diceRollDisplay(int diceRoll1, int diceRoll2, List<Player> players) {
         clear();
-        return new BasicPlayerTurnMenu(player, playCardData, toDiscard).start();
-    }
-
-    /**
-     * Renders the game ending screen with animation and final scores.
-     *
-     * @param playerScores final score map of all players
-     */
-    @Override
-    public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
-        new GameOverDisplay().display();
-        new EndGameScoreBoardDisplay(playerScores).display();
-    }
-
-    /**
-     * Renders an animated dice-rolling block with shaking effect. This is purely visual and does
-     * not determine any game outcome.
-     */
-    @Override
-    public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
-        clear();
-        new Dice(diceRoll1, diceRoll2).display();
+        new DiceDisplay(diceRoll1, diceRoll2).display();
         sleep();
         clear();
-        new BoxedText(
+        new BoxedTextDisplay(
                         String.format(
                                 "%s will play first!",
                                 getChosenPlayerFromDice(diceRoll1 + diceRoll2, players)),
@@ -74,9 +41,23 @@ public class BasicMenuManager extends AbstractMenuManager {
         sleep();
     }
 
-    /** Renders a simple farewell message at the end of the game session. */
     @Override
-    public void renderBye() {
-        printlnFlush(System.lineSeparator() + "THANK YOU FOR PLAYING! SEE YOU NEXT TIME!");
+    public int playerTurnMenu(Player player, PlayCardData playCardData, boolean toDiscard) {
+        clear();
+        return new BasicPlayerTurnMenu(player, playCardData, toDiscard).start();
+    }
+
+    @Override
+    public void endGameDisplay(
+            Map<AbstractPlayerController, Integer> playerScores, GameResult result) {
+        new GameOverDisplay().display();
+        new EndGameScoreBoardDisplay(playerScores).display();
+        new WinnerResultDisplay(playerScores, result).display();
+    }
+
+    @Override
+    public void byeByeDisplay() {
+        new ThankYouDisplay().display();
+        sleep(10_000, true);
     }
 }

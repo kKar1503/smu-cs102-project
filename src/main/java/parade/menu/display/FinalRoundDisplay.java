@@ -4,7 +4,7 @@ import parade.menu.base.MenuResource;
 
 public class FinalRoundDisplay extends AbstractFullScreenBlinkingDisplay {
     public FinalRoundDisplay() {
-        super(MenuResource.getArray(MenuResource.MenuResourceType.ASCII_FINAL));
+        super(MenuResource.getArray(MenuResource.MenuResourceType.FINAL));
     }
 
     @Override

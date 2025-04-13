@@ -16,15 +16,10 @@ import parade.utils.Ansi;
 
 import java.util.*;
 
-/**
- * Represents the game server for the Parade game. Manages players, the deck, the parade, and game
- * flow.
- */
 public class LocalGameEngine extends AbstractGameEngine {
     private final AbstractLogger logger;
     private final MenuManager menuManager;
 
-    /** Initializes the game server with a deck. */
     public LocalGameEngine() {
         logger = LoggerProvider.getInstance();
         menuManager = setupMenuProvider();
@@ -97,13 +92,11 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     private void rollDice() {
-        // "Roll" a die to decide who starts first
-        // Generate a number from 1 to 6
+        // Generate a number from 1 to 6 (number of faces on dice)
         Random dice = new Random();
         int diceRoll1 = dice.nextInt(1, 7);
         int diceRoll2 = dice.nextInt(1, 7);
-        menuManager.renderRoll(diceRoll1, diceRoll2, playerControllerManager.getPlayers());
-        // Sets the current player based on the dice roll
+        menuManager.diceRollDisplay(diceRoll1, diceRoll2, playerControllerManager.getPlayers());
         playerControllerManager.setCurrentPlayerIdx(diceRoll1 + diceRoll2);
         Player startingPlayer = playerControllerManager.peek().getPlayer();
         logger.logf(
@@ -112,16 +105,14 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     private void distributeCards() {
-        // Gives out card to everyone
         int numCardsToDraw = INITIAL_CARDS_PER_PLAYER * playerControllerManager.size();
         logger.logf(
                 "Dealing %d cards to %d players", numCardsToDraw, playerControllerManager.size());
-        List<Card> drawnCards = deck.pop(numCardsToDraw); // Draw all the cards first
+        List<Card> drawnCards = deck.pop(numCardsToDraw);
         logger.log("Drawn cards: " + Arrays.toString(drawnCards.toArray()));
 
         // Dish out the cards one by one, like real life you know? Like not getting the
-        // direct next
-        // card but alternating between players
+        // direct next card but alternating between players
         for (int i = 0; i < playerControllerManager.size(); i++) {
             AbstractPlayerController controller = playerControllerManager.next();
             for (int j = 0; j < INITIAL_CARDS_PER_PLAYER; j++) {
@@ -132,11 +123,6 @@ public class LocalGameEngine extends AbstractGameEngine {
         }
     }
 
-    /**
-     * Starts the game loop and manages game progression.
-     *
-     * @throws IllegalStateException if there are less than 2 players
-     */
     @Override
     public void start() throws IllegalStateException {
         hideCursor();
@@ -166,27 +152,21 @@ public class LocalGameEngine extends AbstractGameEngine {
 
             distributeCards();
 
-            // Game loop continues until the deck is empty or an end condition is met
             logger.log("Game loop starting");
             while (shouldGameContinue()) {
-                // Each player plays a card
                 AbstractPlayerController controller = playerControllerManager.next();
                 playerPlayCard(
                         controller,
                         new PlayCardData(
                                 playerControllerManager.getPlayerControllers(),
                                 parade,
-                                deck.size())); // Play a card from their hand
+                                deck.size()));
 
-                // Draw a card from the deck for the player
                 Card drawnCard = deck.pop();
                 controller.draw(drawnCard);
                 logger.logf("%s drew: %s", controller.getPlayer().getName(), drawnCard);
             }
 
-            logger.logf("Game loop finished");
-
-            // After the game loop finishes, the extra round is played.
             logger.log("Game loop finished, running final round");
             menuManager.finalRoundDisplay();
             for (int i = 0; i < playerControllerManager.size(); i++) {
@@ -196,10 +176,9 @@ public class LocalGameEngine extends AbstractGameEngine {
                         new PlayCardData(
                                 playerControllerManager.getPlayerControllers(),
                                 parade,
-                                deck.size())); // Play a card from their hand
+                                deck.size()));
             }
 
-            // Each player chooses 2 cards to discard
             for (int i = 0; i < playerControllerManager.size(); i++) {
                 AbstractPlayerController controller = playerControllerManager.next();
                 Player player = controller.getPlayer();
@@ -217,47 +196,15 @@ public class LocalGameEngine extends AbstractGameEngine {
                 }
             }
 
-            // Add remaining cards in players' hand to their board for score calculation
             for (int i = 0; i < playerControllerManager.size(); i++) {
                 playerControllerManager.next().moveCardsFromHandToBoard();
             }
 
             logger.log("Tabulating scores");
             Map<AbstractPlayerController, Integer> playerScores = tabulateScores();
-            menuManager.renderEndGame(playerScores);
-
-            // Declare the final results
             DeclareWinner declareWinner = new DeclareWinner();
-            AbstractResult result = declareWinner.evaluateScores(playerScores);
-
-            switch (result) {
-                case WinnerResult win -> {
-                    System.out.printf(
-                            "%s wins with %d points!%n",
-                            win.getPlayer().getPlayer().getName(),
-                            playerScores.get(win.getPlayer()));
-                }
-                case TieAndWinnerResult tie -> {
-                    System.out.printf(
-                            "Tie in score of %d points but %s wins with lesser number of cards%n",
-                            playerScores.get(tie.getPlayer()),
-                            tie.getPlayer().getPlayer().getName());
-                }
-                case TieAndNoWinnerResult overallTie -> {
-                    System.out.println("Overall tie with no winners");
-                    int numPlayers = overallTie.getPlayers().size();
-                    int score = playerScores.get(overallTie.getPlayers().get(0));
-                    for (int i = 0; i < numPlayers - 1; i++) {
-                        System.out.print(
-                                overallTie.getPlayers().get(i).getPlayer().getName() + ", ");
-                    }
-                    System.out.printf(
-                            "%s have the same score of %d points and same number of cards.%n",
-                            overallTie.getPlayers().get(numPlayers - 1).getPlayer().getName(),
-                            score);
-                }
-                default -> System.out.println("Error retrieving result");
-            }
+            GameResult result = declareWinner.evaluateScores(playerScores);
+            menuManager.endGameDisplay(playerScores, result);
         } catch (IllegalStateException e) {
             logger.log("Game engine error", e);
         } catch (MenuCancelledException e) {
@@ -265,7 +212,7 @@ public class LocalGameEngine extends AbstractGameEngine {
         } catch (Exception e) {
             logger.log("Unexpected error", e);
         } finally {
-            menuManager.renderBye();
+            menuManager.byeByeDisplay();
         }
     }
 
@@ -276,21 +223,21 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
-        // Playing card
         logger.logf("%s playing a card", player.getPlayer().getName());
         Card playedCard = player.playCard(playCardData);
         logger.logf(
                 "%s played and placed card into parade: %s",
                 player.getPlayer().getName(), playedCard);
 
-        // Place card in parade and receive cards from parade
-        List<Card> cardsFromParade = parade.placeCard(playedCard); // Apply parade logic
+        List<Card> cardsFromParade = parade.placeCard(playedCard);
         player.receiveFromParade(cardsFromParade.toArray(Card[]::new));
         logger.logf(
                 "%s received %d cards from parade to add to board: %s",
                 player.getPlayer().getName(),
                 cardsFromParade.size(),
                 Arrays.toString(cardsFromParade.toArray()));
+
+        menuManager.playerMoveDisplay(player.getPlayer(), playedCard, cardsFromParade);
     }
 
     private MenuManager setupMenuProvider() {

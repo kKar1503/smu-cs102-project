@@ -40,7 +40,7 @@ public class EndGameScoreBoardDisplay extends AbstractDisplay {
                         + "┴"
                         + "─".repeat(SCORE_COL_WIDTH + 2)
                         + "┘");
-        scoreboard = new HorizontallyCentralisedDisplay(table.toArray(String[]::new));
+        this.scoreboard = new HorizontallyCentralisedDisplay(table.toArray(String[]::new));
     }
 
     @Override

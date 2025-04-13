@@ -4,7 +4,7 @@ import parade.menu.base.AbstractDisplay;
 
 import java.util.Arrays;
 
-public class BoxedText extends AbstractDisplay {
+public class BoxedTextDisplay extends AbstractDisplay {
     private static final String HORIZONTAL = "─";
     private static final String VERTICAL = "│";
     private static final String TOP_LEFT = "┌";
@@ -19,7 +19,7 @@ public class BoxedText extends AbstractDisplay {
     private final int topOffset;
     private final int leftOffset;
 
-    public BoxedText(String text, int padding, boolean centralised) {
+    public BoxedTextDisplay(String text, int padding, boolean centralised) {
         this.text = text.split(NEW_LINE);
         this.xPadding = padding;
         this.yPadding = padding / 2;
@@ -29,11 +29,11 @@ public class BoxedText extends AbstractDisplay {
         this.leftOffset = centralised ? (terminalWidth - textWidth - this.xPadding * 2 - 2) / 2 : 0;
     }
 
-    public BoxedText(String text, int padding) {
+    public BoxedTextDisplay(String text, int padding) {
         this(text, padding, true);
     }
 
-    public BoxedText(String text) {
+    public BoxedTextDisplay(String text) {
         this(text, 1, true);
     }
 

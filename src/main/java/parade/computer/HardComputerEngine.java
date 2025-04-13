@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * The HardComputer class represents an AI player with an advanced strategy. This AI minimises its
@@ -32,19 +31,17 @@ public class HardComputerEngine implements ComputerEngine {
         List<Card> hand = new ArrayList<>(player.getHand());
 
         for (Card candidateCard : hand) {
-            Parade paradeCopy1 = new Parade(playCardData.getParade()); // Copy of parade
-            List<Card> tempBoard = new ArrayList<>(player.getBoard()); // Copy of player’s board
+            Parade paradeCopy1 = new Parade(playCardData.getParade());
+            List<Card> tempBoard = new ArrayList<>(player.getBoard());
 
-            List<Card> takenCards =
-                    simulateParadeRemoval(
-                            paradeCopy1.getCards(), candidateCard); // List of removed cards
-            tempBoard.addAll(takenCards); // added removed cards to temp board
+            List<Card> takenCards = simulateParadeRemoval(paradeCopy1.getCards(), candidateCard);
+            tempBoard.addAll(takenCards);
             List<Player> currentPlayers = new ArrayList<>();
             for (AbstractPlayerController token : playCardData.getOtherPlayers()) {
                 currentPlayers.add(token.getPlayer());
             }
             currentPlayers.add(player);
-            // why just one colour, list of majority colours
+
             List<Colour> majorityColours =
                     decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
             int currentScore = calculateScore(tempBoard, majorityColours);
@@ -66,7 +63,8 @@ public class HardComputerEngine implements ComputerEngine {
                     Map<Player, List<Card>> currentBoardMap = getPlayerBoardMaps(currentPlayers);
                     currentBoardMap.put(player, tempBoard);
 
-                    List<Colour> oppColours = decideMajority(otherPlayer, currentPlayers, currentBoardMap);
+                    List<Colour> oppColours =
+                            decideMajority(otherPlayer, currentPlayers, currentBoardMap);
                     int opponentScore = calculateScore(tempOppBoard, oppColours);
                     bestOpponentScore = Math.min(bestOpponentScore, opponentScore);
                 }
@@ -91,12 +89,7 @@ public class HardComputerEngine implements ComputerEngine {
         return bestCard;
     }
 
-    /**
-     * Simulates playing a card and collecting the appropriate cards from the parade. Modifies the
-     * parade by removing collected cards.
-     */
     public List<Card> simulateParadeRemoval(List<Card> cards, Card placeCard) {
-
         List<Card> removedCards = new ArrayList<>();
 
         if (cards.size() > placeCard.getNumber()) {
@@ -114,7 +107,6 @@ public class HardComputerEngine implements ComputerEngine {
         return removedCards;
     }
 
-    /** Calculates the score of a board based on the card majority rules. */
     private int calculateScore(List<Card> board, List<Colour> majorityColour) {
         int score = 0;
         for (Card card : board) {
@@ -127,7 +119,6 @@ public class HardComputerEngine implements ComputerEngine {
         return score;
     }
 
-    /** Counts the number of each colour in the list of cards. */
     private Map<Colour, Integer> countColours(List<Card> cards) {
         Map<Colour, Integer> colourCount = new HashMap<>();
 
@@ -145,7 +136,6 @@ public class HardComputerEngine implements ComputerEngine {
         return colourCount;
     }
 
-    /** Determines the majority colour(s) for a given player. */
     private List<Colour> decideMajority(
             Player targetPlayer, List<Player> allPlayers, Map<Player, List<Card>> playerCards) {
         if (playerCards == null || targetPlayer == null) {
@@ -218,11 +208,10 @@ public class HardComputerEngine implements ComputerEngine {
                 }
                 toAdd.add(nestedCard);
             }
-            for (Card card : toAdd) {
-                tempBoard.add(card);
-            }
+            tempBoard.addAll(toAdd);
+
             List<Colour> majorityColours =
-            decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
+                    decideMajority(player, currentPlayers, getPlayerBoardMaps(currentPlayers));
             int currentScore = calculateScore(tempBoard, majorityColours);
             if (currentScore < lowestScore) {
                 worstCard = candidateCard;

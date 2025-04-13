@@ -7,7 +7,7 @@ import java.util.*;
 
 public class DeclareWinner {
 
-    public AbstractResult evaluateScores(Map<AbstractPlayerController, Integer> playerScores) {
+    public GameResult evaluateScores(Map<AbstractPlayerController, Integer> playerScores) {
 
         int lowestScore = Integer.MAX_VALUE;
         List<AbstractPlayerController> resultList = new ArrayList<>();
@@ -18,7 +18,8 @@ public class DeclareWinner {
             int currentScore = playerScores.get(controller);
             if (currentScore < lowestScore) {
                 lowestScore = currentScore;
-                resultList.clear(); // Remove all existing players if there is one with a lower score
+                resultList
+                        .clear(); // Remove all existing players if there is one with a lower score
                 resultList.add(controller);
                 tieScoreWithWinner = false;
             } else if (currentScore == lowestScore) {

@@ -6,7 +6,7 @@ import parade.menu.base.MenuResource.MenuResourceType;
 
 import java.util.Random;
 
-public class Dice extends AbstractDisplay {
+public class DiceDisplay extends AbstractDisplay {
     private static final String[] DICE_ROLLING =
             MenuResource.getArray(MenuResourceType.DICE_ROLLING);
 
@@ -19,7 +19,7 @@ public class Dice extends AbstractDisplay {
 
     private final String[] dice;
 
-    public Dice(int dice1, int dice2) {
+    public DiceDisplay(int dice1, int dice2) {
         String[] die1 = getDiceFromNumber(dice1);
         String[] die2 = getDiceFromNumber(dice2);
         this.dice = new String[die1.length];
