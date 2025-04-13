@@ -18,11 +18,11 @@ public class DeclareWinner {
             int currentScore = playerScores.get(controller);
             if (currentScore < lowestScore) {
                 lowestScore = currentScore;
-                resultList
-                        .clear(); // Remove all existing players if there is one with a lower score
+                resultList.clear(); // Remove all existing players if there is one with a lower score
                 resultList.add(controller);
                 tieScoreWithWinner = false;
             } else if (currentScore == lowestScore) {
+                tieScoreWithWinner = true;
                 // Check if current player and potential winners all have the same number of cards
                 boolean sameCardCount = true;
                 for (AbstractPlayerController resultController : resultList) {
@@ -43,7 +43,6 @@ public class DeclareWinner {
                     if (player.getBoard().size() < resultPlayer.getBoard().size()) {
                         resultList.clear();
                         resultList.add(controller);
-                        tieScoreWithWinner = true;
                     }
                 }
             }
