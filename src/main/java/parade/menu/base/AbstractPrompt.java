@@ -10,7 +10,7 @@ public abstract class AbstractPrompt<T> extends AbstractPrinter {
     public abstract T prompt() throws MenuCancelledException;
 
     protected String nextLine() throws MenuCancelledException {
-        String input = reader.readLine();
+        String input = reader.readLine(PROMPT_MARKER);
         if (input.equalsIgnoreCase("x")) {
             throw new MenuCancelledException();
         }

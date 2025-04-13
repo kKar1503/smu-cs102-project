@@ -26,7 +26,6 @@ public class NumericPrompt extends AbstractPrompt<Integer> {
     public Integer prompt() {
         while (true) {
             try {
-                printFlush(PROMPT_MARKER);
                 String line = nextLine();
                 int choice = Integer.parseInt(line);
                 if (choice < 1 || choice > promptRange) {

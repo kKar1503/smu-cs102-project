@@ -18,7 +18,6 @@ public class StringPrompt extends AbstractPrompt<String> {
     public String prompt() {
         while (true) {
             try {
-                printFlush(PROMPT_MARKER);
                 String input = nextLine();
 
                 if (rejectEmptyInput && input.isEmpty()) {

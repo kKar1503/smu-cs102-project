@@ -41,6 +41,7 @@ public class BasicMenuManager extends AbstractMenuManager {
      */
     @Override
     public int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard) {
+        clear();
         return new BasicPlayerTurnMenu(player, playCardData, toDiscard).start();
     }
 

@@ -1,8 +1,7 @@
 package parade.menu.manager;
 
 import parade.menu.base.MenuResource;
-import parade.menu.display.AsciiWelcome;
-import parade.menu.display.Dice;
+import parade.menu.display.*;
 import parade.menu.menu.*;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
@@ -34,6 +33,7 @@ public class AdvancedMenuManager extends AbstractMenuManager {
      */
     @Override
     public int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard) {
+        clear();
         return new AdvancedPlayerTurnMenu(player, playCardData, toDiscard).start();
     }
 
@@ -45,10 +45,18 @@ public class AdvancedMenuManager extends AbstractMenuManager {
 
     @Override
     public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
-        new Dice(diceRoll1, diceRoll2).display();
-        sleep(2500);
         clear();
-        super.renderRoll(diceRoll1, diceRoll2, players);
+        new Dice(diceRoll1, diceRoll2).display();
+        sleep();
+        clear();
+        new BoxedText(
+                        String.format(
+                                "%s will play first!",
+                                getChosenPlayerFromDice(diceRoll1 + diceRoll2, players)),
+                        2,
+                        true)
+                .display();
+        sleep();
     }
 
     /**
