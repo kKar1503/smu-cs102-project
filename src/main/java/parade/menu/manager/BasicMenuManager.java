@@ -1,10 +1,8 @@
 package parade.menu.manager;
 
-import parade.card.Card;
 import parade.menu.base.MenuResource;
 import parade.menu.base.MenuResource.MenuResourceType;
-import parade.menu.display.Dice;
-import parade.menu.display.DynamicSeparator;
+import parade.menu.display.*;
 import parade.menu.menu.*;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
@@ -38,203 +36,12 @@ public class BasicMenuManager extends AbstractMenuManager {
      * Displays the turn information for a player including hand, board, and parade.
      *
      * @param player the current player
-     * @param newlyDrawnCard the most recent drawn card
      * @param playCardData the data for the current turn
      * @param toDiscard indicates if the player should discard a card
      */
     @Override
-    public void renderPlayerTurn(
-            Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard) {
-        // print player's name and drawn card
-        System.out.println(System.lineSeparator() + player.getName() + "'s turn.");
-        if (newlyDrawnCard != null) {
-            System.out.println("You drew:" + System.lineSeparator());
-            String[] formattedCard = rendersSingleCard(newlyDrawnCard);
-            for (String line : formattedCard) {
-                System.out.println(line);
-            }
-        }
-
-        renderCardList(
-                " Parade (read left to right, top to bottom!) ",
-                playCardData.getParade().getCards());
-
-        List<Card> board = new ArrayList<>(player.getBoard());
-        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        renderCardList(" Your scoring board ", board);
-        renderCardList(" Cards in your hand ", player.getHand());
-
-        System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
-    }
-
-    /**
-     * Formats a single card as a short text string.
-     *
-     * @param card the card to format
-     * @return formatted string representation
-     */
-    public String printCards(Card card) {
-        return "[" + card.getNumber() + " " + card.getColour() + "]";
-    }
-
-    /**
-     * Renders a list of cards horizontally within a styled bordered box. Cards are rendered using
-     * their ASCII representation, with automatic line wrapping and optional index labeling for card
-     * selection. The cards are sorted using their natural order as defined by the Comparable
-     * implementation.
-     *
-     * @param label the section label to be displayed as the header of the box
-     * @param cards the list of cards to render
-     */
-    public void renderCardList(String label, List<Card> cards) {
-        // Handle null or empty card list by rendering a placeholder box
-        if (cards == null || cards.isEmpty()) {
-            System.out.println();
-            System.out.println("╔" + Ansi.PURPLE.apply(label) + "═".repeat(40) + "╗");
-            System.out.println("║ No cards to display." + " ".repeat(39) + "║");
-            System.out.println("╚" + "═".repeat(60) + "╝");
-            return;
-        }
-
-        // Defensive copy to avoid modifying unmodifiable lists
-        List<Card> sortedCards = new ArrayList<>(cards);
-
-        // Sort cards using their natural order (by color then number)
-        Collections.sort(sortedCards);
-
-        // Layout constants
-        final int cardWidth = 20; // Width of each individual card (in characters)
-        final int spacing = 1; // Spacing between cards
-        final int maxWidth = 100; // Maximum content width before wrapping
-
-        // Determine how many cards can fit on a row given spacing constraints
-        int cardsPerRow = Math.max(1, (maxWidth + spacing) / (cardWidth + spacing));
-        int totalCards = sortedCards.size();
-
-        // Pre-render all card ASCII lines to optimize row-based printing
-        List<String[]> renderedCards = new ArrayList<>();
-        for (Card card : sortedCards) {
-            renderedCards.add(rendersSingleCard(card));
-        }
-
-        // Each card is rendered over a fixed number of lines
-        int linesPerCard = renderedCards.get(0).length;
-
-        // Force at least 4 cards per row to maintain layout consistency for small hands
-        int maxCardsInRow = Math.max(4, Math.min(cardsPerRow, totalCards));
-        int contentWidth = maxCardsInRow * cardWidth + (maxCardsInRow - 1) * spacing;
-
-        // Construct top and bottom borders dynamically based on label and width
-        String topBorder =
-                "╔"
-                        + Ansi.PURPLE.apply(label)
-                        + "═".repeat(Math.max(0, contentWidth - label.trim().length()))
-                        + "╗";
-        String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
-
-        // Print the top border with the section label
-        System.out.println(System.lineSeparator() + topBorder);
-
-        // Render cards row by row
-        for (int start = 0; start < totalCards; start += cardsPerRow) {
-            int end = Math.min(start + cardsPerRow, totalCards);
-            int actualCardsInRow = end - start;
-
-            // Render index labels only for the player's hand to allow selection
-            if (label.trim().equals("Cards in your hand")) {
-                System.out.print("║ ");
-                for (int j = start; j < end; j++) {
-                    String index = "(" + (j + 1) + ")";
-                    int padLeft = (cardWidth - index.length()) / 2;
-                    int padRight = cardWidth - index.length() - padLeft;
-                    System.out.print(" ".repeat(padLeft) + index + " ".repeat(padRight));
-                    if (j < end - 1) System.out.print(" ");
-                }
-
-                // Pad the line if there are fewer than the expected number of cards
-                int padCards = maxCardsInRow - actualCardsInRow;
-                if (padCards > 0) {
-                    int pad = padCards * (cardWidth + spacing);
-                    System.out.print(" ".repeat(pad));
-                }
-
-                System.out.println(" ║");
-            }
-
-            // Render each line of the card's ASCII representation
-            for (int line = 0; line < linesPerCard; line++) {
-                System.out.print("║ ");
-                for (int j = start; j < end; j++) {
-                    System.out.print(renderedCards.get(j)[line]);
-                    if (j < end - 1) System.out.print(" ");
-                }
-
-                // Pad any extra space if the current row has fewer cards than the max
-                int padCards = maxCardsInRow - actualCardsInRow;
-                if (padCards > 0) {
-                    int pad = padCards * (cardWidth + spacing);
-                    System.out.print(" ".repeat(pad));
-                }
-
-                System.out.println(" ║");
-            }
-        }
-
-        // Print the bottom border to close the card box
-        System.out.println(bottomBorder);
-    }
-
-    /**
-     * Colors a string with background based on the given color name.
-     *
-     * @param colour the name of the color
-     * @param text the text to be colorized
-     * @return colored string
-     */
-    public String colorPrinter(String colour, String text) {
-        return switch (colour) {
-            case "RED" -> Ansi.RED_BACKGROUND.apply(text);
-            case "BLUE" -> Ansi.BLUE_BACKGROUND_BRIGHT.apply(text);
-            case "GREEN" -> Ansi.GREEN_BACKGROUND_BRIGHT.apply(text);
-            case "YELLOW" -> Ansi.YELLOW_BACKGROUND_BRIGHT.apply(text);
-            case "PURPLE" -> Ansi.PURPLE_BACKGROUND.apply(text);
-            default -> Ansi.BLACK_BACKGROUND.apply(text);
-        };
-    }
-
-    /**
-     * Returns the ASCII art representation of a single card.
-     *
-     * @param card the card to render
-     * @return multi-line string representation
-     */
-    public String[] rendersSingleCard(Card card) {
-        String colorCode = card.getColour().name();
-        int width = 18;
-        String numberStr = String.valueOf(card.getNumber());
-        String colorName = card.getColour().name();
-        int padding = (width - colorName.length()) / 2;
-        String centeredColorName =
-                " ".repeat(padding) + colorName + " ".repeat(width - colorName.length() - padding);
-
-        String[] lines = {
-            "┌" + "─".repeat(width) + "┐",
-            String.format("│ %-2s%s│", numberStr, " ".repeat(width - 3)),
-            String.format("│%s│", " ".repeat(width)),
-            String.format("│%s│", centeredColorName),
-            String.format("│%-" + width + "s│", "      /\\__/\\"),
-            String.format("│%-" + width + "s│", "     | @ . @|"),
-            String.format("│%-" + width + "s│", "      \\  -  /"),
-            String.format("│%-" + width + "s│", "  ////|     |\\\\\\\\"),
-            String.format("│%-" + width + "s│", "   ==\\|__|__|/=="),
-            String.format("│%s│", " ".repeat(width)),
-            String.format("│%s%2s │", " ".repeat(width - 3), numberStr),
-            "└" + "─".repeat(width) + "┘"
-        };
-
-        return Arrays.stream(lines)
-                .map(line -> colorPrinter(colorCode, line))
-                .toArray(String[]::new);
+    public int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard) {
+        return new BasicPlayerTurnMenu(player, playCardData, toDiscard).start();
     }
 
     /**
@@ -245,52 +52,48 @@ public class BasicMenuManager extends AbstractMenuManager {
     @Override
     public void renderEndGame(Map<AbstractPlayerController, Integer> playerScores) {
         String asciiFinal = MenuResource.get(MenuResourceType.ASCII_FINAL);
-        try {
-            for (int i = 0; i < 30; i++) {
-                clearConsole();
-                System.out.println(Ansi.PURPLE.apply(asciiFinal));
-                Thread.sleep(100);
-            }
-
-            for (int i = 0; i < 6; i++) {
-                clearConsole();
-                System.out.println(Ansi.PURPLE.apply(asciiFinal));
-            }
-
-            int playerColWidth = 32;
-            int scoreColWidth = 9;
-            String header =
-                    String.format(
-                            "        ┌%s┐%n"
-                                    + "        │ %-"
-                                    + playerColWidth
-                                    + "s │ %-"
-                                    + scoreColWidth
-                                    + "s │%n"
-                                    + "        ├%s┤",
-                            "─".repeat(playerColWidth + 2 + scoreColWidth + 3),
-                            "Player",
-                            "Score",
-                            "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
-            System.out.println(header);
-
-            for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
-                System.out.printf(
-                        "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
-                        entry.getKey().getPlayer().getName(),
-                        entry.getValue());
-            }
-
-            System.out.println(
-                    "        └"
-                            + "─".repeat(playerColWidth + 2)
-                            + "┴"
-                            + "─".repeat(scoreColWidth + 2)
-                            + "┘");
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        for (int i = 0; i < 30; i++) {
+            clear();
+            printlnFlush(Ansi.PURPLE.apply(asciiFinal));
+            sleep(100);
         }
+
+        for (int i = 0; i < 6; i++) {
+            clear();
+            printlnFlush(Ansi.PURPLE.apply(asciiFinal));
+        }
+
+        int playerColWidth = 32;
+        int scoreColWidth = 9;
+        String header =
+                String.format(
+                        "        ┌%s┐%n"
+                                + "        │ %-"
+                                + playerColWidth
+                                + "s │ %-"
+                                + scoreColWidth
+                                + "s │%n"
+                                + "        ├%s┤",
+                        "─".repeat(playerColWidth + 2 + scoreColWidth + 3),
+                        "Player",
+                        "Score",
+                        "─".repeat(playerColWidth + 2) + "┼" + "─".repeat(scoreColWidth + 2));
+        println(header);
+
+        for (Map.Entry<AbstractPlayerController, Integer> entry : playerScores.entrySet()) {
+            printf(
+                    "        │ %-" + playerColWidth + "s │ %" + scoreColWidth + "d │%n",
+                    entry.getKey().getPlayer().getName(),
+                    entry.getValue());
+        }
+
+        println(
+                "        └"
+                        + "─".repeat(playerColWidth + 2)
+                        + "┴"
+                        + "─".repeat(scoreColWidth + 2)
+                        + "┘");
+        flush();
     }
 
     /**
@@ -299,22 +102,23 @@ public class BasicMenuManager extends AbstractMenuManager {
      */
     @Override
     public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
+        clear();
         new Dice(diceRoll1, diceRoll2).display();
-        super.renderRoll(diceRoll1, diceRoll2, players);
-    }
-
-    /**
-     * Clears the console screen using ANSI escape codes. This helps give the illusion of a dynamic
-     * animation.
-     */
-    private void clearConsole() {
-        System.out.print(Ansi.CLEAR);
-        System.out.flush();
+        sleep();
+        clear();
+        new BoxedText(
+                        String.format(
+                                "%s will play first!",
+                                getChosenPlayerFromDice(diceRoll1 + diceRoll2, players)),
+                        2,
+                        true)
+                .display();
+        sleep();
     }
 
     /** Renders a simple farewell message at the end of the game session. */
     @Override
     public void renderBye() {
-        System.out.println(System.lineSeparator() + "THANK YOU FOR PLAYING! SEE YOU NEXT TIME!");
+        printlnFlush(System.lineSeparator() + "THANK YOU FOR PLAYING! SEE YOU NEXT TIME!");
     }
 }

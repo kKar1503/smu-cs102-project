@@ -17,17 +17,20 @@ public class Dice extends AbstractDisplay {
     private static final String[] DICE_FIVE = MenuResource.getArray(MenuResourceType.DICE_FIVE);
     private static final String[] DICE_SIX = MenuResource.getArray(MenuResourceType.DICE_SIX);
 
-    private final String[] dice1;
-    private final String[] dice2;
-    private final int diceWidth;
+    private final String[] dice;
 
     public Dice(int dice1, int dice2) {
-        this.dice1 = getDiceString(dice1);
-        this.dice2 = getDiceString(dice2);
-        this.diceWidth = this.dice1[0].length();
+        String[] die1 = getDiceFromNumber(dice1);
+        String[] die2 = getDiceFromNumber(dice2);
+        this.dice = new String[die1.length];
+
+        String middleSpace = " ".repeat((terminalWidth % 2) + 2);
+        for (int i = 0; i < die1.length; i++) {
+            this.dice[i] = die1[i] + middleSpace + die2[i];
+        }
     }
 
-    private String[] getDiceString(int dice) {
+    private String[] getDiceFromNumber(int dice) {
         return switch (dice) {
             case 1 -> DICE_ONE;
             case 2 -> DICE_TWO;
@@ -41,37 +44,30 @@ public class Dice extends AbstractDisplay {
 
     @Override
     public void display() {
-        int topOffset = (terminalHeight - DICE_ROLLING.length) / 2;
-        int leftOffset = (terminalWidth - DICE_ROLLING[0].length()) / 2;
+        CentralisedDisplay[] rollingDice = generateRollingDiceVariations();
+        CentralisedDisplay dice = new CentralisedDisplay(this.dice, 0, 0);
+
         for (int i = 0; i < 15; i++) {
             clear();
-            for (int j = 0; j < topOffset; j++) {
-                println();
-            }
 
-            String offset = " ".repeat(new Random().nextInt(7) + leftOffset);
+            CentralisedDisplay rollingDie = rollingDice[new Random().nextInt(rollingDice.length)];
 
-            for (String line : DICE_ROLLING) {
-                println(offset + line);
-            }
+            rollingDie.display();
             flush();
 
-            sleep(100); // short delay for shaking effect
+            sleep(100, false); // short delay for shaking effect
         }
 
         clear();
-        topOffset = (terminalHeight - dice1.length) / 2;
-        leftOffset = (terminalWidth / 2) - diceWidth - 1;
-        String middleSpace = " ".repeat((terminalWidth % 2) + 2);
-        String leftPadding = " ".repeat(leftOffset);
-        for (int j = 0; j < topOffset; j++) {
-            println();
-        }
-        for (int i = 0; i < dice1.length; i++) {
-            println(leftPadding + dice1[i] + middleSpace + dice2[i]);
-        }
+        dice.display();
         flush();
-        sleep(2500);
-        clear();
+    }
+
+    private CentralisedDisplay[] generateRollingDiceVariations() {
+        CentralisedDisplay[] rollingDice = new CentralisedDisplay[7];
+        for (int i = 0; i < 7; i++) {
+            rollingDice[i] = new CentralisedDisplay(DICE_ROLLING, 0, i);
+        }
+        return rollingDice;
     }
 }

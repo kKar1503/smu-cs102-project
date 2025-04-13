@@ -3,15 +3,11 @@ package parade.player.controller;
 import parade.card.Card;
 import parade.menu.manager.MenuManager;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
 /**
  * The Human class represents a human player in the game. It implements the Player interface and
  * provides functionality for a human player such as drawing and playing cards.
  */
 public class HumanController extends AbstractPlayerController {
-    private Card latestDrawnCard;
     private final MenuManager menuManager;
 
     /**
@@ -32,55 +28,13 @@ public class HumanController extends AbstractPlayerController {
      */
     @Override
     public Card playCard(PlayCardData playCardData) {
-        Scanner sc = new Scanner(System.in);
-        int input;
-        menuManager.renderPlayerTurn(player, latestDrawnCard, playCardData, false);
-        while (true) {
-            try {
-                input = sc.nextInt();
-                if (input < 1 || input > player.getHand().size()) {
-                    throw new IndexOutOfBoundsException();
-                }
-                break; // Valid input received
-            } catch (InputMismatchException e) {
-                System.out.println(
-                        System.lineSeparator() + "Invalid input. Please enter a number.");
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(
-                        System.lineSeparator() + "Invalid choice. Please select a valid index.");
-            }
-            System.out.println("Select a card to play:");
-            sc.nextLine();
-        }
-
-        latestDrawnCard = null;
-        return player.removeFromHand(input - 1);
+        int cardIndexToPlay = menuManager.renderPlayerTurn(player, playCardData, false);
+        return player.removeFromHand(cardIndexToPlay);
     }
 
     @Override
     public Card discardCard(PlayCardData playCardData) {
-        Scanner sc = new Scanner(System.in);
-        int input;
-        menuManager.renderPlayerTurn(player, null, playCardData, true);
-        while (true) {
-            try {
-                input = sc.nextInt();
-
-                if (input < 1 || input > player.getHand().size()) {
-                    throw new IndexOutOfBoundsException();
-                }
-                break; // Valid input
-            } catch (InputMismatchException e) {
-                System.out.println(
-                        System.lineSeparator() + "Invalid input. Please enter a number.");
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(
-                        System.lineSeparator() + "Invalid choice. Please select a valid index.");
-            }
-            System.out.print("Select a card to discard:" + System.lineSeparator());
-            sc.nextLine();
-        }
-
-        return player.removeFromHand(input - 1);
+        int cardIndexToRemove = menuManager.renderPlayerTurn(player, playCardData, true);
+        return player.removeFromHand(cardIndexToRemove);
     }
 }

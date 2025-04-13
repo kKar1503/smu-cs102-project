@@ -14,6 +14,7 @@ import parade.player.Player;
 import parade.player.controller.*;
 import parade.settings.SettingKey;
 import parade.settings.Settings;
+import parade.utils.Ansi;
 
 import java.util.*;
 
@@ -136,6 +137,7 @@ public class LocalGameEngine extends AbstractGameEngine {
      */
     @Override
     public void start() throws IllegalStateException {
+        System.out.println(Ansi.HIDE_CURSOR); // hide cursor for the game, stop blinking top corner
         try {
             menuManager.welcomeDisplay();
             logger.log("Prompting user to start game in menu");
@@ -263,6 +265,7 @@ public class LocalGameEngine extends AbstractGameEngine {
             logger.log("Unexpected error", e);
         } finally {
             menuManager.renderBye();
+            System.out.println(Ansi.SHOW_CURSOR);
         }
     }
 

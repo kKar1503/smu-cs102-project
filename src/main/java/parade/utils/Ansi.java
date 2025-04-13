@@ -1,6 +1,18 @@
 package parade.utils;
 
 public enum Ansi {
+    // Cursor
+    HIDE_CURSOR("\033[?25l"), // Hide cursor
+    SHOW_CURSOR("\033[?25h"), // Show cursor
+
+    // Cursor Position
+    MOVE_CURSOR_TO_TOP_LEFT("\033[H"), // Move cursor to top left
+    MOVE_CURSOR_TO_FORMAT("\033[%d;%dH"), // Move cursor to specific position
+    MOVE_CURSOR_LEFT("\033[1D"), // Move cursor left
+    MOVE_CURSOR_RIGHT("\033[1C"), // Move cursor right
+    MOVE_CURSOR_UP("\033[1A"), // Move cursor up
+    MOVE_CURSOR_DOWN("\033[1B"), // Move cursor down
+
     // Reset
     RESET("\033[0m"), // Text Reset
 

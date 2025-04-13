@@ -26,8 +26,7 @@ public interface MenuManager {
 
     AbstractPlayerController removePlayerMenu(List<AbstractPlayerController> controllers);
 
-    void renderPlayerTurn(
-            Player player, Card newlyDrawnCard, PlayCardData playCardData, boolean toDiscard);
+    int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard);
 
     void renderEndGame(Map<AbstractPlayerController, Integer> playerScores);
 

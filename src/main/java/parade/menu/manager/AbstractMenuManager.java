@@ -1,6 +1,7 @@
 package parade.menu.manager;
 
 import parade.computer.ComputerEngine;
+import parade.menu.base.AbstractPrinter;
 import parade.menu.menu.*;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
@@ -9,7 +10,7 @@ import parade.player.controller.AbstractPlayerController;
 
 import java.util.List;
 
-abstract class AbstractMenuManager implements MenuManager {
+abstract class AbstractMenuManager extends AbstractPrinter implements MenuManager {
     @Override
     public MainMenuOption mainMenu() {
         return new MainMenu().start();
@@ -40,15 +41,19 @@ abstract class AbstractMenuManager implements MenuManager {
         return new HumanNameMenu().start();
     }
 
+    String getChosenPlayerFromDice(int diceSum, List<Player> players) {
+        return players.get((diceSum) % players.size()).getName();
+    }
+
     @Override
     public void renderRoll(int diceRoll1, int diceRoll2, List<Player> players) {
-        String playerName = players.get((diceRoll1 + diceRoll2) % players.size()).getName();
-        System.out.printf(
-                "Dice roll: %d, %s will be starting first!%n", diceRoll1 + diceRoll2, playerName);
+        printfFlush(
+                "Dice roll: %d, %s will be starting first!%n",
+                diceRoll1 + diceRoll2, getChosenPlayerFromDice(diceRoll1 + diceRoll2, players));
     }
 
     @Override
     public void renderBye() {
-        System.out.println("Bye bye buddy.");
+        printlnFlush("Bye bye buddy.");
     }
 }
