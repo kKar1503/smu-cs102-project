@@ -42,7 +42,7 @@ public enum Ansi {
 
     // High Intensity backgrounds
     GREEN_BACKGROUND_BRIGHT("\033[0;102m"), // GREEN
-    YELLOW_BACKGROUND_BRIGHT("\033[0;103m"), // YELLOW
+    YELLOW_BACKGROUND_BRIGHT("\033[48;5;179m"), // YELLOW
     BLUE_BACKGROUND_BRIGHT("\033[0;104m"), // BLUE
     RED_BACKGROUND_BRIGHT("\033[0;101m"), // Bright Red
     PURPLE_BACKGROUND_BRIGHT("\033[0;105m"); // Bright Purple

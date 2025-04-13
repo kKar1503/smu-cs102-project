@@ -154,7 +154,7 @@ public class BasicPlayerTurnMenu extends AbstractMenu<Integer> {
             case "RED" -> Ansi.RED_BACKGROUND.apply(text);
             case "BLUE" -> Ansi.BLUE_BACKGROUND_BRIGHT.apply(text);
             case "GREEN" -> Ansi.GREEN_BACKGROUND_BRIGHT.apply(text);
-            case "YELLOW" -> Ansi.YELLOW_BACKGROUND_BRIGHT.apply(text);
+            case "YELLOW" -> Ansi.apply(text, Ansi.YELLOW_BACKGROUND_BRIGHT, Ansi.BLACK);
             case "PURPLE" -> Ansi.PURPLE_BACKGROUND.apply(text);
             default -> Ansi.BLACK_BACKGROUND.apply(text);
         };
