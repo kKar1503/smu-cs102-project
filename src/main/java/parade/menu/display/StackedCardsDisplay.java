@@ -47,13 +47,9 @@ public class StackedCardsDisplay extends AbstractCardsDisplay {
             return;
         }
 
-        // Sort cards for consistent stacking order
-        List<Card> cardsCopy = new ArrayList<>(cards);
-        cardsCopy.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-
         // Group cards by colour
         Map<Colour, List<Card>> colourCardMap = new LinkedHashMap<>();
-        for (Card card : cardsCopy) {
+        for (Card card : cards) {
             colourCardMap.computeIfAbsent(card.getColour(), k -> new ArrayList<>()).add(card);
         }
 

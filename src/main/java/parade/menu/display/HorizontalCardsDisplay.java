@@ -57,19 +57,16 @@ public class HorizontalCardsDisplay extends AbstractCardsDisplay {
             return;
         }
 
-        // Sort cards consistently by color and number
-        List<Card> sortedBoard = new ArrayList<>(cards);
-
         // Render top border of the box
         println(
                 TOP_LEFT
-                        + HORIZONTAL_DOUBLE.repeat(sortedBoard.size() * TOTAL_CARD_WIDTH + PADDING)
+                        + HORIZONTAL_DOUBLE.repeat(cards.size() * TOTAL_CARD_WIDTH + PADDING)
                         + TOP_RIGHT);
 
         // Render index labels if requested
         if (showIndices) {
             sbIndices.append(VERTICAL_DOUBLE);
-            for (int i = 0; i < sortedBoard.size(); i++) {
+            for (int i = 0; i < cards.size(); i++) {
                 index = String.format("[%d]", i + 1);
                 int rightIndexPadding = TOTAL_CARD_WIDTH - index.length() - LEFT_INDEX_PADDING;
 
@@ -77,8 +74,7 @@ public class HorizontalCardsDisplay extends AbstractCardsDisplay {
                         .append(SPACE.repeat(LEFT_INDEX_PADDING))
                         .append(
                                 printConsoleColour(
-                                        sortedBoard.get(i).getColour().toString().toLowerCase(),
-                                        index))
+                                        cards.get(i).getColour().toString().toLowerCase(), index))
                         .append(SPACE.repeat(rightIndexPadding));
             }
             // Close the index row with a box edge
@@ -91,7 +87,7 @@ public class HorizontalCardsDisplay extends AbstractCardsDisplay {
         sbMiddle.append(VERTICAL_DOUBLE);
         sbBottom.append(VERTICAL_DOUBLE);
 
-        for (Card card : sortedBoard) {
+        for (Card card : cards) {
             sbTop.append(renderTopHalfCard(card, PADDING)).append(SPACE);
             sbMiddle.append(renderMiddleCard(card, PADDING)).append(SPACE);
             sbBottom.append(renderBottomHalfCard(card, PADDING)).append(SPACE);
@@ -110,7 +106,7 @@ public class HorizontalCardsDisplay extends AbstractCardsDisplay {
         // Render bottom border of the box
         println(
                 BOTTOM_LEFT
-                        + HORIZONTAL_DOUBLE.repeat(sortedBoard.size() * TOTAL_CARD_WIDTH + PADDING)
+                        + HORIZONTAL_DOUBLE.repeat(cards.size() * TOTAL_CARD_WIDTH + PADDING)
                         + BOTTOM_RIGHT);
         flush();
     }
