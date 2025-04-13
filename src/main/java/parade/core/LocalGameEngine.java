@@ -189,7 +189,7 @@ public class LocalGameEngine extends AbstractGameEngine {
 
             // After the game loop finishes, the extra round is played.
             logger.log("Game loop finished, running final round");
-            System.out.println("Final round started. Players do not draw a card.");
+            menuManager.finalRoundDisplay();
             for (int i = 0; i < playerControllerManager.size(); i++) {
                 AbstractPlayerController controller = playerControllerManager.next();
                 playerPlayCard(

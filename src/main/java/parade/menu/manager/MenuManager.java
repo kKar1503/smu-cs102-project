@@ -1,6 +1,5 @@
 package parade.menu.manager;
 
-import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
@@ -18,6 +17,8 @@ public interface MenuManager {
 
     LobbyMenuOption lobbyMenu(List<Player> lobby);
 
+    void renderRoll(int diceRoll1, int diceRoll2, List<Player> players);
+
     String computerNameMenu();
 
     ComputerEngine computerDifficultyMenu();
@@ -28,9 +29,9 @@ public interface MenuManager {
 
     int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard);
 
+    void finalRoundDisplay();
+
     void renderEndGame(Map<AbstractPlayerController, Integer> playerScores);
 
     void renderBye();
-
-    void renderRoll(int diceRoll1, int diceRoll2, List<Player> players);
 }

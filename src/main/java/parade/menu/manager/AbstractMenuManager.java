@@ -2,6 +2,7 @@ package parade.menu.manager;
 
 import parade.computer.ComputerEngine;
 import parade.menu.base.AbstractPrinter;
+import parade.menu.display.FinalRoundDisplay;
 import parade.menu.menu.*;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
@@ -50,6 +51,11 @@ abstract class AbstractMenuManager extends AbstractPrinter implements MenuManage
         printfFlush(
                 "Dice roll: %d, %s will be starting first!%n",
                 diceRoll1 + diceRoll2, getChosenPlayerFromDice(diceRoll1 + diceRoll2, players));
+    }
+
+    @Override
+    public void finalRoundDisplay() {
+        new FinalRoundDisplay().display();
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.*;
 public class MenuResource {
     public enum MenuResourceType {
         ASCII_FINAL("ascii_final.txt"),
+        ASCII_GAME_OVER("ascii_game_over.txt"),
         ADVANCED_WELCOME_SCREEN("advanced_welcome_screen.txt"),
         BASIC_WELCOME_MENU("basic_welcome_menu.txt"),
 
