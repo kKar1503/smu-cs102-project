@@ -1,7 +1,7 @@
 package parade.menu.menu;
 
 import parade.card.Card;
-import parade.exceptions.MenuCancelledException;
+import parade.exception.MenuCancelledException;
 import parade.menu.base.AbstractMenu;
 import parade.menu.prompt.OptionsPrompt;
 import parade.player.Player;

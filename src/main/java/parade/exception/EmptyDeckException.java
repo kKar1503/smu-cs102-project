@@ -1,4 +1,4 @@
-package parade.exceptions;
+package parade.exception;
 
 public class EmptyDeckException extends RuntimeException {
     public EmptyDeckException() {}

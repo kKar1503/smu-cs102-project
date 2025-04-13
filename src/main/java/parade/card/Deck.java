@@ -1,7 +1,7 @@
 package parade.card;
 
-import parade.exceptions.EmptyDeckException;
-import parade.exceptions.InsufficientCardException;
+import parade.exception.EmptyDeckException;
+import parade.exception.InsufficientCardException;
 
 import java.util.*;
 

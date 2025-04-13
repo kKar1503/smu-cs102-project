@@ -1,4 +1,4 @@
-package parade.settings;
+package parade.setting;
 
 public enum SettingKey {
     LOGGER_ENABLED("logger.enabled", false),

@@ -1,6 +1,6 @@
-package parade.settings;
+package parade.setting;
 
-import parade.exceptions.InvalidSettingException;
+import parade.exception.InvalidSettingException;
 
 import java.io.*;
 import java.util.Properties;
@@ -13,11 +13,11 @@ import java.util.Properties;
  *
  * <p>The Settings class should be initialised using the Builder subclass.
  */
-public class Settings {
+public class Setting {
     private static final String DEFAULT_FILE_PATH = "config/config.properties";
     private static final String CONFIG_FILE_PATH_ENV = "CONFIG_PATH";
 
-    private static Settings instance = null;
+    private static Setting instance = null;
     private final Properties properties = new Properties();
 
     /**
@@ -26,7 +26,7 @@ public class Settings {
      * @throws InvalidSettingException if the properties are not found or if there is an error
      *     reading the file
      */
-    private Settings() throws InvalidSettingException {
+    private Setting() throws InvalidSettingException {
         String filePath = System.getenv(CONFIG_FILE_PATH_ENV);
         if (filePath == null || filePath.isEmpty()) {
             filePath = DEFAULT_FILE_PATH;
@@ -41,9 +41,9 @@ public class Settings {
      * @return the instance of the Settings class
      * @throws InvalidSettingException if the Settings class is not initialized
      */
-    public static Settings get() throws InvalidSettingException {
+    public static Setting get() throws InvalidSettingException {
         if (instance == null) {
-            return instance = new Settings();
+            return instance = new Setting();
         }
         return instance;
     }

@@ -1,6 +1,6 @@
 package parade.menu.menu;
 
-import parade.exceptions.MenuCancelledException;
+import parade.exception.MenuCancelledException;
 import parade.menu.base.AbstractMenu;
 import parade.menu.prompt.StringPrompt;
 

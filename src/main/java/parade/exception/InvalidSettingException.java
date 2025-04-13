@@ -1,4 +1,4 @@
-package parade.exceptions;
+package parade.exception;
 
 public class InvalidSettingException extends RuntimeException {
     public InvalidSettingException(String message) {

@@ -3,24 +3,24 @@ package parade.core;
 import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.core.result.*;
-import parade.exceptions.MenuCancelledException;
+import parade.exception.MenuCancelledException;
 import parade.logger.AbstractLogger;
 import parade.logger.LoggerProvider;
 import parade.menu.manager.*;
 import parade.menu.option.LobbyMenuOption;
 import parade.player.Player;
 import parade.player.controller.*;
-import parade.settings.SettingKey;
-import parade.settings.Settings;
+import parade.setting.Setting;
+import parade.setting.SettingKey;
 import parade.utils.Ansi;
 
 import java.util.*;
 
-public class LocalGameEngine extends AbstractGameEngine {
+public class GameEngine extends AbstractGameEngine {
     private final AbstractLogger logger;
     private final MenuManager menuManager;
 
-    public LocalGameEngine() {
+    public GameEngine() {
         logger = LoggerProvider.getInstance();
         menuManager = setupMenuProvider();
     }
@@ -241,7 +241,7 @@ public class LocalGameEngine extends AbstractGameEngine {
     }
 
     private MenuManager setupMenuProvider() {
-        Settings settings = Settings.get();
+        Setting settings = Setting.get();
         String menuType = settings.get(SettingKey.CLIENT_MENU);
 
         MenuManager menuManager =

@@ -1,6 +1,6 @@
 package parade.menu.base;
 
-import parade.exceptions.MenuCancelledException;
+import parade.exception.MenuCancelledException;
 import parade.utils.Ansi;
 
 public abstract class AbstractPrompt<T> extends AbstractPrinter {
