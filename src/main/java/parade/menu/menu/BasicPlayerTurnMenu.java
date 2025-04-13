@@ -151,11 +151,11 @@ public class BasicPlayerTurnMenu extends AbstractMenu<Integer> {
      */
     String colorPrinter(String colour, String text) {
         return switch (colour) {
-            case "RED" -> Ansi.RED_BACKGROUND.apply(text);
+            case "RED" -> Ansi.apply(text, Ansi.RED_BACKGROUND, Ansi.BLACK);
             case "BLUE" -> Ansi.apply(text, Ansi.BLUE_BACKGROUND_BRIGHT, Ansi.BLACK);
             case "GREEN" -> Ansi.apply(text, Ansi.GREEN_BACKGROUND_BRIGHT, Ansi.BLACK);
             case "YELLOW" -> Ansi.apply(text, Ansi.YELLOW_BACKGROUND_BRIGHT, Ansi.BLACK);
-            case "PURPLE" -> Ansi.PURPLE_BACKGROUND.apply(text);
+            case "PURPLE" -> Ansi.apply(text, Ansi.PURPLE_BACKGROUND, Ansi.BLACK);
             default -> Ansi.BLACK_BACKGROUND.apply(text);
         };
     }
