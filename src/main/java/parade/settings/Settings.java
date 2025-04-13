@@ -14,7 +14,7 @@ import java.util.Properties;
  * <p>The Settings class should be initialised using the Builder subclass.
  */
 public class Settings {
-    private static final String DEFAULT_FILE_PATH = "settings.properties";
+    private static final String DEFAULT_FILE_PATH = "config.properties";
     private static final String CONFIG_FILE_PATH_ENV = "CONFIG_PATH";
 
     private static Settings instance = null;
