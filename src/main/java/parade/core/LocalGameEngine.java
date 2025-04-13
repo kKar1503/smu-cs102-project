@@ -228,7 +228,6 @@ public class LocalGameEngine extends AbstractGameEngine {
             menuManager.renderEndGame(playerScores);
 
             // Declare the final results
-            System.out.println("Game Over! Final Scores:");
             DeclareWinner declareWinner = new DeclareWinner();
             AbstractResult result = declareWinner.evaluateScores(playerScores);
 
