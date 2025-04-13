@@ -14,25 +14,25 @@ import java.util.Properties;
  * <p>The Settings class should be initialised using the Builder subclass.
  */
 public class Settings {
-    static Settings instance = null;
+    private static final String DEFAULT_FILE_PATH = "settings.properties";
+    private static final String CONFIG_FILE_PATH_ENV = "CONFIG_PATH";
+
+    private static Settings instance = null;
     private final Properties properties = new Properties();
 
     /**
      * Private constructor to create the Settings instance.
      *
-     * @param filePath the file path of the properties file
-     * @param isClasspath if the given file path is in the classpath or external file
-     * @param shouldValidateProperties if the properties should be validated
      * @throws InvalidSettingException if the properties are not found or if there is an error
      *     reading the file
      */
-    private Settings(String filePath, boolean isClasspath, boolean shouldValidateProperties)
-            throws InvalidSettingException {
-        loadProperties(filePath, isClasspath);
-
-        if (shouldValidateProperties) {
-            validateRequiredProperties();
+    private Settings() throws InvalidSettingException {
+        String filePath = System.getenv(CONFIG_FILE_PATH_ENV);
+        if (filePath == null || filePath.isEmpty()) {
+            filePath = DEFAULT_FILE_PATH;
         }
+        loadProperties(filePath);
+        validateRequiredProperties();
     }
 
     /**
@@ -41,32 +41,20 @@ public class Settings {
      * @return the instance of the Settings class
      * @throws InvalidSettingException if the Settings class is not initialized
      */
-    public static Settings getInstance() throws InvalidSettingException {
+    public static Settings get() throws InvalidSettingException {
         if (instance == null) {
-            throw new InvalidSettingException("Settings not initialized. Use Settings.Builder.");
+            return instance = new Settings();
         }
         return instance;
     }
 
     /**
-     * Load the properties from the file.
-     *
      * @param filePath the file path of the properties file
-     * @param isClasspath true if the file is in the classpath, false if it is an external file,
-     *     this is used to determined where the properties are being read from.
      * @throws InvalidSettingException if the file is not found or if there is an error reading the
      *     file
      */
-    private void loadProperties(String filePath, boolean isClasspath)
-            throws InvalidSettingException {
-        try (InputStream input =
-                isClasspath
-                        ? getClass().getClassLoader().getResourceAsStream(filePath)
-                        : new FileInputStream(filePath)) {
-
-            if (input == null) {
-                throw new IOException("Configuration file not found: " + filePath);
-            }
+    private void loadProperties(String filePath) throws InvalidSettingException {
+        try (InputStream input = new FileInputStream(filePath)) {
             properties.load(input);
         } catch (IOException e) {
             throw new InvalidSettingException("Failed to load configuration: " + filePath, e);
@@ -116,47 +104,5 @@ public class Settings {
      */
     public boolean getBoolean(SettingKey key) {
         return Boolean.parseBoolean(properties.getProperty(key.getKey()));
-    }
-
-    /**
-     * Builder class to create the Settings instance.
-     *
-     * <p>The Builder class provides two methods to specify the file path: fromClasspath() and
-     * fromExternalFile(). The build() method must be called to create the Settings instance.
-     */
-    public static class Builder {
-        private String filePath = "config.properties"; // Default: config.properties
-        private boolean isClasspath = true; // Default: Load from classpath
-        private boolean shouldValidateProperties = true; // Default: Validate properties
-
-        public Builder fromClasspath(String filePath) {
-            this.filePath = filePath;
-            this.isClasspath = true;
-            return this;
-        }
-
-        public Builder fromExternalFile(String filePath) {
-            this.filePath = filePath;
-            this.isClasspath = false;
-            return this;
-        }
-
-        public Builder shouldValidateProperties(boolean shouldValidate) {
-            this.shouldValidateProperties = shouldValidate;
-            return this;
-        }
-
-        /**
-         * Build the Settings instance.
-         *
-         * @return the Settings instance
-         * @throws InvalidSettingException if the properties are not found or if there is an error
-         *     reading the file
-         */
-        public Settings build() throws InvalidSettingException {
-            // If not specified, we will use the default values
-            instance = new Settings(filePath, isClasspath, shouldValidateProperties);
-            return instance;
-        }
     }
 }

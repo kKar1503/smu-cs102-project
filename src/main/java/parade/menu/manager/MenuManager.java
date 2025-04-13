@@ -1,5 +1,6 @@
 package parade.menu.manager;
 
+import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.menu.option.LobbyMenuOption;
 import parade.menu.option.MainMenuOption;
@@ -28,6 +29,8 @@ public interface MenuManager {
     AbstractPlayerController removePlayerMenu(List<AbstractPlayerController> controllers);
 
     int renderPlayerTurn(Player player, PlayCardData playCardData, boolean toDiscard);
+
+    void playerMoveDisplay(Player player, Card playedCard, List<Card> cardsFromParade);
 
     void finalRoundDisplay();
 

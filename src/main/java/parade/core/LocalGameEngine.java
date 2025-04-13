@@ -273,14 +273,8 @@ public class LocalGameEngine extends AbstractGameEngine {
 
     private void hideCursor() {
         System.out.println(Ansi.HIDE_CURSOR); // hide cursor for the game, stop blinking top corner
-        Runtime.getRuntime()
-                .addShutdownHook(
-                        new Thread(
-                                () -> {
-                                    System.out.println(
-                                            Ansi.SHOW_CURSOR); // show cursor when game ends
-                                    System.out.println(System.lineSeparator() + "Game ended.");
-                                }));
+        Runtime.getRuntime() // shutdown hook helps to handle the missing cursor when Ctrl+C
+                .addShutdownHook(new Thread(() -> System.out.println(Ansi.SHOW_CURSOR)));
     }
 
     private void playerPlayCard(AbstractPlayerController player, PlayCardData playCardData) {
@@ -290,7 +284,6 @@ public class LocalGameEngine extends AbstractGameEngine {
         logger.logf(
                 "%s played and placed card into parade: %s",
                 player.getPlayer().getName(), playedCard);
-        System.out.println(player.getPlayer().getName() + " played: " + playedCard);
 
         // Place card in parade and receive cards from parade
         List<Card> cardsFromParade = parade.placeCard(playedCard); // Apply parade logic
@@ -300,31 +293,22 @@ public class LocalGameEngine extends AbstractGameEngine {
                 player.getPlayer().getName(),
                 cardsFromParade.size(),
                 Arrays.toString(cardsFromParade.toArray()));
-        System.out.printf(
-                "%s received %s from parade.%n",
-                player.getPlayer().getName(), Arrays.toString(cardsFromParade.toArray()));
     }
 
-    /**
-     * Sets up the client renderer.
-     *
-     * @return the client renderer
-     */
     private MenuManager setupMenuProvider() {
-        Settings settings = Settings.getInstance();
+        Settings settings = Settings.get();
+        String menuType = settings.get(SettingKey.CLIENT_MENU);
 
-        String clientRendererType = settings.get(SettingKey.CLIENT_RENDERER);
-
-        MenuManager clientRenderer =
-                switch (clientRendererType) {
-                    case "basic_local" -> new BasicMenuManager();
-                    case "advanced_local" -> new AdvancedMenuManager();
+        MenuManager menuManager =
+                switch (menuType) {
+                    case "basic" -> new BasicMenuManager();
+                    case "advanced" -> new AdvancedMenuManager();
                     case "debug" -> new DebugMenuManager();
                     default ->
                             throw new IllegalStateException(
-                                    "Unknown client renderer in settings: " + clientRendererType);
+                                    "Unknown client menu in settings: " + menuType);
                 };
-        logger.log("Gameplay client renderer is using " + clientRendererType);
-        return clientRenderer;
+        logger.log("Gameplay client menu is using " + menuType);
+        return menuManager;
     }
 }

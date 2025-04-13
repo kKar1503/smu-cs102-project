@@ -1,7 +1,9 @@
 package parade.menu.manager;
 
+import parade.card.Card;
 import parade.computer.ComputerEngine;
 import parade.menu.base.AbstractPrinter;
+import parade.menu.display.BoxedText;
 import parade.menu.display.FinalRoundDisplay;
 import parade.menu.menu.*;
 import parade.menu.option.LobbyMenuOption;
@@ -51,6 +53,15 @@ abstract class AbstractMenuManager extends AbstractPrinter implements MenuManage
         printfFlush(
                 "Dice roll: %d, %s will be starting first!%n",
                 diceRoll1 + diceRoll2, getChosenPlayerFromDice(diceRoll1 + diceRoll2, players));
+    }
+
+    @Override
+    public void playerMoveDisplay(Player player, Card playedCard, List<Card> cardsFromParade) {
+        String displayText =
+                String.format(
+                        "%s played: %s%n" + "and received: %n%s",
+                        player.getName(), playedCard, cardsFromParade);
+        new BoxedText(displayText).display();
     }
 
     @Override

@@ -4,12 +4,7 @@ public enum SettingKey {
     LOGGER_ENABLED("logger.enabled", false),
     LOGGER_TYPES("logger.types", false),
     LOGGER_FILE("logger.file", false),
-    SERVER_PORT("server.port", true),
-    SERVER_THREADS("server.threads", true),
-    SERVER_TIMEOUT("server.timeout", true),
-    CLIENT_RENDERER("client.renderer", false),
-    CLIENT_CONNECTION_RETRIES("client.connection.retries", false),
-    GAMEPLAY_MODE("gameplay.mode", true);
+    CLIENT_MENU("client.menu", false);
 
     private final String key;
     private final boolean required;
