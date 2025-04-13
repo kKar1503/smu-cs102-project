@@ -8,13 +8,15 @@ public class StringPrompt extends AbstractPrompt<String> {
     private final boolean rejectEmptyInput;
 
     public StringPrompt() {
-        this(true);
+        this(true, false);
     }
 
-    public StringPrompt(boolean acceptEmptyInput) {
-        this.rejectEmptyInput = acceptEmptyInput;
+    public StringPrompt(boolean rejectEmptyInput, boolean cancellable) {
+        super(cancellable);
+        this.rejectEmptyInput = rejectEmptyInput;
     }
 
+    @Override
     public String prompt() {
         while (true) {
             try {

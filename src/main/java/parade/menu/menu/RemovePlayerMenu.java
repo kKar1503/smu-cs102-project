@@ -15,6 +15,7 @@ public class RemovePlayerMenu extends AbstractMenu<AbstractPlayerController> {
         this.controllers = controllers;
         this.prompt =
                 new OptionsPrompt(
+                        true,
                         controllers.stream()
                                 .map(x -> x.getPlayer().getName())
                                 .toArray(String[]::new));

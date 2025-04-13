@@ -3,8 +3,8 @@ package parade.menu.prompt;
 public class OptionsPrompt extends NumericPrompt {
     final String displayText;
 
-    public OptionsPrompt(String... options) {
-        super(options.length);
+    public OptionsPrompt(boolean cancellable, String... options) {
+        super(options.length, cancellable);
         if (options.length == 0) {
             throw new IllegalArgumentException("Options cannot be empty");
         }
@@ -14,9 +14,17 @@ public class OptionsPrompt extends NumericPrompt {
         this.displayText = String.join(NEW_LINE, options);
     }
 
-    public OptionsPrompt(String displayText, int optionCount) {
-        super(optionCount);
+    public OptionsPrompt(String... options) {
+        this(false, options);
+    }
+
+    public OptionsPrompt(String displayText, int optionCount, boolean cancellable) {
+        super(optionCount, cancellable);
         this.displayText = displayText;
+    }
+
+    public OptionsPrompt(String displayText, int optionCount) {
+        this(displayText, optionCount, false);
     }
 
     /**

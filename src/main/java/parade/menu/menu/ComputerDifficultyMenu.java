@@ -5,7 +5,7 @@ import parade.menu.base.AbstractMenu;
 import parade.menu.prompt.OptionsPrompt;
 
 public class ComputerDifficultyMenu extends AbstractMenu<ComputerEngine> {
-    private final OptionsPrompt prompt = new OptionsPrompt("Easy", "Normal", "Hard");
+    private final OptionsPrompt prompt = new OptionsPrompt(true, "Easy", "Hard");
 
     @Override
     public ComputerEngine start() {
@@ -13,8 +13,7 @@ public class ComputerDifficultyMenu extends AbstractMenu<ComputerEngine> {
         int userInput = prompt.prompt();
         return switch (userInput) {
             case 0 -> new EasyComputerEngine();
-            case 1 -> new NormalComputerEngine();
-            case 2 -> new HardComputerEngine();
+            case 1 -> new HardComputerEngine();
             default -> throw new IllegalStateException("Unexpected value: " + userInput);
         };
     }

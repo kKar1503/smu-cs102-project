@@ -8,6 +8,11 @@ public class NumericPrompt extends AbstractPrompt<Integer> {
     private final int promptRange;
 
     public NumericPrompt(int promptRange) {
+        this(promptRange, false);
+    }
+
+    public NumericPrompt(int promptRange, boolean cancellable) {
+        super(cancellable);
         if (promptRange <= 0) {
             throw new IllegalArgumentException("Prompt range must be greater than 0");
         }

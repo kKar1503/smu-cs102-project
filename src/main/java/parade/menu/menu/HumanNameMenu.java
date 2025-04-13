@@ -7,7 +7,7 @@ import parade.menu.prompt.StringPrompt;
 public class HumanNameMenu extends AbstractMenu<String> {
     @Override
     public String start() throws MenuCancelledException {
-        printFlush("Enter player name: ");
-        return new StringPrompt().prompt();
+        printlnFlush("Enter player name: ");
+        return new StringPrompt(true, true).prompt();
     }
 }

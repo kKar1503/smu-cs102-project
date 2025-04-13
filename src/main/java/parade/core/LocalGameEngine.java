@@ -90,13 +90,16 @@ public class LocalGameEngine extends AbstractGameEngine {
                     logger.log("User requested to start the game");
                     return;
                 }
+                case QUIT_GAME -> {
+                    throw new MenuCancelledException();
+                }
             }
         }
     }
 
     private void rollDice() {
         // "Roll" a die to decide who starts first
-        // Generate a number from 0 to 6
+        // Generate a number from 1 to 6
         Random dice = new Random();
         int diceRoll1 = dice.nextInt(1, 7);
         int diceRoll2 = dice.nextInt(1, 7);

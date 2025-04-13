@@ -20,7 +20,8 @@ public class LobbyMenu extends AbstractMenu<LobbyMenuOption> {
                         "Add Computer" + (players.size() == MAX_PLAYERS ? " (Lobby is full)" : ""),
                         "Remove player/computer" + (players.isEmpty() ? " (Lobby is empty)" : ""),
                         "Start Game"
-                                + (players.size() < MIN_PLAYERS ? " (Not enough players)" : ""));
+                                + (players.size() < MIN_PLAYERS ? " (Not enough players)" : ""),
+                        "Quit Game");
         this.players = players;
     }
 
@@ -58,6 +59,8 @@ public class LobbyMenu extends AbstractMenu<LobbyMenuOption> {
                         continue;
                     }
                     return LobbyMenuOption.START_GAME;
+                case 4:
+                    return LobbyMenuOption.QUIT_GAME;
                 default:
                     throw new IllegalStateException("Unexpected value: " + userInput);
             }

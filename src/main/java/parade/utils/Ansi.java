@@ -20,16 +20,16 @@ public enum Ansi {
     CLEAR("\033[H\033[2J"), // Clear console
 
     // Regular Colors
-    BLACK("\033[0;90m"), // BLACK - SPECIAL  \033[0;30m
+    BLACK("\033[30m"), // BLACK
 
-    RED("\033[0;31m"), // RED
-    GREEN("\033[0;32m"), // GREEN
-    YELLOW("\033[0;33m"), // YELLOW
+    RED("\033[31m"), // RED
+    GREEN("\033[32m"), // GREEN
+    YELLOW("\033[33m"), // YELLOW
     BLUE("\033[38;5;32m"), // BLUE - SPECIAL
-    PURPLE("\033[0;35m"), // PURPLE
-    CYAN("\033[0;36m"), // CYAN
-    WHITE("\033[0;37m"), // WHITE
-    GREY("\033[0;90m"), // GREY
+    PURPLE("\033[35m"), // PURPLE
+    CYAN("\033[36m"), // CYAN
+    WHITE("\033[37m"), // WHITE
+    GREY("\033[90m"), // GREY
 
     // bold
     PURPLE_BOLD("\033[1;35m"), // PURPLE
@@ -41,11 +41,11 @@ public enum Ansi {
     WHITE_BACKGROUND("\033[47m"), // White
 
     // High Intensity backgrounds
-    GREEN_BACKGROUND_BRIGHT("\033[0;102m"), // GREEN
-    YELLOW_BACKGROUND_BRIGHT("\033[48;5;179m"), // YELLOW
-    BLUE_BACKGROUND_BRIGHT("\033[0;104m"), // BLUE
-    RED_BACKGROUND_BRIGHT("\033[0;101m"), // Bright Red
-    PURPLE_BACKGROUND_BRIGHT("\033[0;105m"); // Bright Purple
+    GREEN_BACKGROUND_BRIGHT("\033[102m"), // GREEN
+    YELLOW_BACKGROUND_BRIGHT("\033[103m"), // YELLOW
+    BLUE_BACKGROUND_BRIGHT("\033[104m"), // BLUE
+    RED_BACKGROUND_BRIGHT("\033[101m"), // Bright Red
+    PURPLE_BACKGROUND_BRIGHT("\033[105m"); // Bright Purple
 
     private final String code;
 

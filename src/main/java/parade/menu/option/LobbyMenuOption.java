@@ -5,4 +5,5 @@ public enum LobbyMenuOption {
     ADD_COMPUTER,
     REMOVE_PLAYER,
     START_GAME,
+    QUIT_GAME,
 }

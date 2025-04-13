@@ -12,7 +12,8 @@ public class AsciiMainMenu extends AbstractMenu<MainMenuOption> {
             new OptionsPrompt(
                     Ansi.PURPLE.apply(
                             MenuResource.get(MenuResource.MenuResourceType.BASIC_WELCOME_MENU)),
-                    2);
+                    2,
+                    false);
 
     @Override
     public MainMenuOption start() {
