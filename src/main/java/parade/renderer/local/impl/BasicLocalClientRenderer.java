@@ -132,12 +132,12 @@ public class BasicLocalClientRenderer implements ClientRenderer {
 
         renderCardList(
                 " Parade (read left to right, top to bottom!) ",
-                playCardData.getParade().getCards());
+                playCardData.getParade().getCards(), false);
 
         List<Card> board = new ArrayList<>(player.getBoard());
         board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        renderCardList(" Your scoring board ", board);
-        renderCardList(" Cards in your hand ", player.getHand());
+        renderCardList(" Your scoring board ", board, false);
+        renderCardList(" Cards in your hand ", player.getHand(), true);
 
         System.out.printf("%n%nSelect a card to %s:", toDiscard ? "discard" : "play");
     }
@@ -161,7 +161,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
      * @param label the section label to be displayed as the header of the box
      * @param cards the list of cards to render
      */
-    public void renderCardList(String label, List<Card> cards) {
+    public void renderCardList(String label, List<Card> cards, boolean showIndices) {
         if (cards == null || cards.isEmpty()) {
             System.out.println();
             System.out.println("╔" + ConsoleColors.purple(label) + "═".repeat(40) + "╗");
@@ -171,7 +171,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
         }
     
         List<Card> displayCards = new ArrayList<>(cards);
-        if (label.trim().equals("Cards in your hand")) {
+        if (showIndices) {
             displayCards.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
         }
     
@@ -191,7 +191,8 @@ public class BasicLocalClientRenderer implements ClientRenderer {
         int maxCardsInRow = Math.max(4, Math.min(cardsPerRow, totalCards));
         int contentWidth = maxCardsInRow * cardWidth + (maxCardsInRow - 1) * spacing;
     
-        String topBorder = "╔" + ConsoleColors.purple(label) + "═".repeat(Math.max(0, contentWidth - label.trim().length())) + "╗";
+        String topBorder = "╔" + ConsoleColors.purple(label)
+                + "═".repeat(Math.max(0, contentWidth - label.trim().length())) + "╗";
         String bottomBorder = "╚" + "═".repeat(contentWidth + 2) + "╝";
     
         System.out.println(System.lineSeparator() + topBorder);
@@ -200,7 +201,7 @@ public class BasicLocalClientRenderer implements ClientRenderer {
             int end = Math.min(start + cardsPerRow, totalCards);
             int actualCardsInRow = end - start;
     
-            if (label.trim().equals("Cards in your hand")) {
+            if (showIndices) {
                 System.out.print("║ ");
                 for (int j = start; j < end; j++) {
                     String index = "(" + (j + 1) + ")";
