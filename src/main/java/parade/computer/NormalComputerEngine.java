@@ -2,6 +2,7 @@ package parade.computer;
 
 import parade.card.*;
 import parade.player.Player;
+import parade.player.controller.PlayCardData;
 
 import java.util.*;
 
@@ -15,15 +16,15 @@ import java.util.*;
  */
 public class NormalComputerEngine implements ComputerEngine {
     @Override
-    public Card process(Player player, List<Player> players, Parade parade, int deckSize) {
+    public Card process(Player player, PlayCardData playCardData) {
         Card bestCard = null;
         int minLoss = Integer.MAX_VALUE; // Tracks fewest cards taken from parade
         int minColourImpact = Integer.MAX_VALUE; // Tracks how much the card colour matches parade
 
         for (Card card : player.getHand()) {
-            int loss = simulateLoss(card, parade); // Estimate how many cards will be taken
+            int loss = simulateLoss(card, playCardData.getParade()); // Estimate how many cards will be taken
             int colourImpact =
-                    countColourMatches(card, parade); // Count parade cards with same colour
+                    countColourMatches(card, playCardData.getParade()); // Count parade cards with same colour
 
             // Prioritize moves that result in fewer cards collected.
             // If tied, prefer cards with less colour impact to avoid building towards majorities.
@@ -48,7 +49,7 @@ public class NormalComputerEngine implements ComputerEngine {
      * @return The chosen card to be discarded.
      */
     @Override
-    public Card discardCard(Player player, Parade parade) {
+    public Card discardCard(Player player, PlayCardData playCardData) {
         Map<Colour, Integer> boardColourCount =
                 countColourOnBoard(player); // Count colours already on the board
 

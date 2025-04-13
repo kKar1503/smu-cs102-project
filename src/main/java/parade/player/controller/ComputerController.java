@@ -30,15 +30,17 @@ public class ComputerController extends AbstractPlayerController {
     public Card playCard(PlayCardData playCardData) {
         return computerEngine.process(
                 player,
-                playCardData.getOtherPlayers().stream()
-                        .map(AbstractPlayerController::getPlayer)
-                        .toList(),
-                playCardData.getParade(),
-                playCardData.getDeckSize());
+                playCardData);
     }
 
     @Override
     public Card discardCard(PlayCardData playCardData) {
-        return computerEngine.discardCard(player, playCardData.getParade());
+        return computerEngine.discardCard(player, playCardData);
     }
+
+    @Override
+    public String toString() {
+        return "ComputerController [player=" + player + ", computerEngine=" + computerEngine + "]";
+    }
+
 }
