@@ -9,11 +9,7 @@ import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
