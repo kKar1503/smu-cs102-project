@@ -3,14 +3,13 @@ package parade.renderer.local.impl;
 import parade.card.Card;
 import parade.card.Colour;
 import parade.player.Player;
+import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
 import java.util.*;
-
-import parade.player.controller.AbstractPlayerController;
 
 /**
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
@@ -180,13 +179,12 @@ public class AdvancedClientRenderer implements ClientRenderer {
      * @param showIndices If true, index labels are shown above cards (used for hand selection)
      */
     public void printCardsHorizontally(List<Card> board, boolean showIndices) {
-
         int padding = 3;
-        int width = 5; // card width
+        int width = 5;
         int leftIndexPadding = (padding + width / 2) - 1;
         int totalCardWidth = padding + width + 2;
         int rightIndexPadding;
-
+    
         String verticalBorder = "║";
         String rightTopCornerBorder = "╗";
         String leftTopCornerBorder = "╔";
@@ -196,99 +194,82 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String emptySpace = " ";
         String emptyBoxDisplay = "No cards to display.";
         String index;
-
-        // StringBuilders for different card parts
+    
         StringBuilder sbIndices = new StringBuilder();
         StringBuilder sbTop = new StringBuilder();
         StringBuilder sbMiddle = new StringBuilder();
         StringBuilder sbBottom = new StringBuilder();
         StringBuilder sbEmptyBox = new StringBuilder();
-
+    
         if (board == null || board.isEmpty()) {
-            // if no board, should return error!
-            sbEmptyBox.append(
-                    leftTopCornerBorder
-                            + horizontalBorder.repeat(padding)
-                            + horizontalBorder.repeat(emptyBoxDisplay.length())
-                            + horizontalBorder.repeat(padding)
-                            + rightTopCornerBorder
-                            + "\n");
-            sbEmptyBox.append(
-                    verticalBorder
-                            + emptySpace.repeat(padding)
-                            + emptyBoxDisplay
-                            + emptySpace.repeat(padding)
-                            + verticalBorder
-                            + "\n");
-
-            sbEmptyBox.append(
-                    leftBottomCornerBorder
-                            + horizontalBorder.repeat(padding)
-                            + horizontalBorder.repeat(emptyBoxDisplay.length())
-                            + horizontalBorder.repeat(padding)
-                            + rightBottomCornerBorder
-                            + "\n");
-
+            sbEmptyBox.append(leftTopCornerBorder)
+                      .append(horizontalBorder.repeat(padding))
+                      .append(horizontalBorder.repeat(emptyBoxDisplay.length()))
+                      .append(horizontalBorder.repeat(padding))
+                      .append(rightTopCornerBorder).append("\n");
+    
+            sbEmptyBox.append(verticalBorder)
+                      .append(emptySpace.repeat(padding))
+                      .append(emptyBoxDisplay)
+                      .append(emptySpace.repeat(padding))
+                      .append(verticalBorder).append("\n");
+    
+            sbEmptyBox.append(leftBottomCornerBorder)
+                      .append(horizontalBorder.repeat(padding))
+                      .append(horizontalBorder.repeat(emptyBoxDisplay.length()))
+                      .append(horizontalBorder.repeat(padding))
+                      .append(rightBottomCornerBorder).append("\n");
+    
             System.out.println(sbEmptyBox);
             return;
         }
-
-        // Sort cards consistently by color and number
-        List<Card> sortedBoard = new ArrayList<>(board);
-
-        // Render top border of the box
-        System.out.println(
-                leftTopCornerBorder
-                        + horizontalBorder.repeat(sortedBoard.size() * totalCardWidth + padding)
-                        + rightTopCornerBorder);
-
-        // Render index labels if requested
+    
+        List<Card> displayCards = new ArrayList<>(board);
+        if (showIndices) {
+            displayCards.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
+        }
+    
+        System.out.println(leftTopCornerBorder
+                + horizontalBorder.repeat(displayCards.size() * totalCardWidth + padding)
+                + rightTopCornerBorder);
+    
         if (showIndices) {
             sbIndices.append(verticalBorder);
-            for (int i = 0; i < sortedBoard.size(); i++) {
+            for (int i = 0; i < displayCards.size(); i++) {
                 index = String.format("[%d]", i + 1);
                 rightIndexPadding = totalCardWidth - index.length() - leftIndexPadding;
-
-                sbIndices
-                        .append(emptySpace.repeat(leftIndexPadding))
-                        .append(
-                                printConsoleColour(
-                                        sortedBoard.get(i).getColour().toString().toLowerCase(),
-                                        index))
-                        .append(emptySpace.repeat(rightIndexPadding));
+    
+                sbIndices.append(emptySpace.repeat(leftIndexPadding))
+                         .append(printConsoleColour(displayCards.get(i).getColour().toString().toLowerCase(), index))
+                         .append(emptySpace.repeat(rightIndexPadding));
             }
-            // Close the index row with a box edge
             sbIndices.append(emptySpace.repeat(padding) + verticalBorder);
             System.out.println(sbIndices);
         }
-
-        // Build each card row line by line
+    
         sbTop.append(verticalBorder);
         sbMiddle.append(verticalBorder);
         sbBottom.append(verticalBorder);
-
-        for (Card card : sortedBoard) {
+    
+        for (Card card : displayCards) {
             sbTop.append(renderTopHalfCard(card, padding)).append(emptySpace);
             sbMiddle.append(renderMiddleCard(card, padding)).append(emptySpace);
             sbBottom.append(renderBottomHalfCard(card, padding)).append(emptySpace);
         }
-
-        // Close the content rows
+    
         sbTop.append(emptySpace.repeat(padding) + verticalBorder);
         sbMiddle.append(emptySpace.repeat(padding) + verticalBorder);
         sbBottom.append(emptySpace.repeat(padding) + verticalBorder);
-
-        // Print all rows
+    
         System.out.println(sbTop);
         System.out.println(sbMiddle);
         System.out.println(sbBottom);
-
-        // Render bottom border of the box
-        System.out.println(
-                leftBottomCornerBorder
-                        + horizontalBorder.repeat(sortedBoard.size() * totalCardWidth + padding)
-                        + rightBottomCornerBorder);
+    
+        System.out.println(leftBottomCornerBorder
+                + horizontalBorder.repeat(displayCards.size() * totalCardWidth + padding)
+                + rightBottomCornerBorder);
     }
+    
 
     /**
      * Renders a stack of cards in vertical columns by color, aligned with padding and boxed
