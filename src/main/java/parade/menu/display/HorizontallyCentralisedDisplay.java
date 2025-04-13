@@ -9,11 +9,11 @@ class HorizontallyCentralisedDisplay extends AbstractDisplay {
     private final int topOffset;
     private final int leftOffset;
 
-    HorizontallyCentralisedDisplay(String[] text) {
-        this(text, 0, 0);
+    HorizontallyCentralisedDisplay(String... text) {
+        this(0, 0, text);
     }
 
-    HorizontallyCentralisedDisplay(String[] text, int topOffset, int leftOffset) {
+    HorizontallyCentralisedDisplay(int topOffset, int leftOffset, String... text) {
         this.text = text;
 
         this.topOffset = topOffset;

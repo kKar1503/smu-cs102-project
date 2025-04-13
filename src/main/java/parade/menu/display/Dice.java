@@ -45,7 +45,7 @@ public class Dice extends AbstractDisplay {
     @Override
     public void display() {
         CentralisedDisplay[] rollingDice = generateRollingDiceVariations();
-        CentralisedDisplay dice = new CentralisedDisplay(this.dice, 0, 0);
+        CentralisedDisplay dice = new CentralisedDisplay(0, 0, this.dice);
 
         for (int i = 0; i < 15; i++) {
             clear();
@@ -66,7 +66,7 @@ public class Dice extends AbstractDisplay {
     private CentralisedDisplay[] generateRollingDiceVariations() {
         CentralisedDisplay[] rollingDice = new CentralisedDisplay[7];
         for (int i = 0; i < 7; i++) {
-            rollingDice[i] = new CentralisedDisplay(DICE_ROLLING, 0, i);
+            rollingDice[i] = new CentralisedDisplay(0, i, DICE_ROLLING);
         }
         return rollingDice;
     }

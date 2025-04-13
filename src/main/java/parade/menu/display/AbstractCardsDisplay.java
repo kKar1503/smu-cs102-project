@@ -30,7 +30,7 @@ abstract class AbstractCardsDisplay extends AbstractDisplay {
     String printConsoleColour(String colour, String colourisedString) {
         return switch (colour) {
             case "red" -> Ansi.RED.apply(colourisedString);
-            case "black" -> Ansi.BLACK.apply(colourisedString);
+            case "black" -> Ansi.GREY.apply(colourisedString);
             case "green" -> Ansi.GREEN.apply(colourisedString);
             case "blue" -> Ansi.BLUE.apply(colourisedString);
             case "yellow" -> Ansi.YELLOW.apply(colourisedString);
