@@ -75,9 +75,6 @@ public class AdvancedClientRenderer implements ClientRenderer {
             System.out.println(ConsoleColors.PURPLE + paradeWelcome + ConsoleColors.RESET);
             System.out.println(
                     "===================================================================================");
-
-            // Print a sample card
-            System.out.println(renderSingleCard(new Card(1, Colour.BLACK), 4));
         }
     }
 
