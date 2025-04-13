@@ -9,7 +9,11 @@ import parade.renderer.local.ClientRenderer;
 import parade.utils.ConsoleColors;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
@@ -181,7 +185,7 @@ public class AdvancedClientRenderer implements ClientRenderer {
         int leftIndexPadding = (padding + width / 2) - 1;
         int totalCardWidth = padding + width + 2;
         int rightIndexPadding;
-    
+
         String verticalBorder = "║";
         String rightTopCornerBorder = "╗";
         String leftTopCornerBorder = "╔";
@@ -191,82 +195,90 @@ public class AdvancedClientRenderer implements ClientRenderer {
         String emptySpace = " ";
         String emptyBoxDisplay = "No cards to display.";
         String index;
-    
+
         StringBuilder sbIndices = new StringBuilder();
         StringBuilder sbTop = new StringBuilder();
         StringBuilder sbMiddle = new StringBuilder();
         StringBuilder sbBottom = new StringBuilder();
         StringBuilder sbEmptyBox = new StringBuilder();
-    
+
         if (board == null || board.isEmpty()) {
-            sbEmptyBox.append(leftTopCornerBorder)
-                      .append(horizontalBorder.repeat(padding))
-                      .append(horizontalBorder.repeat(emptyBoxDisplay.length()))
-                      .append(horizontalBorder.repeat(padding))
-                      .append(rightTopCornerBorder).append("\n");
-    
-            sbEmptyBox.append(verticalBorder)
-                      .append(emptySpace.repeat(padding))
-                      .append(emptyBoxDisplay)
-                      .append(emptySpace.repeat(padding))
-                      .append(verticalBorder).append("\n");
-    
-            sbEmptyBox.append(leftBottomCornerBorder)
-                      .append(horizontalBorder.repeat(padding))
-                      .append(horizontalBorder.repeat(emptyBoxDisplay.length()))
-                      .append(horizontalBorder.repeat(padding))
-                      .append(rightBottomCornerBorder).append("\n");
-    
+            sbEmptyBox
+                    .append(leftTopCornerBorder)
+                    .append(horizontalBorder.repeat(padding))
+                    .append(horizontalBorder.repeat(emptyBoxDisplay.length()))
+                    .append(horizontalBorder.repeat(padding))
+                    .append(rightTopCornerBorder)
+                    .append("\n");
+
+            sbEmptyBox
+                    .append(verticalBorder)
+                    .append(emptySpace.repeat(padding))
+                    .append(emptyBoxDisplay)
+                    .append(emptySpace.repeat(padding))
+                    .append(verticalBorder)
+                    .append("\n");
+
+            sbEmptyBox
+                    .append(leftBottomCornerBorder)
+                    .append(horizontalBorder.repeat(padding))
+                    .append(horizontalBorder.repeat(emptyBoxDisplay.length()))
+                    .append(horizontalBorder.repeat(padding))
+                    .append(rightBottomCornerBorder)
+                    .append("\n");
+
             System.out.println(sbEmptyBox);
             return;
         }
-    
+
         List<Card> displayCards = new ArrayList<>(board);
-        if (showIndices) {
-            displayCards.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
-        }
-    
-        System.out.println(leftTopCornerBorder
-                + horizontalBorder.repeat(displayCards.size() * totalCardWidth + padding)
-                + rightTopCornerBorder);
-    
+
+        System.out.println(
+                leftTopCornerBorder
+                        + horizontalBorder.repeat(displayCards.size() * totalCardWidth + padding)
+                        + rightTopCornerBorder);
+
         if (showIndices) {
             sbIndices.append(verticalBorder);
             for (int i = 0; i < displayCards.size(); i++) {
                 index = String.format("[%d]", i + 1);
                 rightIndexPadding = totalCardWidth - index.length() - leftIndexPadding;
-    
-                sbIndices.append(emptySpace.repeat(leftIndexPadding))
-                         .append(printConsoleColour(displayCards.get(i).getColour().toString().toLowerCase(), index))
-                         .append(emptySpace.repeat(rightIndexPadding));
+
+                sbIndices
+                        .append(emptySpace.repeat(leftIndexPadding))
+                        .append(
+                                printConsoleColour(
+                                        displayCards.get(i).getColour().toString().toLowerCase(),
+                                        index))
+                        .append(emptySpace.repeat(rightIndexPadding));
             }
             sbIndices.append(emptySpace.repeat(padding) + verticalBorder);
             System.out.println(sbIndices);
         }
-    
+
         sbTop.append(verticalBorder);
         sbMiddle.append(verticalBorder);
         sbBottom.append(verticalBorder);
-    
+
         for (Card card : displayCards) {
             sbTop.append(renderTopHalfCard(card, padding)).append(emptySpace);
             sbMiddle.append(renderMiddleCard(card, padding)).append(emptySpace);
             sbBottom.append(renderBottomHalfCard(card, padding)).append(emptySpace);
         }
-    
+
         sbTop.append(emptySpace.repeat(padding) + verticalBorder);
         sbMiddle.append(emptySpace.repeat(padding) + verticalBorder);
         sbBottom.append(emptySpace.repeat(padding) + verticalBorder);
-    
+
         System.out.println(sbTop);
         System.out.println(sbMiddle);
         System.out.println(sbBottom);
-    
-        System.out.println(leftBottomCornerBorder
-                + horizontalBorder.repeat(displayCards.size() * totalCardWidth + padding)
-                + rightBottomCornerBorder);
+
+        System.out.println(
+                leftBottomCornerBorder
+                        + horizontalBorder.repeat(displayCards.size() * totalCardWidth + padding)
+                        + rightBottomCornerBorder);
     }
-    
 
     /**
      * Renders a stack of cards in vertical columns by color, aligned with padding and boxed
@@ -322,10 +334,6 @@ public class AdvancedClientRenderer implements ClientRenderer {
             System.out.println(sbEmptyBox);
             return;
         }
-
-        // Sort cards for consistent stacking order
-        board = new ArrayList<>(board);
-        board.sort(Comparator.comparing(Card::getColour).thenComparing(Card::getNumber));
 
         // Group cards by colour
         Map<Colour, List<Card>> colourCardMap = new LinkedHashMap<>();
