@@ -56,15 +56,31 @@ chmod +x ./scripts/run.sh
 .\scripts\run.bat
 ```
 
-This will start the game. Follow the instructions in the terminal to interact with the game. You may
-also change the properties in your configuration file to update the game behavior, like Logging and
-game menu types.
+This will start the game. Follow the instructions in the terminal to interact with the game.
+
+You may also change the properties in your configuration file to update the game behavior, like
+Logging and game menu types. By default, the game will look for the configuration file
+in [config](../config), but you can change the path by setting the `CONFIG_PATH` environment
+variable with the path to your configuration file.
 
 ## Features
 
 - [x] Fully functional Parade Game
     - [x] Base game rules
     - [x] Special rules for 2 players
+    - [x] Coloured interface using ANSI codes (only supported for terminals that support ANSI codes)
+    - [x] UTF-8 characters for cards and game board
+    - [x] Modularised menus & displays
+    - [x] Computer Engines
+        - [x] Easy Engine
+        - [x] Hard Engine
+- [x] Custom logging implementation
+    - [x] Console based logging
+    - [x] File based logging
+    - [x] Multi-writer logging
+- [x] Externalised configurations
+    - [x] Java properties file
+    - [x] Customised Java properties file path using ENV
 
 ## Dependencies Used
 
@@ -104,3 +120,26 @@ Gson has been added as a dependency in the `pom.xml` file. You do not need to do
 have set up Maven, the dependencies will be automatically downloaded and added to the project.
 
 To find out more about Gson, refer to the [Gson's GitHub Page](https://github.com/google/gson).
+
+### ANSI Supported Terminals
+
+This project uses ANSI codes to colour and control the terminal output. The ANSI codes are used to
+change the text colour and background colour of the terminal output. It also controls the terminal
+screen with things that may adjust and alter things like the cursor position, clear the screen,
+and more.
+
+Note: The ANSI codes may be supported by your terminal, but the terminal may not support coloured
+output.
+
+### UTF-8 Character Support
+
+This project uses UTF-8 characters to represent the cards in the game and the game board. The UTF-8
+characters may not be supported in all terminals.
+
+The following are some workarounds found to address the issue:
+
+- Command Prompt (CMD) supports ASCII characters, but some user may need to configure the codepage
+  to support UTF-8. You can do this by running the following command in CMD:
+  ```cmd
+  chcp 65001
+  ```
