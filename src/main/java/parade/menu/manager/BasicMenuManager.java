@@ -1,14 +1,22 @@
 package parade.menu.manager;
 
 import parade.core.result.GameResult;
-import parade.menu.display.*;
-import parade.menu.menu.*;
+import parade.menu.display.BasicWelcomeDisplay;
+import parade.menu.display.BoxedTextDisplay;
+import parade.menu.display.DiceDisplay;
+import parade.menu.display.EndGameScoreBoardDisplay;
+import parade.menu.display.GameOverDisplay;
+import parade.menu.display.ThankYouDisplay;
+import parade.menu.display.WinnerResultDisplay;
+import parade.menu.menu.BasicMainMenu;
+import parade.menu.menu.BasicPlayerTurnMenu;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A basic text-based implementation of the client renderer for local gameplay. Responsible for
@@ -53,6 +61,7 @@ public class BasicMenuManager extends AbstractMenuManager {
         new GameOverDisplay().display();
         new EndGameScoreBoardDisplay(playerScores).display();
         new WinnerResultDisplay(playerScores, result).display();
+        sleep(10_000, true);
     }
 
     @Override

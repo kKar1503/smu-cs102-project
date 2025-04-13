@@ -1,14 +1,22 @@
 package parade.menu.manager;
 
 import parade.core.result.GameResult;
-import parade.menu.display.*;
-import parade.menu.menu.*;
+import parade.menu.display.AdvancedWelcomeDisplay;
+import parade.menu.display.BoxedTextDisplay;
+import parade.menu.display.DiceDisplay;
+import parade.menu.display.EndGameScoreBoardDisplay;
+import parade.menu.display.GameOverDisplay;
+import parade.menu.display.ThankYouDisplay;
+import parade.menu.display.WinnerResultDisplay;
+import parade.menu.menu.AdvancedPlayerTurnMenu;
+import parade.menu.menu.BasicMainMenu;
 import parade.menu.option.MainMenuOption;
 import parade.player.Player;
 import parade.player.controller.AbstractPlayerController;
 import parade.player.controller.PlayCardData;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * AdvancedClientRenderer provides advanced rendering capabilities for the Parade game. It outputs
@@ -53,6 +61,7 @@ public class AdvancedMenuManager extends AbstractMenuManager {
         new GameOverDisplay().display();
         new EndGameScoreBoardDisplay(playerScores).display();
         new WinnerResultDisplay(playerScores, result).display();
+        sleep(10_000, true);
     }
 
     @Override
