@@ -13,21 +13,10 @@ class PlayerControllerManager implements Iterator<AbstractPlayerController> {
         this.lobby = new ArrayList<>(6);
     }
 
-    /**
-     * Adds a player controller to the list.
-     *
-     * @param playerController The player controller to add.
-     */
     void add(AbstractPlayerController playerController) {
         lobby.add(playerController);
     }
 
-    /**
-     * Increments the index of the current player to the next player in the list and returns the
-     * next player controller.
-     *
-     * @return The next player controller.
-     */
     @Override
     public AbstractPlayerController next() {
         return lobby.get(nextIndex(true));
@@ -58,19 +47,6 @@ class PlayerControllerManager implements Iterator<AbstractPlayerController> {
         return lobby.remove(playerController);
     }
 
-    AbstractPlayerController remove(int index) {
-        return lobby.remove(index);
-    }
-
-    boolean remove(Player player) {
-        for (AbstractPlayerController playerController : lobby) {
-            if (playerController.getPlayer().equals(player)) {
-                return remove(playerController);
-            }
-        }
-        return false;
-    }
-
     List<AbstractPlayerController> getPlayerControllers() {
         return Collections.unmodifiableList(lobby);
     }
@@ -85,13 +61,5 @@ class PlayerControllerManager implements Iterator<AbstractPlayerController> {
 
     boolean isReady() {
         return lobby.size() >= 2;
-    }
-
-    boolean isFull() {
-        return lobby.size() == 6;
-    }
-
-    boolean isEmpty() {
-        return lobby.isEmpty();
     }
 }

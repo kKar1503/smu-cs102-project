@@ -4,8 +4,8 @@ import parade.player.controller.AbstractPlayerController;
 
 import java.util.*;
 
-public class TieAndNoWinnerResult extends AbstractResult {
-    private List<AbstractPlayerController> playerList;
+public class TieAndNoWinnerResult implements GameResult {
+    private final List<AbstractPlayerController> playerList;
 
     protected TieAndNoWinnerResult(List<AbstractPlayerController> playerList) {
         this.playerList = playerList;

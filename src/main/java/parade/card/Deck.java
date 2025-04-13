@@ -1,7 +1,7 @@
 package parade.card;
 
-import parade.exceptions.EmptyDeckException;
-import parade.exceptions.InsufficientCardException;
+import parade.exception.EmptyDeckException;
+import parade.exception.InsufficientCardException;
 
 import java.util.*;
 
@@ -14,18 +14,6 @@ public class Deck extends Stack<Card> {
             }
         }
         shuffle();
-    }
-
-    /**
-     * Copy constructor that uses the underlying {@link Vector#elementData} array. This
-     * implementation is referencing to that of {@link Vector#Vector(Collection)} constructor
-     * implementation.
-     *
-     * @param deck The deck to copy.
-     */
-    public Deck(Deck deck) {
-        elementCount = deck.elementCount;
-        elementData = deck.toArray(Card[]::new);
     }
 
     private void shuffle() {

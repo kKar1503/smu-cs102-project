@@ -7,7 +7,7 @@ import java.util.*;
 
 public class DeclareWinner {
 
-    public AbstractResult evaluateScores(Map<AbstractPlayerController, Integer> playerScores) {
+    public GameResult evaluateScores(Map<AbstractPlayerController, Integer> playerScores) {
 
         int lowestScore = Integer.MAX_VALUE;
         List<AbstractPlayerController> resultList = new ArrayList<>();
@@ -23,6 +23,7 @@ public class DeclareWinner {
                 resultList.add(controller);
                 tieScoreWithWinner = false;
             } else if (currentScore == lowestScore) {
+                tieScoreWithWinner = true;
                 // Check if current player and potential winners all have the same number of cards
                 boolean sameCardCount = true;
                 for (AbstractPlayerController resultController : resultList) {
@@ -43,7 +44,6 @@ public class DeclareWinner {
                     if (player.getBoard().size() < resultPlayer.getBoard().size()) {
                         resultList.clear();
                         resultList.add(controller);
-                        tieScoreWithWinner = true;
                     }
                 }
             }

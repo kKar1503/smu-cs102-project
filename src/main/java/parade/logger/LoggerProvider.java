@@ -1,8 +1,8 @@
 package parade.logger;
 
 import parade.logger.impl.*;
-import parade.settings.SettingKey;
-import parade.settings.Settings;
+import parade.setting.Setting;
+import parade.setting.SettingKey;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,7 @@ public class LoggerProvider {
     }
 
     public static void setupLogger() throws IOException {
-        Settings settings = Settings.getInstance();
+        Setting settings = Setting.get();
 
         String loggerTypes = settings.get(SettingKey.LOGGER_TYPES);
         boolean shouldLog = settings.getBoolean(SettingKey.LOGGER_ENABLED);
@@ -63,7 +63,7 @@ public class LoggerProvider {
             case "console" -> new PrettyLogger();
             case "console_json" -> new JsonLogger(System.out);
             case "file_json" -> {
-                String filePath = Settings.getInstance().get(SettingKey.LOGGER_FILE);
+                String filePath = Setting.get().get(SettingKey.LOGGER_FILE);
                 if (filePath == null || filePath.isEmpty()) {
                     throw new IllegalStateException("File path for logger is not set in settings");
                 }

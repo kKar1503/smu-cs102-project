@@ -5,10 +5,10 @@ import parade.player.Player;
 import parade.player.controller.PlayCardData;
 
 /**
- * The IComputerEngine interface is an interface for all computer engines built to interact with the
+ * The ComputerEngine interface is an interface for all computer engines built to interact with the
  * game.
  *
- * <p>The impls of IComputerEngine should be stateless and relies on the process method that allows
+ * <p>The impls of ComputerEngine should be stateless and relies on the process method that allows
  * it to consume all required information to process the game state and return the ideal card to
  * play.
  */
@@ -26,9 +26,7 @@ public interface ComputerEngine {
      * disable the .removeFromHand() method in the player passed to the computer engine.
      *
      * @param player The player that this computer is playing for.
-     * @param players The other players that are playing in the game.
-     * @param parade The current cards in the parade.
-     * @param deckSize The number of cards left in the deck.
+     * @param playCardData The game state that the computer engine can use to make its decision.
      * @return The ideal card to play.
      */
     Card process(Player player, PlayCardData playCardData);

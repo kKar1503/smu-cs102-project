@@ -34,4 +34,4 @@ logs/*
 *.log
 
 ### Properties ###
-*/**/resources/config.properties
+config/config.properties

@@ -7,12 +7,14 @@ import parade.player.controller.AbstractPlayerController;
 import java.util.*;
 
 abstract class AbstractGameEngine {
-    static final int INITIAL_CARDS_PER_PLAYER = 5; // Number of cards each player starts with
-    static final int PARADE_SIZE = 6; // Number of cards in the parade
+    static final int INITIAL_CARDS_PER_PLAYER = 5;
+    static final int PARADE_SIZE = 6;
+    static final int MAX_PLAYERS = 6;
+    static final int MIN_PLAYERS = 2;
 
-    final Deck deck = new Deck(); // The deck of cards used in the game
+    final Deck deck = new Deck();
     final PlayerControllerManager playerControllerManager;
-    final Parade parade; // The list of cards currently in the parade
+    final Parade parade;
 
     AbstractGameEngine() {
         playerControllerManager = new PlayerControllerManager();

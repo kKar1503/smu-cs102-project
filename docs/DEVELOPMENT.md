@@ -53,12 +53,16 @@ Before you begin, ensure you have the following tools installed:
 3. **Import the project into your IDE:**
 
    If you're using IntelliJ IDEA, you can open the project directly. For other IDEs, you might need
-   to import the Maven
-   project.
+   to import the Maven project.
 
     - In IntelliJ, go to `File -> Open`, select the project directory, and IntelliJ will
-      automatically recognize the
-      Maven project. (_Look, it's just that good_)
+      automatically recognize the Maven project. (_Look, it's just that good_)
+
+4. **Prepare the configuration file:**
+
+   Copy the `config/config.example.properties` file to `config/config.properties` and
+   modify it according to your needs. The example file contains all the necessary
+   configurations for the game.
 
 ---
 
@@ -99,7 +103,7 @@ chmod +x ./scripts/run.sh
 
 ```cmd
 # Windows users
-./scripts/run.bat
+.\scripts\run.bat
 ```
 
 This will start the game in local game mode. Follow the instructions in the terminal to interact
@@ -108,18 +112,6 @@ with the game.
 ### Network Game Mode
 
 The project temporarily does not support network game mode.
-
----
-
-## Running Tests
-
-To run the tests, use the following Maven command:
-
-```bash
-mvn test
-```
-
-This will run all the tests located in the `src/test` directory.
 
 ---
 
@@ -183,29 +175,37 @@ Here is an overview of the project directory structure:
 
 ```
 parade-game/
-├── pom.xml                      # Maven configuration file
+├── pom.xml                         # Maven configuration file
+├── config/                         # Configurations
+│   ├── config.example.properties   # Example configuration file
 ├── src/
-│   ├── main/
-│   │   ├── java/                # Source code
-│   │   │   └── parade/
-│   │   │       ├── network/
-│   │   │       ├── utils/
-│   │   │       ├── Main.java    # Main Entry file
-│   │   │       ├── Server.java  # Server Entry file
-│   │   │       └── Client.java  # Client Entry file
-│   │   ├── resources/           # Configuration files and resources
-│   └── test/
-│       ├── java/                # Test source code
+│   └── main/
+│       ├── java/                   # Source code
 │       │   └── parade/
-│       │       └── utils/
-│       └── resources/           # Test resources
-└── target/                      # Compiled classes and JAR files
+│       │       ├── card/           # All cards related classes
+│       │       ├── computer/       # Engines for computer controllers
+│       │       ├── core/           # Core logic used by the game
+│       │       │   └── result/     # Game results
+│       │       ├── exception/      # Exceptions
+│       │       ├── logger/         # Logger
+│       │       │   └── impl/       # Implementations of Logger
+│       │       ├── menu/           # Contains the menu & displays shown to players
+│       │       │   ├── base/       # Base abstract menu classes
+│       │       │   ├── display/    # Displays (no interactions)
+│       │       │   ├── manager/    # Menu managers
+│       │       │   ├── option/     # Menu options enums
+│       │       │   └── prompt/     # Prompts (user inputs)
+│       │       ├── player/         # Player
+│       │       │   └── controller/ # Player controllers (interact with underlying Player)
+│       │       ├── setting/        # Setting
+│       │       ├── utils/          # Util
+│       │       └── Game.java       # Game entry file
+│       └── resources/              # Configuration files and resources
+└── target/                         # Compiled classes and JAR files
 ```
 
 - `src/main/java`: Contains the main source code for the project.
 - `src/main/resources`: Contains non-code resources (e.g., configuration files).
-- `src/test/java`: Contains unit tests.
-- `src/test/resources`: Contains resources needed for testing.
 - `target`: Contains the compiled class files and the executable JAR files.
 
 ---
@@ -213,5 +213,5 @@ parade-game/
 ## Additional Resources
 
 - **Maven Documentation**: [https://maven.apache.org/guides/](https://maven.apache.org/guides/)
-- **JUnit Documentation**:
-  [https://junit.org/junit5/docs/current/user-guide/](https://junit.org/junit5/docs/current/user-guide/)
+- **JLine JavaDoc**
+  : [https://www.javadoc.io/doc/org.jline/jline](https://www.javadoc.io/doc/org.jline/jline)
